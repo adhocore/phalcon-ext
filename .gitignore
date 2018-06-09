@@ -1,0 +1,14 @@
+# standards
+/.cache/
+/.env
+/.idea/
+/.var/
+/vendor/
+composer.lock
+/example/.var/db.db
+/example/.var/mail/
+/example/.var/sql/
+/example/.var/view/
+!/example/.var/mail/.gitkeep
+!/example/.var/sql/.gitkeep
+!/example/.var/view/.gitkeep
