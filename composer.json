@@ -1,0 +1,42 @@
+{
+    "name": "adhocore/phalcon-ext",
+    "description": "Miscellaneous phalcon adapters, extensions and utilities",
+    "type": "library",
+    "keywords": [
+        "php", "phalcon", "phalcon-adapters", "phalcon-extensions",
+        "swiftmailer", "twig", "cors", "cache", "request-throttle"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jitendra Adhikari",
+            "email": "jiten.adhikary@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "PhalconExt\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PhalconExt\\Test\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.0.0",
+        "swiftmailer/swiftmailer": "^6.0.0",
+        "twig/twig": "^1.3.3"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": {
+            "*": "dist"
+        }
+    },
+    "scripts": {
+    }
+}
