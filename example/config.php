@@ -34,4 +34,17 @@ return [
         'cache'       => __DIR__ . '/.var/view/',
         // ... other options (see twig docs)
     ],
+    'cors' => [
+        'exposedHeaders' => [],
+        // Should be in lowercases.
+        'allowedHeaders' => ['x-requested-with', 'content-type', 'authorization'],
+        // Should be in uppercase.
+        'allowedMethods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+        // Requests originating from here can entertain CORS.
+        'allowedOrigins' => [
+            'http://127.0.0.1:1234',
+        ],
+        // Cache preflight for 7 days (expressed in seconds).
+        'maxAge'         => 604800,
+    ],
 ];
