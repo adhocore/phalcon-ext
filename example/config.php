@@ -54,7 +54,7 @@ return [
             60   => 250,
             1440 => 4500,
         ],
-        'checkUserAgent' => true,
+        'checkUserAgent' => false,
         'prefix'         => '_',
     ],
 ];
