@@ -155,9 +155,11 @@ class Cors implements MiddlewareInterface
     /**
      * Check if cors headers from client are allowed.
      *
+     * @param  $corsRequestHeaders string
+     *
      * @return bool
      */
-    protected function areHeadersAllowed()
+    protected function areHeadersAllowed(string $corsRequestHeaders = null)
     {
         if ('' === \trim($corsRequestHeaders)) {
             return true;
