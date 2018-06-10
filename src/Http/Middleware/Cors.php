@@ -2,47 +2,18 @@
 
 namespace PhalconExt\Http\Middleware;
 
-use PhalconExt\Di\ProvidesDi;
-use Phalcon\Events\Event;
-use Phalcon\Mvc\DispatcherInterface;
-use Phalcon\Mvc\View;
-use Phalcon\Mvc\Micro as MicroApplication;
-use Phalcon\Mvc\Micro\MiddlewareInterface;
+use PhalconExt\Http\BaseMiddleware;
 
-class Cors implements MiddlewareInterface
+class Cors extends BaseMiddleware
 {
-    use ProvidesDi;
-
     /** @var string */
     protected $origin;
 
-    /** @var array Cors settings */
-    protected $config;
+    protected $configKey = 'cors';
 
-    public function beforeExecuteRoute(Event $event, DispatcherInterface $dispatcher, $data = null)
-    {
-        return $this->handle();
-    }
-
-    /**
-     * @param MicroApplication $app
-     *
-     * @return bool
-     */
-    public function call(MicroApplication $app): bool
-    {
-        return $this->handle();
-    }
-
-    /**
-     * Common handler for both micro and mvc app.
-     *
-     * @return bool
-     */
     protected function handle(): bool
     {
         $this->origin = $this->di('request')->getHeader('Origin');
-        $this->config = $this->di('config')->toArray()['cors'];
 
         if (!$this->isApplicable()) {
             return true;
@@ -96,20 +67,6 @@ class Cors implements MiddlewareInterface
     }
 
     /**
-     * If origin is white listed.
-     *
-     * @return bool
-     */
-    protected function isOriginAllowed(): bool
-    {
-        if (\in_array('*', $this->config['allowedOrigins'])) {
-            return true;
-        }
-
-        return \in_array($this->origin, $this->config['allowedOrigins']);
-    }
-
-    /**
      * Handle preflight.
      *
      * @return bool
@@ -126,9 +83,7 @@ class Cors implements MiddlewareInterface
             return $this->abort(403);
         }
 
-        if ($this->di('view') instanceof View) {
-            $this->di('view')->disable();
-        }
+        $this->disableView();
 
         $this->di('response')
             ->setHeader('Access-Control-Allow-Origin', $this->origin)
@@ -139,20 +94,6 @@ class Cors implements MiddlewareInterface
             ->setContent('')
             ->send()
         ;
-
-        return false;
-    }
-
-    /**
-     * Abort with failure response.
-     *
-     * @param  int  $status
-     *
-     * @return bool
-     */
-    protected function abort(int $status): bool
-    {
-        $this->di('response')->setStatusCode($status)->sendHeaders();
 
         return false;
     }
@@ -184,7 +125,7 @@ class Cors implements MiddlewareInterface
      *
      * @return bool
      */
-    public function serve()
+    public function serve(): bool
     {
         if (!$this->isOriginAllowed()) {
             return $this->abort(403);
@@ -203,5 +144,19 @@ class Cors implements MiddlewareInterface
         }
 
         return true;
+    }
+
+    /**
+     * If origin is white listed.
+     *
+     * @return bool
+     */
+    protected function isOriginAllowed(): bool
+    {
+        if (\in_array('*', $this->config['allowedOrigins'])) {
+            return true;
+        }
+
+        return \in_array($this->origin, $this->config['allowedOrigins']);
     }
 }

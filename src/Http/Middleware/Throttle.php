@@ -3,63 +3,33 @@
 namespace PhalconExt\Http\Middleware;
 
 use PhalconExt\Cache\Redis;
-use PhalconExt\Di\ProvidesDi;
-use Phalcon\Events\Event;
+use PhalconExt\Http\BaseMiddleware;
 use Phalcon\Http\Request;
-use Phalcon\Mvc\View;
-use Phalcon\Mvc\DispatcherInterface;
-use Phalcon\Mvc\Micro as MicroApplication;
-use Phalcon\Mvc\Micro\MiddlewareInterface;
 
-class Throttle implements MiddlewareInterface
+class Throttle extends BaseMiddleware
 {
-    use ProvidesDi;
-
     /** @var string */
     protected $redis;
 
-    /** @var array */
-    protected $config;
+    protected $configKey = 'throttle';
 
     public function __construct(Redis $redis)
     {
         $this->redis = $redis;
+
+        parent::__construct();
     }
 
-    public function beforeExecuteRoute(Event $event, DispatcherInterface $dispatcher, $data = null)
-    {
-        return $this->handle();
-    }
-
-    /**
-     * @param MicroApplication $app
-     *
-     * @return bool
-     */
-    public function call(MicroApplication $app): bool
-    {
-        return $this->handle();
-    }
-
-    /**
-     * Common handler for both micro and mvc app.
-     *
-     * @return bool
-     */
     protected function handle(): bool
     {
-        $request  = $this->di('request');
-        $retryKey = null;
-
+        $retryKey     = null;
         $this->config = $this->di('config')->toArray()['throttle'];
 
-        if (null === $retryKey = $this->findRetryKey($request)) {
+        if (null === $retryKey = $this->findRetryKey($this->di('request'))) {
             return true;
         }
 
-        if ($this->di('view') instanceof View) {
-            $this->di('view')->disable();
-        }
+        $this->disableView();
 
         $after = \ceil($this->redis->getTTL($retryKey) / 60);
 
