@@ -125,6 +125,8 @@ class Cors implements MiddlewareInterface
             return $this->abort(403);
         }
 
+        $this->di('view')->disable();
+
         $this->di('response')
             ->setHeader('Access-Control-Allow-Origin', $this->origin)
             ->setHeader('Access-Control-Allow-Credentials', 'true')
