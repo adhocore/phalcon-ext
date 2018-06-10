@@ -6,6 +6,7 @@ use PhalconExt\Cache\Redis;
 use PhalconExt\Di\ProvidesDi;
 use Phalcon\Events\Event;
 use Phalcon\Http\Request;
+use Phalcon\Mvc\View;
 use Phalcon\Mvc\DispatcherInterface;
 use Phalcon\Mvc\Micro as MicroApplication;
 use Phalcon\Mvc\Micro\MiddlewareInterface;
@@ -48,16 +49,17 @@ class Throttle implements MiddlewareInterface
     protected function handle(): bool
     {
         $request  = $this->di('request');
-        $baseKey  = $this->getKey($request);
         $retryKey = null;
 
         $this->config = $this->di('config')->toArray()['throttle'];
 
-        if (null === $retryKey = $this->findRetryKey()) {
+        if (null === $retryKey = $this->findRetryKey($request)) {
             return true;
         }
 
-        $this->di('view')->disable();
+        if ($this->di('view') instanceof View) {
+            $this->di('view')->disable();
+        }
 
         $after = \ceil($this->redis->getTTL($retryKey) / 60);
 
@@ -70,9 +72,10 @@ class Throttle implements MiddlewareInterface
         return false;
     }
 
-    protected function findRetryKey(): ?string
+    protected function findRetryKey(Request $request): ?string
     {
         $retryKey = null;
+        $baseKey  = $this->getKey($request);
 
         foreach ($this->config['maxHits'] as $minutes => $maxHits) {
             $key  = "$baseKey:$minutes";

@@ -5,6 +5,7 @@ namespace PhalconExt\Http\Middleware;
 use PhalconExt\Di\ProvidesDi;
 use Phalcon\Events\Event;
 use Phalcon\Mvc\DispatcherInterface;
+use Phalcon\Mvc\View;
 use Phalcon\Mvc\Micro as MicroApplication;
 use Phalcon\Mvc\Micro\MiddlewareInterface;
 
@@ -125,7 +126,9 @@ class Cors implements MiddlewareInterface
             return $this->abort(403);
         }
 
-        $this->di('view')->disable();
+        if ($this->di('view') instanceof View) {
+            $this->di('view')->disable();
+        }
 
         $this->di('response')
             ->setHeader('Access-Control-Allow-Origin', $this->origin)
@@ -173,7 +176,7 @@ class Cors implements MiddlewareInterface
             \explode(',', \str_replace(' ', '', $corsRequestHeaders))
         );
 
-        return \count(\array_diff($corsRequestHeaders, $this->config['allowedHeaders'])) > 0;
+        return empty(\array_diff($corsRequestHeaders, $this->config['allowedHeaders']));
     }
 
     /**
