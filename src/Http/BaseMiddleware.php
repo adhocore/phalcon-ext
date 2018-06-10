@@ -66,4 +66,19 @@ abstract class BaseMiddleware implements MiddlewareInterface
 
         return false;
     }
+
+    protected function isMicro(): bool
+    {
+        static $isMicro = null;
+
+        if (null !== $isMicro) {
+            return $isMicro;
+        }
+
+        if (!$this->di()->has('application')) {
+            return $isMicro = false;
+        }
+
+        return $isMicro = $this->di('application') instanceof MicroApplication;
+    }
 }
