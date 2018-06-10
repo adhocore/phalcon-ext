@@ -1,5 +1,6 @@
 <?php
 
+use PhalconExt\Http\Middleware\Cache;
 use PhalconExt\Http\Middleware\Cors;
 use PhalconExt\Http\Middleware\Throttle;
 use Phalcon\Mvc\Application;
@@ -21,9 +22,10 @@ $di->get('router')->add('/corsheader', ['controller' => 'index', 'action' => 'co
 
 $evm = $di->get('eventsManager');
 
-// Cors, Throttle
-$evm->attach('dispatch:beforeExecuteRoute', new Cors);
+// Order: Throttle, Cors, Cache
 $evm->attach('dispatch:beforeExecuteRoute', new Throttle($di->get('redis')));
+$evm->attach('dispatch:beforeExecuteRoute', new Cors);
+$evm->attach('dispatch:beforeExecuteRoute', new Cache);
 
 $di->get('dispatcher')->setEventsManager($evm);
 

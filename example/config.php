@@ -57,4 +57,7 @@ return [
         'checkUserAgent' => false,
         'prefix'         => '_',
     ],
+    'requestCache' => [
+        'ttl' => 60, // 60 minutes
+    ],
 ];

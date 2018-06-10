@@ -1,5 +1,6 @@
 <?php
 
+use PhalconExt\Http\Middleware\Cache;
 use PhalconExt\Http\Middleware\Cors;
 use PhalconExt\Http\Middleware\Throttle;
 use Phalcon\Mvc\Micro as MicroApplication;
@@ -45,9 +46,10 @@ $app->mount((new Collection)
     ->mapVia('corsheader', 'corsHeaderAction', ['GET', 'OPTIONS'])
 );
 
-// Cors
+// Order: Throttle, Cors, Cache
 $app->before(new Throttle($di->get('redis')));
 $app->before(new Cors);
+$app->before(new Cache);
 
 $app->notFound(function () use ($di) {
     return $di->get('response')->setContent('')->setStatusCode(404);
