@@ -125,6 +125,21 @@ class MicroController
 
         return '<pre>' . print_r($info, 1) . '<pre>';
     }
+
+    public function corsAction()
+    {
+        return $this->di('view')->render('index/cors', ['cors_uri' => '?_url=/corsheader']);
+    }
+
+    public function corsHeaderAction()
+    {
+        $response = $this->di('response');
+
+        return $response->setJsonContent([
+            'request' => $this->di('request')->getHeaders(),
+            'response' => $response->getHeaders()->toArray(),
+        ]);
+    }
 }
 
 // Dummy classes for DI extension demo

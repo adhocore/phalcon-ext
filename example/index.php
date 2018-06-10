@@ -1,5 +1,6 @@
 <?php
 
+use PhalconExt\Http\Middleware\Cors;
 use Phalcon\Mvc\Micro as MicroApplication;
 use Phalcon\Mvc\Micro\Collection;
 use Phalcon\Mvc\Router;
@@ -37,6 +38,17 @@ $app->mount((new Collection)
     ->get('mail', 'mailAction')
     ->get('logger', 'loggerAction')
     ->get('validation', 'validationAction')
+    ->get('cors', 'corsAction')
+    // Need to allow OPTIONS request for cors enabled endpoint!
+    // (But not always, simple requests can do without it.)
+    ->mapVia('corsheader', 'corsHeaderAction', ['GET', 'OPTIONS'])
 );
+
+// Cors
+$app->before(new Cors);
+
+$app->notFound(function () use ($di) {
+    return $di->get('response')->setContent('')->setStatusCode(404);
+});
 
 $app->handle();

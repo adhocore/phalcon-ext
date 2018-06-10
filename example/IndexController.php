@@ -1,5 +1,6 @@
 <?php
 
+use PhalconExt\Di\ProvidesDi;
 use Phalcon\Mvc\Controller;
 use PhalconExt\Mail\Mailable;
 
@@ -7,6 +8,7 @@ use PhalconExt\Mail\Mailable;
 class IndexController extends Controller
 {
     use Mailable;
+    use ProvidesDi;
 
     public function indexAction()
     {
@@ -25,5 +27,20 @@ class IndexController extends Controller
             ->mail();
 
         $this->view->setVar('info', print_r($info, 1));
+    }
+
+    public function corsAction()
+    {
+        return $this->view->setVars(['cors_uri' => 'mvc.php?_url=/corsheader']);
+    }
+
+    public function corsHeaderAction()
+    {
+        $response = $this->di('response');
+
+        return $response->setJsonContent([
+            'request' => $this->di('request')->getHeaders(),
+            'response' => $response->getHeaders()->toArray(),
+        ]);
     }
 }
