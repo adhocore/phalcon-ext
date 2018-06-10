@@ -1,10 +1,12 @@
 <?php
 
+use PhalconExt\Cache\Redis;
 use PhalconExt\Db\Sqlite;
 use PhalconExt\Di\FactoryDefault;
 use PhalconExt\Mail\Mailer;
 use PhalconExt\Validation\Validation;
 use PhalconExt\View\Twig;
+use Phalcon\Cache\Frontend\None as CacheFront;
 use Phalcon\Mvc\View;
 
 $loader = (new Phalcon\Loader)
@@ -51,6 +53,10 @@ $di->setShared('twig', function () {
 
 $di->setShared('mailer', function () {
     return (new Mailer($this->get('config')->toArray()['mail']));
+});
+
+$di->setShared('redis', function () {
+    return new Redis(new CacheFront(['lifetime' => 0]));
 });
 
 // Since it is registered as FQCN, it is auto aliased when calling `registerAliases()`.

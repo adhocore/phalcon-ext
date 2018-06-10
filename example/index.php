@@ -1,6 +1,7 @@
 <?php
 
 use PhalconExt\Http\Middleware\Cors;
+use PhalconExt\Http\Middleware\Throttle;
 use Phalcon\Mvc\Micro as MicroApplication;
 use Phalcon\Mvc\Micro\Collection;
 use Phalcon\Mvc\Router;
@@ -45,6 +46,7 @@ $app->mount((new Collection)
 );
 
 // Cors
+$app->before(new Throttle($di->get('redis')));
 $app->before(new Cors);
 
 $app->notFound(function () use ($di) {

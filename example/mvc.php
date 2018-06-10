@@ -1,6 +1,7 @@
 <?php
 
 use PhalconExt\Http\Middleware\Cors;
+use PhalconExt\Http\Middleware\Throttle;
 use Phalcon\Mvc\Application;
 use Phalcon\Mvc\Router;
 
@@ -18,9 +19,12 @@ $di->get('router')->add('/mail', ['controller' => 'index', 'action' => 'mail']);
 $di->get('router')->add('/cors', ['controller' => 'index', 'action' => 'cors']);
 $di->get('router')->add('/corsheader', ['controller' => 'index', 'action' => 'corsheader'], ['GET', 'OPTIONS']);
 
-// Cors
 $evm = $di->get('eventsManager');
+
+// Cors, Throttle
 $evm->attach('dispatch:beforeExecuteRoute', new Cors);
+$evm->attach('dispatch:beforeExecuteRoute', new Throttle($di->get('redis')));
+
 $di->get('dispatcher')->setEventsManager($evm);
 
 echo $app->handle()->getContent();

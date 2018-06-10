@@ -47,4 +47,14 @@ return [
         // Cache preflight for 7 days (expressed in seconds).
         'maxAge'         => 604800,
     ],
+    'throttle' => [
+        'maxHits' => [
+            // Mintues => Max Hits
+            1    => 5,
+            60   => 250,
+            1440 => 4500,
+        ],
+        'checkUserAgent' => true,
+        'prefix'         => '_',
+    ],
 ];
