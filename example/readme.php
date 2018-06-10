@@ -9,6 +9,7 @@ DONT COPY PASTE THESE EXAMPLE SNIPPETS INTO YOUR CODE.
 Go to the root of this project and run
 
 ```sh
+mkdir -p example/.var/mail example/.var/sql example/.var/view
 touch example/.var/db.db
 php -S localhost:1234 -t example
 ```
