@@ -34,7 +34,7 @@ require_once __DIR__ . '/MicroController.php';
 $app->mount((new Collection)
     ->setPrefix('/')
     ->setHandler(MicroController::class, true)
-    ->get('/', 'indexAction')
+    ->get('/', 'indexAction', 'home')
     ->get('db', 'dbAction')
     ->get('di', 'diAction')
     ->get('mail', 'mailAction')
@@ -47,9 +47,9 @@ $app->mount((new Collection)
 );
 
 // Order: Throttle, Cors, Cache
-$app->before(new Throttle($di->get('redis')));
-$app->before(new Cors);
-$app->before(new Cache);
+(new Throttle)->boot();
+(new Cors)->boot();
+(new Cache)->boot();
 
 $app->notFound(function () use ($di) {
     return $di->get('response')->setContent('')->setStatusCode(404);
