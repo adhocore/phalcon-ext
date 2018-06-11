@@ -22,8 +22,6 @@ abstract class BaseMiddleware implements MiddlewareInterface
     public function __construct()
     {
        $this->config = $this->di('config')->toArray()[$this->configKey];
-
-       $this->boot();
     }
 
     public function boot()
@@ -34,11 +32,11 @@ abstract class BaseMiddleware implements MiddlewareInterface
             return;
         }
 
-        $evm = $di->get('eventsManager');
+        $evm = $this->di('eventsManager');
 
         $evm->attach('dispatch:beforeExecuteRoute', $this);
 
-        $di->get('dispatcher')->setEventsManager($evm);
+        $this->di('dispatcher')->setEventsManager($evm);
     }
 
     /**
@@ -48,7 +46,7 @@ abstract class BaseMiddleware implements MiddlewareInterface
      */
     abstract protected function handle(): bool;
 
-    public function beforeExecuteRoute(Event $event, Dispatcher $dispatcher, $data = null): bool
+    public function beforeExecuteRoute(): bool
     {
         return $this->handle();
     }
