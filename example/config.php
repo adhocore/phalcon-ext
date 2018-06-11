@@ -50,11 +50,12 @@ return [
     'throttle' => [
         'maxHits' => [
             // Mintues => Max Hits
-            1    => 5,
+            1    => 10,
             60   => 250,
             1440 => 4500,
         ],
         'checkUserAgent' => false,
+        // Cache key prefix
         'prefix'         => '_',
     ],
     'httpCache' => [
