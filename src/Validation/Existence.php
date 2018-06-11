@@ -20,7 +20,7 @@ class Existence extends Uniqueness
             return true;
         }
 
-        $label = $this->getOption('label')   ?: $validation->getLabel($field);
+        $label = $this->getOption('label') ?: $validation->getLabel($field);
         $error = $this->getOption('message') ?: $validation->getDefaultMessage('Existence');
         $error = \strtr($error, [':field' => $label]);
 

@@ -1,14 +1,14 @@
 <?php
 
-use PhalconExt\Http\Middleware\Cache;
-use PhalconExt\Http\Middleware\Cors;
-use PhalconExt\Http\Middleware\Throttle;
 use Phalcon\Mvc\Micro as MicroApplication;
 use Phalcon\Mvc\Micro\Collection;
 use Phalcon\Mvc\Router;
 use Phalcon\Mvc\View\Simple as SimpleView;
+use PhalconExt\Http\Middleware\Cache;
+use PhalconExt\Http\Middleware\Cors;
+use PhalconExt\Http\Middleware\Throttle;
 
-# Micro app
+// Micro app
 
 // In micro mode, most of the di services are the same
 $di = require_once __DIR__ . '/bootstrap.php';

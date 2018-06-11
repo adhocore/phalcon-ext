@@ -84,7 +84,7 @@ class Logger implements \Swift_Events_SendListener
             }
         }
 
-        $html .= "</div>";
+        $html .= '</div>';
 
         return $html;
     }

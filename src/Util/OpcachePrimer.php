@@ -29,8 +29,7 @@ class OpcachePrimer
 
     protected function filter(\RecursiveIteratorIterator $iterator): \FilterIterator
     {
-        return new class($iterator) extends \FilterIterator
-        {
+        return new class($iterator) extends \FilterIterator {
             public function accept(): bool
             {
                 return $this->getInnerIterator()->current()->getExtension() === 'php';

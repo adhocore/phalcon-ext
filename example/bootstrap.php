@@ -1,13 +1,13 @@
 <?php
 
+use Phalcon\Cache\Frontend\None as CacheFront;
+use Phalcon\Mvc\View;
 use PhalconExt\Cache\Redis;
 use PhalconExt\Db\Sqlite;
 use PhalconExt\Di\FactoryDefault;
 use PhalconExt\Mail\Mailer;
 use PhalconExt\Validation\Validation;
 use PhalconExt\View\Twig;
-use Phalcon\Cache\Frontend\None as CacheFront;
-use Phalcon\Mvc\View;
 
 $loader = (new Phalcon\Loader)
     ->registerNamespaces([
@@ -52,7 +52,7 @@ $di->setShared('twig', function () {
 });
 
 $di->setShared('mailer', function () {
-    return (new Mailer($this->get('config')->toArray()['mail']));
+    return new Mailer($this->get('config')->toArray()['mail']);
 });
 
 $di->setShared('redis', function () {
@@ -71,7 +71,7 @@ $di->registerAliases([
     Twig::class   => 'twig',
     Mailer::class => 'mailer',
     // Some like to call it validator!
-    'validator'   => 'validation'
+    'validator'   => 'validation',
 ]);
 
 return $di;

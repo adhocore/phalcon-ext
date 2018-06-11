@@ -2,9 +2,9 @@
 
 namespace PhalconExt\Http\Middleware;
 
-use PhalconExt\Http\BaseMiddleware;
 use Phalcon\Http\Request;
 use Phalcon\Http\Response;
+use PhalconExt\Http\BaseMiddleware;
 
 class Cache extends BaseMiddleware
 {

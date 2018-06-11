@@ -2,12 +2,11 @@
 
 namespace PhalconExt\Http;
 
-use PhalconExt\Di\ProvidesDi;
-use Phalcon\Events\Event;
 use Phalcon\Mvc\DispatcherInterface as Dispatcher;
-use Phalcon\Mvc\View;
 use Phalcon\Mvc\Micro as MicroApplication;
 use Phalcon\Mvc\Micro\MiddlewareInterface;
+use Phalcon\Mvc\View;
+use PhalconExt\Di\ProvidesDi;
 
 abstract class BaseMiddleware implements MiddlewareInterface
 {
@@ -21,7 +20,7 @@ abstract class BaseMiddleware implements MiddlewareInterface
 
     public function __construct()
     {
-       $this->config = $this->di('config')->toArray()[$this->configKey];
+        $this->config = $this->di('config')->toArray()[$this->configKey];
     }
 
     public function boot()
@@ -71,7 +70,7 @@ abstract class BaseMiddleware implements MiddlewareInterface
     /**
      * Abort with failure response.
      *
-     * @param  int  $status
+     * @param int $status
      *
      * @return bool
      */

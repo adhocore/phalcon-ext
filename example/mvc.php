@@ -1,12 +1,12 @@
 <?php
 
+use Phalcon\Mvc\Application;
+use Phalcon\Mvc\Router;
 use PhalconExt\Http\Middleware\Cache;
 use PhalconExt\Http\Middleware\Cors;
 use PhalconExt\Http\Middleware\Throttle;
-use Phalcon\Mvc\Application;
-use Phalcon\Mvc\Router;
 
-# MVC app
+// MVC app
 
 $di = require_once __DIR__ . '/bootstrap.php';
 

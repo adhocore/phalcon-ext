@@ -1,9 +1,9 @@
 <?php
 
+use Phalcon\Logger;
 use PhalconExt\Di\ProvidesDi;
 use PhalconExt\Logger\EchoLogger;
 use PhalconExt\Mail\Mailer;
-use Phalcon\Logger;
 
 /** Micro Controller */
 class MicroController
@@ -35,13 +35,13 @@ class MicroController
             ['details' => 'detail2', 'name' => 'name2'], // columns dont need to be ordered or balanced
         ]);
 
-        $info['count_by[name1]=1'] = $db->countBy('phalcon_ext', ['name' => 'name1']);
+        $info['count_by[name1]=1']         = $db->countBy('phalcon_ext', ['name' => 'name1']);
         $info['count_by[name2,detail3]=0'] = $db->countBy('phalcon_ext', [
-            'name' => 'name1',
+            'name'    => 'name1',
             'details' => 'detail3',
         ]);
 
-        $info['upsert=1'] = (int) $db->upsert('phalcon_ext', ['details' => 'detail1'], ['name' => 'name1']);
+        $info['upsert=1']            = (int) $db->upsert('phalcon_ext', ['details' => 'detail1'], ['name' => 'name1']);
         $info['count_by[detail1]=1'] = $db->countBy('phalcon_ext', ['name' => 'name1']);
 
         return '<pre>' . print_r($info, 1) . '</pre>'
@@ -110,7 +110,7 @@ class MicroController
                 'required' => true,
                 'length'   => ['min' => 5, 'max' => 15],
             ],
-            'id' => 'required|length:min:1;max:2;|in:domain:1,12,30',
+            'id'    => 'required|length:min:1;max:2;|in:domain:1,12,30',
             'email' => [
                 'required' => true,
                 'gmail'    => true,
@@ -122,8 +122,8 @@ class MicroController
         // Validate against empty data
         $validation->run($rules, []);
 
-        $info['pass=0'] = (int) $validation->pass();
-        $info['fail=1'] = (int) $validation->fail();
+        $info['pass=0']           = (int) $validation->pass();
+        $info['fail=1']           = (int) $validation->fail();
         $info['errors=[0,1...6]'] = $validation->getErrorMessages();
 
         return '<pre>' . print_r($info, 1) . '<pre>';
@@ -139,13 +139,26 @@ class MicroController
         $response = $this->di('response');
 
         return $response->setJsonContent([
-            'request' => $this->di('request')->getHeaders(),
+            'request'  => $this->di('request')->getHeaders(),
             'response' => $response->getHeaders()->toArray(),
         ]);
     }
 }
 
 // Dummy classes for DI extension demo
-class NeedsDb { function __construct(\Phalcon\Db\Adapter $_db) {} }
-class DeepNest { function __construct(NeedsDb $n, Mailer $mailer) {} }
-class DiProvider { use ProvidesDi; }
+class NeedsDb
+{
+    public function __construct(\Phalcon\Db\Adapter $_db)
+    {
+    }
+}
+class DeepNest
+{
+    public function __construct(NeedsDb $n, Mailer $mailer)
+    {
+    }
+}
+class DiProvider
+{
+    use ProvidesDi;
+}

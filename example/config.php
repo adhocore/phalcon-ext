@@ -16,7 +16,7 @@ return [
     'mail' => [
         'driver' => 'null',
         'from'   => [
-            'name' => 'Test',
+            'name'  => 'Test',
             'email' => 'test@localhost',
         ],
         'logger' => [
