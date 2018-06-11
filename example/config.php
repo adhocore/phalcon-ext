@@ -57,7 +57,15 @@ return [
         'checkUserAgent' => false,
         'prefix'         => '_',
     ],
-    'requestCache' => [
-        'ttl' => 60, // 60 minutes
+    'httpCache' => [
+        // cache life- time to live
+        'ttl'       => 60, // 60 minutes
+        'routes'    => [
+            // for absolute uri, prepend forward `/`
+            '/di',
+            '/logger',
+            // or you can use route name without a `/`
+            'home',
+        ],
     ],
 ];
