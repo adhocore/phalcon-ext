@@ -10,7 +10,7 @@ class Cache extends BaseMiddleware
     /** @var string */
     protected $cacheKey;
 
-    protected $configKey = 'requestCache';
+    protected $configKey = 'httpCache';
 
     public function afterExecuteRoute()
     {
@@ -19,11 +19,14 @@ class Cache extends BaseMiddleware
 
     protected function handle(): bool
     {
+        if (false === $this->isCacheable()) {
+            return true;
+        }
+
         $this->cacheKey = $this->getCacheKey($this->di('request'));
 
-        $cacheable = $this->isCacheable();
-        if (!$cacheable || !$this->hasCache()) {
-            return $cacheable ? $this->willCache() : true;
+        if (!$this->hasCache()) {
+            return $this->willCache();
         }
 
         return $this->serve();
@@ -31,7 +34,21 @@ class Cache extends BaseMiddleware
 
     protected function isCacheable(): bool
     {
-        return $this->di('request')->isGet();
+        if (false === $this->di('request')->isGet()) {
+            return false;
+        }
+
+        list($routeName, $url) = $this->getRouteNameUrl();
+
+        $allowedRoutes = \array_fill_keys($this->config['routes'], true);
+
+        if (!isset($allowedRoutes[$routeName]) && !isset($allowedRoutes[$url])) {
+            return false;
+        }
+
+        $statusCode = $this->di('response')->getStatusCode();
+
+        return \in_array($statusCode, [200, 204, 301, null]); // null doesnt indicate failure!
     }
 
     protected function hasCache(): bool
@@ -97,16 +114,16 @@ class Cache extends BaseMiddleware
         return true;
     }
 
-    protected function getContent($response)
+    protected function getContent($response): string
     {
         if (null !== $response->getContent()) {
             return $response->getContent();
         }
 
-        if ($this->di()->has('application')) {
+        if ($this->isMicro()) {
             return (string) $this->di('application')->getReturnedValue();
         }
 
-        return '';
+        return (string) $this->di('dispatcher')->getReturnedValue();
     }
 }
