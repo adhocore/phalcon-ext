@@ -22,6 +22,23 @@ abstract class BaseMiddleware implements MiddlewareInterface
     public function __construct()
     {
        $this->config = $this->di('config')->toArray()[$this->configKey];
+
+       $this->boot();
+    }
+
+    public function boot()
+    {
+        if ($this->isMicro()) {
+            $this->di('application')->before($this);
+
+            return;
+        }
+
+        $evm = $di->get('eventsManager');
+
+        $evm->attach('dispatch:beforeExecuteRoute', $this);
+
+        $di->get('dispatcher')->setEventsManager($evm);
     }
 
     /**
