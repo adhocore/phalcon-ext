@@ -88,9 +88,12 @@ class MicroController
     {
         $echo = $this->di(EchoLogger::class, ['config' => ['level' => Logger::INFO]]);
 
+        ob_start();
         $echo->log('info from echo logger<br>', Logger::INFO);
         $echo->log('debug from echo logger<br>', Logger::DEBUG); // will not print
         $echo->log('error from echo logger<br>', Logger::ERROR);
+
+        return ob_get_clean();
     }
 
     public function validationAction()
