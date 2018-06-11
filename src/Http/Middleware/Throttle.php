@@ -2,7 +2,6 @@
 
 namespace PhalconExt\Http\Middleware;
 
-use PhalconExt\Cache\Redis;
 use PhalconExt\Http\BaseMiddleware;
 use Phalcon\Http\Request;
 
@@ -12,13 +11,6 @@ class Throttle extends BaseMiddleware
     protected $redis;
 
     protected $configKey = 'throttle';
-
-    public function __construct(Redis $redis)
-    {
-        $this->redis = $redis;
-
-        parent::__construct();
-    }
 
     protected function handle(): bool
     {
@@ -31,13 +23,14 @@ class Throttle extends BaseMiddleware
 
         $this->disableView();
 
-        $after = \ceil($this->redis->getTTL($retryKey) / 60);
+        $after = \ceil($this->di('redis')->getTtl($retryKey) / 60);
 
         $this->di('response')
             ->setContent("Too many requests. Try again in $after min.")
             ->setHeader('Retry-After', $after)
             ->setStatusCode(429)
-            ->send();
+            ->send()
+        ;
 
         return false;
     }
@@ -45,12 +38,13 @@ class Throttle extends BaseMiddleware
     protected function findRetryKey(Request $request): ?string
     {
         $retryKey = null;
+        $redis    = $this->di('redis');
         $baseKey  = $this->getKey($request);
 
         foreach ($this->config['maxHits'] as $minutes => $maxHits) {
             $key  = "$baseKey:$minutes";
-            $hits = $this->redis->exists($key) ? $this->redis->get($key) : 0;
-            $ttl  = $hits ? $this->redis->getTTL($key) : $minutes * 60;
+            $hits = $redis->exists($key) ? $redis->get($key) : 0;
+            $ttl  = $hits ? $redis->getTtl($key) : $minutes * 60;
 
             if (null === $retryKey && $hits >= $maxHits) {
                 $retryKey = $key;
@@ -58,7 +52,7 @@ class Throttle extends BaseMiddleware
                 continue;
             }
 
-            $this->redis->save($key, $hits + 1, $ttl);
+            $redis->save($key, $hits + 1, $ttl);
         }
 
         return $retryKey;
