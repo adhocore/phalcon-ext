@@ -9,7 +9,7 @@ install:
   - composer install --prefer-dist
 
 before_script:
-  - for P in src tests; do find $P -type f -name '*.php' -exec php -l {} \;; done
+  - for P in src tests example; do find $P -type f -name '*.php' -exec php -l {} \;; done
 
 script:
   - vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
