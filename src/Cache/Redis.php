@@ -11,7 +11,7 @@ class Redis extends BaseRedis
         return $this->_redis;
     }
 
-    public function getTTL(string $key): int
+    public function getTtl(string $key): int
     {
         return $this->_redis->ttl("_PHCR$key") ?: -1;
     }
