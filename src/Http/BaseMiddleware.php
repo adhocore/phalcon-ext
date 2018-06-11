@@ -100,7 +100,9 @@ abstract class BaseMiddleware implements MiddlewareInterface
     protected function getRouteNameUrl(): array
     {
         $router = $this->di('router');
+        $route  = $router->getMatchedRoute();
+        $name   = $route ? $route->getName() : null;
 
-        return [$router->getMatchedRoute()->getName(), $router->getRewriteUri()];
+        return [$name, $router->getRewriteUri()];
     }
 }
