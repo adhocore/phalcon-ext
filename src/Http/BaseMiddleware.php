@@ -98,4 +98,11 @@ abstract class BaseMiddleware implements MiddlewareInterface
 
         return $isMicro = $this->di('application') instanceof MicroApplication;
     }
+
+    protected function getRouteNameUrl(): array
+    {
+        $router = $this->di('router');
+
+        return [$router->getMatchedRoute()->getName(), $router->getRewriteUri()];
+    }
 }
