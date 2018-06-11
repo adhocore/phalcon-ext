@@ -13,6 +13,9 @@ Go to the root of this project and run
 mkdir -p example/.var/mail example/.var/sql example/.var/view
 touch example/.var/db.db
 
+# composer
+composer install -o
+
 # start redis server
 redis-server &
 
