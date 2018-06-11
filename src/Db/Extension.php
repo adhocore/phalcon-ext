@@ -14,13 +14,13 @@ trait Extension
     /**
      * Update a row matching given criteria if exists or insert new one.
      *
-     * @param  string $table    The table to act upon.
-     * @param  array  $data     The actual data dict ([field => value]) to update/insert.
-     * @param  array  $criteria The criteria dict ([field => value]) to update the row.
-     *
-     * @return bool
+     * @param string $table    The table to act upon.
+     * @param array  $data     The actual data dict ([field => value]) to update/insert.
+     * @param array  $criteria The criteria dict ([field => value]) to update the row.
      *
      * @throws \InvalidArgumentException When the criteria is insufficient.
+     *
+     * @return bool
      */
     public function upsert(string $table, array $data, array $criteria): bool
     {
@@ -52,8 +52,8 @@ trait Extension
     /**
      * Count rows in db table using given criteria.
      *
-     * @param  string $table
-     * @param  array  $criteria Col=>Val pairs
+     * @param string $table
+     * @param array  $criteria Col=>Val pairs
      *
      * @return int
      */
@@ -71,8 +71,8 @@ trait Extension
     /**
      * Prepare clause and Binds using data dict.
      *
-     * @param  array $dict  Col=>Val pairs
-     * @param  bool  $named Whether to use named placeholder.
+     * @param array $dict  Col=>Val pairs
+     * @param bool  $named Whether to use named placeholder.
      *
      * @return array ['clause', [binds]]
      */
@@ -92,8 +92,8 @@ trait Extension
     /**
      * Insert bulk data to a table in single query.
      *
-     * @param  string $table
-     * @param  array  $data
+     * @param string $table
+     * @param array  $data
      *
      * @return bool
      */

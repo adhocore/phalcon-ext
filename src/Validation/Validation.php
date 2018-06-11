@@ -2,12 +2,12 @@
 
 namespace PhalconExt\Validation;
 
-use PhalconExt\Validators;
 use Phalcon\Validation as BaseValidation;
 use Phalcon\Validation\Validator;
+use PhalconExt\Validators;
 
 /**
- * Validation
+ * Validation.
  */
 class Validation extends BaseValidation
 {
@@ -40,9 +40,9 @@ class Validation extends BaseValidation
     /**
      * Register a custom validation rule.
      *
-     * @param  string             $ruleName
-     * @param  callable|Validator $handler
-     * @param  string             $message  Message to use when validation fails
+     * @param string             $ruleName
+     * @param callable|Validator $handler
+     * @param string             $message  Message to use when validation fails
      *
      * @return Validation $this
      */
@@ -58,7 +58,7 @@ class Validation extends BaseValidation
 
         if (\is_callable($handler)) {
             $this->callbacks[$ruleName] = $handler;
-            $handler = Validator\Callback::class;
+            $handler                    = Validator\Callback::class;
         }
 
         if (!\is_subclass_of($handler, Validator::class)) {
@@ -73,8 +73,8 @@ class Validation extends BaseValidation
     /**
      * Registers multiple custom validation rules at once!
      *
-     * @param  array  $ruleDefinitions ['rule1' => <handler>, ...]
-     * @param  array  $messages        ['rule1' => 'message', ...]
+     * @param array $ruleDefinitions ['rule1' => <handler>, ...]
+     * @param array $messages        ['rule1' => 'message', ...]
      *
      * @return Validation $this
      */
@@ -130,8 +130,8 @@ class Validation extends BaseValidation
     /**
      * Runs a validation with given ruleSet against given arbitrary dataSet.
      *
-     * @param  array $ruleSet
-     * @param  array $dataSet
+     * @param array $ruleSet
+     * @param array $dataSet
      *
      * @return Validation $this
      */
@@ -145,9 +145,9 @@ class Validation extends BaseValidation
     /**
      * Run the validation rules on data set.
      *
-     * @param  array $ruleSet
-     * @param  array $dataSet
-     * @param  bool  $reset    Whether to reset currently registered validators.
+     * @param array $ruleSet
+     * @param array $dataSet
+     * @param bool  $reset   Whether to reset currently registered validators.
      *
      * @return Validation
      */
@@ -214,8 +214,8 @@ class Validation extends BaseValidation
     /**
      * Add all the rules for given attribute to validators list.
      *
-     * @param  string $attribute
-     * @param  array  $rules
+     * @param string $attribute
+     * @param array  $rules
      *
      * @return void
      */

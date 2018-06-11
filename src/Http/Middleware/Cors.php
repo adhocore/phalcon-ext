@@ -92,8 +92,7 @@ class Cors extends BaseMiddleware
             ->setHeader('Access-Control-Allow-Headers', \implode(', ', $this->config['allowedHeaders']))
             ->setHeader('Access-Control-Max-Age', $this->config['maxAge'])
             ->setContent('')
-            ->send()
-        ;
+            ->send();
 
         return false;
     }
@@ -135,8 +134,7 @@ class Cors extends BaseMiddleware
 
         $response
             ->setHeader('Access-Control-Allow-Origin', $this->origin)
-            ->setHeader('Access-Control-Allow-Credentials', 'true')
-        ;
+            ->setHeader('Access-Control-Allow-Credentials', 'true');
 
         // Optionally set expose headers.
         if ($this->config['exposedHeaders'] ?? null) {

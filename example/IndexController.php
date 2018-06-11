@@ -1,7 +1,7 @@
 <?php
 
-use PhalconExt\Di\ProvidesDi;
 use Phalcon\Mvc\Controller;
+use PhalconExt\Di\ProvidesDi;
 use PhalconExt\Mail\Mailable;
 
 /** MVC controller */
@@ -18,7 +18,7 @@ class IndexController extends Controller
     public function mailAction()
     {
         $info['newTemplateMail[mailable]=1'] = $this->mail('me@localhost', 'Hi', [
-            'body' => 'mailable body'
+            'body' => 'mailable body',
         ]);
 
         $info['newTemplateMail=2'] = $this->mailer->newTemplateMail('mail.template')
@@ -39,7 +39,7 @@ class IndexController extends Controller
         $response = $this->di('response');
 
         return $response->setJsonContent([
-            'request' => $this->di('request')->getHeaders(),
+            'request'  => $this->di('request')->getHeaders(),
             'response' => $response->getHeaders()->toArray(),
         ]);
     }

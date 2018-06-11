@@ -19,8 +19,8 @@ trait Extension
     /**
      * Resolve all the dependencies for a class FQCN and instantiate it.
      *
-     * @param  string $class      FQCN
-     * @param  array  $parameters Parameters
+     * @param string $class      FQCN
+     * @param array  $parameters Parameters
      *
      * @return object
      */
@@ -44,7 +44,7 @@ trait Extension
             $resolved = $this->get($class, $parameters);
         } catch (\Throwable $e) {
             $this->resolving[$class] = true;
-            $resolved = $this->instantiate($class, $parameters);
+            $resolved                = $this->instantiate($class, $parameters);
         }
 
         $this->setShared($class, $resolved);
@@ -55,8 +55,8 @@ trait Extension
     /**
      * Instantiate class FQCN by constructor injecting the dependencies from the DI.
      *
-     * @param  string $class      FQCN
-     * @param  array  $parameters Parameters
+     * @param string $class      FQCN
+     * @param array  $parameters Parameters
      *
      * @return object
      */
@@ -99,8 +99,7 @@ trait Extension
             // Use default value.
             elseif ($dependency->isOptional()) {
                 $resolved[] = $dependency->getDefaultValue();
-            }
-            else {
+            } else {
                 throw new \RuntimeException('Cannot resolve dependency $' . $name);
             }
         }
@@ -153,7 +152,7 @@ trait Extension
             $isStr = \is_string($def);
 
             if ($isStr || (\is_object($def) && !$def instanceof \Closure)) {
-                $alias = $isStr ? $def : \get_class($def);
+                $alias                 = $isStr ? $def : \get_class($def);
                 $this->aliases[$alias] = $name;
             }
         }

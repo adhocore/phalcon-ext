@@ -23,7 +23,7 @@ class Twig extends Engine
         $this->initTwig();
 
         $this->_view->setContent(
-            $this->twig->render($this->normalizePath($path), empty($params) ? [] : (array)$params)
+            $this->twig->render($this->normalizePath($path), empty($params) ? [] : (array) $params)
         );
     }
 
@@ -82,8 +82,8 @@ class Twig extends Engine
     /**
      * Delegate calls to twig.
      *
-     * @param  string $method
-     * @param  array  $args
+     * @param string $method
+     * @param array  $args
      *
      * @return mixed
      */

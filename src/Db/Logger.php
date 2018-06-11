@@ -54,7 +54,7 @@ class Logger
         $header = '-- ' . ($_SERVER['REQUEST_URI'] ?? '') . \date(' [Y-m-d H:i:s]') . "\n";
 
         return $header
-            . \str_pad("-- -", \strlen($header), '-', STR_PAD_RIGHT)
+            . \str_pad('-- -', \strlen($header), '-', STR_PAD_RIGHT)
             . "\n";
     }
 

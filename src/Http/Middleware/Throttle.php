@@ -2,8 +2,8 @@
 
 namespace PhalconExt\Http\Middleware;
 
-use PhalconExt\Http\BaseMiddleware;
 use Phalcon\Http\Request;
+use PhalconExt\Http\BaseMiddleware;
 
 class Throttle extends BaseMiddleware
 {
@@ -29,8 +29,7 @@ class Throttle extends BaseMiddleware
             ->setContent("Too many requests. Try again in $after min.")
             ->setHeader('Retry-After', $after)
             ->setStatusCode(429)
-            ->send()
-        ;
+            ->send();
 
         return false;
     }
