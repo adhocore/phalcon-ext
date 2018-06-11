@@ -4,6 +4,7 @@ namespace PhalconExt\Http\Middleware;
 
 use PhalconExt\Http\BaseMiddleware;
 use Phalcon\Http\Request;
+use Phalcon\Http\Response;
 
 class Cache extends BaseMiddleware
 {
@@ -12,9 +13,9 @@ class Cache extends BaseMiddleware
 
     protected $configKey = 'httpCache';
 
-    public function afterExecuteRoute()
+    public function afterExecuteRoute(): bool
     {
-        $this->cache();
+        return $this->cache();
     }
 
     protected function handle(): bool
@@ -69,10 +70,10 @@ class Cache extends BaseMiddleware
         return true;
     }
 
-    protected function getCacheKey(Request $request)
+    protected function getCacheKey(Request $request): string
     {
         if ($this->cacheKey) {
-            return $cacheKey;
+            return $this->cacheKey;
         }
 
         $query = $request->getQuery();
@@ -95,7 +96,7 @@ class Cache extends BaseMiddleware
         return false;
     }
 
-    public function cache()
+    public function cache(): bool
     {
         $response = $this->di('response');
         $headers  = ['X-Cache' => time(), 'X-Cache-ID' => $this->cacheKey];
@@ -114,7 +115,7 @@ class Cache extends BaseMiddleware
         return true;
     }
 
-    protected function getContent($response): string
+    protected function getContent(Response $response): string
     {
         if (null !== $response->getContent()) {
             return $response->getContent();
