@@ -16,17 +16,14 @@ $app = new Application($di);
 
 require_once __DIR__ . '/IndexController.php';
 
+$di->get('router')->add('/', ['controller' => 'index', 'action' => 'index'])->setName('home');
 $di->get('router')->add('/mail', ['controller' => 'index', 'action' => 'mail']);
 $di->get('router')->add('/cors', ['controller' => 'index', 'action' => 'cors']);
 $di->get('router')->add('/corsheader', ['controller' => 'index', 'action' => 'corsheader'], ['GET', 'OPTIONS']);
 
-$evm = $di->get('eventsManager');
-
 // Order: Throttle, Cors, Cache
-$evm->attach('dispatch:beforeExecuteRoute', new Throttle($di->get('redis')));
-$evm->attach('dispatch:beforeExecuteRoute', new Cors);
-$evm->attach('dispatch:beforeExecuteRoute', new Cache);
-
-$di->get('dispatcher')->setEventsManager($evm);
+(new Throttle)->boot();
+(new Cors)->boot();
+(new Cache)->boot();
 
 echo $app->handle()->getContent();
