@@ -99,7 +99,7 @@ class Cache extends BaseMiddleware
     public function cache(): bool
     {
         $response = $this->di('response');
-        $headers  = ['X-Cache' => time(), 'X-Cache-ID' => $this->cacheKey];
+        $headers  = ['X-Cache' => \time(), 'X-Cache-ID' => $this->cacheKey];
 
         foreach ($response->getHeaders()->toArray() as $key => $value) {
             if (\strpos($key, 'Access-Control-') === false) {
