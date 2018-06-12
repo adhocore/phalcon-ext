@@ -107,7 +107,7 @@ trait Extension
         return $resolved;
     }
 
-    public function replace(array $services)
+    public function replace(array $services): self
     {
         foreach ($services as $name => $definition) {
             if ($this->has($name)) {
@@ -121,7 +121,7 @@ trait Extension
         return $this;
     }
 
-    public function restore(string $name = null)
+    public function restore(string $name = null): self
     {
         if ($name && empty($this->original[$name])) {
             return $this;
@@ -143,7 +143,7 @@ trait Extension
         return $this;
     }
 
-    public function registerAliases(array $aliases = [])
+    public function registerAliases(array $aliases = []): self
     {
         $this->aliases += $aliases;
 
