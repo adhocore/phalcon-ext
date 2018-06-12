@@ -5,7 +5,7 @@
     "keywords": [
         "php", "phalcon", "phalcon-adapters", "phalcon-extensions",
         "swiftmailer", "twig", "cors", "cache", "request-throttle",
-        "middleware", "di", "logger", "opcache-primer"
+        "middleware", "di", "logger", "opcache-primer", "validation"
     ],
     "license": "MIT",
     "authors": [
