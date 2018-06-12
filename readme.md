@@ -15,9 +15,23 @@ Miscellaneous phalcon adapters, extensions and utilities
 composer require adhocore/phalcon-ext
 ```
 
+---
+### Cache.Redis
+
+Extends `Phalcon\Cache\Backend\Redis` to allow access over the underlying redis binding.
+
+#### Setup
+
+```php
+$di->setShared('redis', function () {
+    return new \PhalconExt\Cache\Redis(new \Phalcon\Cache\Frontend\None(['lifetime' => 0]));
+});
+```
+
 ### Db.Extension
 
 #### Setup
+
 ```php
 $di->setShared('config', new \Phalcon\Config([
     'database' => [
@@ -31,16 +45,22 @@ $di->setShared('db', function () {
     // Can use Mysql or Postgresql too
     return (new \PhalconExt\Db\Sqlite($this->get('config')->toArray()['database']));
 });
+
+// Or if you have your own already, just use the trait
+class YourDb extends \Phalcon\Db\Adapter
+{
+    use PhalconExt\Db\Extension;
+}
 ```
 
 #### upsert(string $table, array $data, array $criteria): bool
-To insert of update as per given criteria
+Insert or update data row in given table as per given criteria.
 ```php
 $di->get('db')->upsert('users', ['name' => 'John'], ['username' => 'johnny']);
 ```
 
 #### insertAsBulk(string $table, array $data): bool
-Insert many items at once - in one query - no loop
+Insert many items at once - in one query - no loop.
 ```php
 $di->get('db')->insertAsBulk('table', [
     ['name' => 'name1', 'status' => 'status1'],
@@ -49,13 +69,15 @@ $di->get('db')->insertAsBulk('table', [
 ```
 
 #### countBy(string $table, array $criteria): int
-Count rows in table by criteria
+
+Count rows in table by criteria.
+
 ```php
 $di->get('db')->countBy('table', ['name' => 'name1', 'status' => 'ok']);
 ```
 
 ### Db.Logger
-Hook into the db as an event listener and log all the sql queries- binds are interpolated
+Hook into the db as an event listener and log all the sql queries- binds are interpolated.
 ```php
 $di->setShared('config', new \Phalcon\Config([
     'sqllogger' => [
@@ -72,13 +94,23 @@ $di->get('db')->registerLogger($di->get('config')->toArray()['sqllogger']);
 
 ---
 ### Di.Extension
+
 #### Setup
+
 ```php
 $di = new \PhalconExt\Di\FactoryDefault;
+
+// Or if you have your own already, just use the trait
+class YourDi extends \Phalcon\Di
+{
+    use PhalconExt\Di\Extension;
+}
 ```
 
 #### registerAliases(array $aliases): self
-Register aliases for di service so they can be resolved automatically
+
+Register aliases for di service so they can be resolved automatically by name &/or typehints.
+
 ```php
 $di->registerAliases([
     'TheAlias'                 => 'service',
@@ -87,27 +119,36 @@ $di->registerAliases([
 ```
 
 #### resolve(string $class, array $parameters = []): mixed
-Recursively resolve all dependencies of a given class FQCN and return new instance
+
+Recursively resolve all dependencies of a given class FQCN and return new instance.
+
 ```php
 $instance = $di->resolve(\Some\Complex\ClassName::class, $parameters);
 ```
 
 #### replace(array $services): self
+
 Override a di service but keep backup so it may be restored if needed (great for tests)
+
 ```php
 $di->replace(['service' => new \MockedService]);
 ```
 
 #### restore(?string $service)
-Restore the overridden services to their usual defaults
+
+Restore the overridden services to their usual defaults.
+
 ```php
 $di->restore();          // All
 $di->restore('service'); // One
 ```
 
 ### Di.ProvidesDi
+
 #### di(?string $service): mixed
-Easily resolve di services with this shortcut
+
+Easily resolve di services with this shortcut.
+
 ```php
 class AnyClass
 {
@@ -122,17 +163,144 @@ class AnyClass
 ```
 
 ---
+### Http.BaseMiddleware
+
+A base implementation for middlewares on top of which you can create your own middlewares.
+See an example for Ajax middleware:
+
+```php
+$di->setShared('config', new \Phalcon\Config([
+    'ajax' => [
+        'uriPrefix' => '/ajax',
+    ],
+]);
+
+class Ajax extends \PhalconExt\Http\BaseMiddleware
+{
+    /** @var string */
+    protected $configKey = 'ajax';
+
+    /**
+     * For any uri starting with `/ajax`, allow if only it is real ajax request.
+     *
+     * @return bool
+     */
+    protected function handle(): bool
+    {
+        list(, $url) = $this->getRouteNameUrl();
+
+        if (\strpos($url, $this->config['uriPrefix']) === false) {
+            return true;
+        }
+
+        if (!$this->di('request')->isAjax()) {
+            return $this->abort(400);
+        }
+
+        return true;
+    }
+}
+
+// Usage: same for micro or mvc app :)
+(new Ajax)->boot();
+```
+
+#### Http.Middleware.Cache
+
+Caches output for requests to boost performance heavily. Requires redis service.
+Currently by design only GET requests are cached and this might change.
+
+#### Setup
+
+```php
+$di->setShared('config', new \Phalcon\Config([
+    'httpCache' => [
+        // cache life- time to live in mintues
+        'ttl'       => 60,
+        // White listed uri/routes to enable caching
+        'routes'    => [
+            // for absolute uri, prepend forward `/`
+            '/content/about-us',
+            // or you can use route name without a `/`
+            'home',
+        ],
+    ],
+]);
+
+// Usage: same for micro or mvc app :)
+(new \PhalconExt\Http\Middleware\Cache)->boot();
+```
+
+#### Http.Middleware.Cors
+
+Enables cors with preflight for configured origins and request options.
+
+#### Setup
+
+```php
+$di->setShared('config', new \Phalcon\Config([
+    'cors' => [
+        'exposedHeaders' => [],
+        // Should be in lowercases.
+        'allowedHeaders' => ['x-requested-with', 'content-type', 'authorization'],
+        // Should be in uppercase.
+        'allowedMethods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+        // Requests originating from here can entertain CORS.
+        'allowedOrigins' => [
+            'http://127.0.0.1:1234',
+        ],
+        // Cache preflight for 7 days (expressed in seconds).
+        'maxAge'         => 604800,
+    ],
+]);
+
+// Usage: same for micro or mvc app :)
+(new \PhalconExt\Http\Middleware\Cors)->boot();
+```
+
+#### Http.Middleware.Throttle
+
+Throttles the flooded requests as per time and quota of your choosing. Requires redis service.
+
+#### Setup
+
+```php
+$di->setShared('config', new \Phalcon\Config([
+    'throttle' => [
+        'maxHits' => [
+            // Mintues => Max Hits
+            1    => 10,
+            60   => 250,
+            1440 => 4500,
+        ],
+        'checkUserAgent' => false,
+        // Cache key prefix
+        'prefix'         => '_',
+    ],
+]);
+
+// Usage: same for micro or mvc app :)
+(new \PhalconExt\Http\Middleware\Throttle)->boot();
+```
+
+---
 ### Logger.EchoLogger
+
 #### log(string $message, int $type, array $context = [])
-Echoes anything right away - but you can control formatting and log level
+
+Echoes anything right away - but you can control formatting and log level.
+
 ```php
 $echo = $this->di(\PhalconExt\Logger\EchoLogger::class, ['config' => ['level' => Logger::INFO]]);
 $echo->log('Message {a}', \Phalcon\Logger::INFO, ['a' => 'ok']);
 ```
 
 ### Logger.LogsToFile
+
 #### log(string $message, int $type, array $context = [])
-Delegate mundane file logging task to this trait thereby cutting down boilerplate codes
+
+Delegate mundane file logging task to this trait thereby cutting down boilerplate codes.
+
 ```php
 class AnyClass
 {
@@ -151,8 +319,11 @@ class AnyClass
 
 ---
 ### Mail.Mailer
-A Phalcon adapter/bridge/container/delegator (read: abcd) to swiftmailer
+
+A Phalcon adapter/bridge/container/delegator (read: abcd) to swiftmailer.
+
 #### Setup
+
 ```php
 $di->setShared('config', new \Phalcon\Config([
     'mail' => [
@@ -170,7 +341,9 @@ $di->setShared('mailer', function () {
 ```
 
 ### Mail.Mail
-A child of swiftmail message to allow attaching attachments without much ado
+
+A child of swiftmail message to allow attaching attachments without much ado.
+
 ```php
 $mail = $di->get('mailer')->newMail();
 // Or from view template
@@ -180,8 +353,11 @@ $mail->setTo('test@localhost')->setSubject('Hi')->setBody('Hello')->mail();
 ```
 
 ### Mail.Mailable
+
 #### mail()
-Like Logger.LogsToFile above, but for mails
+
+Like Logger.LogsToFile above, but for mails.
+
 ```php
 class AnyClass
 {
@@ -196,9 +372,11 @@ class AnyClass
 ```
 
 ### Mail.Logger
-Automatically logs all sent mails into file as a swiftmailer event listener- you can choose log formats: `eml | html | json`
+
+Automatically logs all sent mails into file as a swiftmailer event listener- you can choose log formats: `eml | html | json`.
 
 #### Setup
+
 ```php
 $di->setShared('config', new \Phalcon\Config([
     'mail' => [
@@ -225,8 +403,10 @@ $di->setShared('mailer', function () {
 ### Util.OpcachePrimer
 
 #### prime(array $paths): int
-Ensures to warm up opcache for all files in given path well before file exceution
+
+Ensures to warm up opcache for all files in given path well before file exceution.
 Opcache caches are specific to the sapi it is run. So for web, you need to have an endpoint
+
 ```php
 $primer = new \PhalconExt\Util\OpcachePrimer;
 
@@ -235,23 +415,29 @@ $total = $primer->prime(['/path/to/project/src', '/path/to/project/app/', '/path
 
 ---
 ### Validation.Validation
-Validate data like we did in elsewhere- setting rules as .well-known array key=>value pairs
+
+Validate data like we did in elsewhere- setting rules as .well-known strings or key=>value pairs (array).
 
 #### Setup
+
 ```php
 $di->setShared('validation', \PhalconExt\Validation\Validation::class);
 ```
 
 #### register(string $ruleName, $handler, string $message = ''): self
-Register a new validation rule
+
+Register a new validation rule.
+
 ```php
 $di->get('validation')->register('gmail', function ($data) {
     return stripos($data['email'] ?? '', '@gmail.com') > 0;
 }, 'Field :field must be an email with @gmail.com');
 ```
 
-#### registerRules(string $ruleName, $handler, string $message = ''): self
-Register many new validation rules
+#### registerRules(array $ruleHandlers, array $messages = []): self
+
+Register many new validation rules at once.
+
 ```php
 $di->get('validation')->registerRules([
     'rule1' => function($data) { return true; },
@@ -263,6 +449,7 @@ $di->get('validation')->registerRules([
 ```
 
 #### Usage
+
 ```php
 $validation = $this->di('validation');
 
@@ -289,9 +476,11 @@ $errors = $validation->getErrorMessages(); // array
 
 ---
 ### View.Twig
+
 Use twig view natively in Phalcon
 
 #### Setup
+
 ```php
 $di->setShared('config', new \Phalcon\Config([
     'view' => [
@@ -327,9 +516,14 @@ $di->setShared('twig', function () {
 ```
 
 #### Usage
+
 ```php
 // standalone
 $di->get('twig')->render('template.twig', ['view' => 'params']);
 // or as view
 $di->get('twig')->render('template.twig', ['view' => 'params']); // .twig is optional
 ```
+
+---
+
+You can also see the [example](./example) codes for all these. Read [more](./example/readme.md).
