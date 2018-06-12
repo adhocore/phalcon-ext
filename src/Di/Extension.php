@@ -21,6 +21,14 @@ trait Extension
     /** @var array The aliases of services */
     protected $aliases   = [];
 
+    // Implemented by \Phalcon\Di.
+    abstract public function set($service, $definition, $shared);
+    abstract public function setShared($service, $definition);
+    abstract public function get($service, $parameters);
+    abstract public function getShared($service);
+    abstract public function has($service);
+    abstract public function remove($service);
+
     /**
      * Resolve all the dependencies for a class FQCN and instantiate it.
      *

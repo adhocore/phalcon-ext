@@ -16,6 +16,9 @@ trait Extension
 {
     use ProvidesDi;
 
+    // Implemented by \Phalcon\Db\Adapter.
+    abstract public function updateAsDict($table, $data, $conditions, $dataTypes);
+
     /**
      * Update a row matching given criteria if exists or insert new one.
      *
