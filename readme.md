@@ -26,6 +26,10 @@ Extends `Phalcon\Cache\Backend\Redis` to allow access over the underlying redis 
 $di->setShared('redis', function () {
     return new \PhalconExt\Cache\Redis(new \Phalcon\Cache\Frontend\None(['lifetime' => 0]));
 });
+
+// Call native \Redis methods like:
+$di->get('redis')->getConnection()->hGet();
+$di->get('redis')->getConnection()->info();
 ```
 
 ### Db.Extension
