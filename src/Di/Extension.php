@@ -22,11 +22,11 @@ trait Extension
     protected $aliases   = [];
 
     // Implemented by \Phalcon\Di.
-    abstract public function set($service, $definition, $shared);
+    abstract public function set($service, $definition, $shared = false);
 
     abstract public function setShared($service, $definition);
 
-    abstract public function get($service, $parameters);
+    abstract public function get($service, $parameters = null);
 
     abstract public function getShared($service);
 
