@@ -189,7 +189,7 @@ class Ajax extends \PhalconExt\Http\BaseMiddleware
     {
         list(, $url) = $this->getRouteNameUrl();
 
-        if (\strpos($url, $this->config['uriPrefix']) === false) {
+        if (\stripos($url, $this->config['uriPrefix']) !== 0) {
             return true;
         }
 
@@ -332,6 +332,16 @@ $di->setShared('config', new \Phalcon\Config([
             'name'  => 'Test',
             'email' => 'test@localhost',
         ],
+
+        // for driver 'smtp':
+        'host'       => 'smtp.server.com',
+        'port'       => 425,
+        'encryption' => true,
+        'username'   => 'user',
+        'password'   => 'pass',
+
+        // for driver sendmail only (optional)
+        'sendmail' => '/sendmail/binary',
     ],
 ]);
 
