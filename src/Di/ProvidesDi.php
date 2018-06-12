@@ -9,6 +9,14 @@ use Phalcon\Di;
  */
 trait ProvidesDi
 {
+    /**
+     * Provide the di instance or a service if its name is given.
+     *
+     * @param string|null $service
+     * @param array       $parameters
+     *
+     * @return mixed
+     */
     public function di(string $service = null, array $parameters = [])
     {
         if (null === $service) {

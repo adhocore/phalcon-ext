@@ -5,6 +5,14 @@ namespace PhalconExt\Mail;
 use Phalcon\Di;
 use Phalcon\Mvc\View\Simple;
 
+/**
+ * A swift mailer tuned for phalcon.
+ *
+ * @author  Jitendra Adhikari <jiten.adhikary@gmail.com>
+ * @license MIT
+ *
+ * @link    https://github.com/adhocore/phalcon-ext
+ */
 class Mailer
 {
     /** @var array */
@@ -32,6 +40,11 @@ class Mailer
         $this->config = $config;
     }
 
+    /**
+     * Create new raw mail.
+     *
+     * @return Mail
+     */
     public function newMail(): Mail
     {
         $from = $this->config['from'];
@@ -39,6 +52,15 @@ class Mailer
         return (new Mail($this))->setFrom($from['email'], $from['name']);
     }
 
+    /**
+     * Create new mail from view template.
+     *
+     * @param string $viewFile
+     * @param array  $viewParams
+     * @param string $type
+     *
+     * @return Mail
+     */
     public function newTemplateMail(string $viewFile, array $viewParams = [], string $type = 'text/html'): Mail
     {
         $dirName  = \dirname($viewFile);
@@ -52,11 +74,25 @@ class Mailer
         return $this->newMail()->setBody($markup, $type);
     }
 
+    /**
+     * Get the swift mailer.
+     *
+     * @throws \InvalidArgumentException When configured driver not supported.
+     *
+     * @return \Swift_Mailer
+     */
     public function getMailer(): \Swift_Mailer
     {
         return $this->mailer ?? $this->mailer = new \Swift_Mailer($this->getTransport());
     }
 
+    /**
+     * Get the swift transport.
+     *
+     * @throws \InvalidArgumentException When configured driver not supported.
+     *
+     * @return \Swift_Transport
+     */
     public function getTransport(): \Swift_Transport
     {
         if (!$this->transport) {
@@ -70,7 +106,14 @@ class Mailer
         return $this->transport;
     }
 
-    protected function initTransport()
+    /**
+     * Instantiate the swift transport.
+     *
+     * @throws \InvalidArgumentException When configured driver not supported.
+     *
+     * @return \Swift_Transport
+     */
+    protected function initTransport(): \Swift_Transport
     {
         $config = $this->config;
         $driver = \strtolower($config['driver']);
@@ -100,6 +143,11 @@ class Mailer
         return $transport;
     }
 
+    /**
+     * Mail the mail with swift mailer.
+     *
+     * @return int The count of mailed recipients.
+     */
     public function mail(Mail $mail)
     {
         $this->failed = [];

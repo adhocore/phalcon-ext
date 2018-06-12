@@ -8,6 +8,14 @@ use Phalcon\Mvc\Micro\MiddlewareInterface;
 use Phalcon\Mvc\View;
 use PhalconExt\Di\ProvidesDi;
 
+/**
+ * A handy base for middlewares.
+ *
+ * @author  Jitendra Adhikari <jiten.adhikary@gmail.com>
+ * @license MIT
+ *
+ * @link    https://github.com/adhocore/phalcon-ext
+ */
 abstract class BaseMiddleware implements MiddlewareInterface
 {
     use ProvidesDi;
@@ -23,6 +31,11 @@ abstract class BaseMiddleware implements MiddlewareInterface
         $this->config = $this->di('config')->toArray()[$this->configKey];
     }
 
+    /**
+     * Sets itself to be triggered on `beforeExecuteRoute` (or `before` in micro) events.
+     *
+     * @return void
+     */
     public function boot()
     {
         if ($this->isMicro()) {
@@ -45,12 +58,19 @@ abstract class BaseMiddleware implements MiddlewareInterface
      */
     abstract protected function handle(): bool;
 
+    /**
+     * Handler for mvc app.
+     *
+     * @return bool
+     */
     public function beforeExecuteRoute(): bool
     {
         return $this->handle();
     }
 
     /**
+     * Handler for micro app.
+     *
      * @param MicroApplication $app
      *
      * @return bool
@@ -60,6 +80,11 @@ abstract class BaseMiddleware implements MiddlewareInterface
         return $this->handle();
     }
 
+    /**
+     * Disable view if possible.
+     *
+     * @return void
+     */
     protected function disableView()
     {
         if ($this->di('view') instanceof View) {
@@ -81,6 +106,11 @@ abstract class BaseMiddleware implements MiddlewareInterface
         return false;
     }
 
+    /**
+     * Checks if current app is micro.
+     *
+     * @return bool
+     */
     protected function isMicro(): bool
     {
         static $isMicro = null;
@@ -96,6 +126,11 @@ abstract class BaseMiddleware implements MiddlewareInterface
         return $isMicro = $this->di('application') instanceof MicroApplication;
     }
 
+    /**
+     * Get routeName and Url tuple.
+     *
+     * @return array [name, 'uri']
+     */
     protected function getRouteNameUrl(): array
     {
         $router = $this->di('router');

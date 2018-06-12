@@ -4,6 +4,11 @@ namespace PhalconExt\Di;
 
 /**
  * An extension to phalcon di.
+ *
+ * @author  Jitendra Adhikari <jiten.adhikary@gmail.com>
+ * @license MIT
+ *
+ * @link    https://github.com/adhocore/phalcon-ext
  */
 trait Extension
 {
@@ -77,6 +82,14 @@ trait Extension
         );
     }
 
+    /**
+     * Resolve dependencies of a class.
+     *
+     * @param array $dependencies
+     * @param array $parameters
+     *
+     * @return mixed
+     */
     protected function resolveDependencies(array $dependencies, array $parameters)
     {
         $resolved = [];
@@ -107,6 +120,13 @@ trait Extension
         return $resolved;
     }
 
+    /**
+     * Replace services with another one. Great for test mocks.
+     *
+     * @param array $services
+     *
+     * @return self
+     */
     public function replace(array $services): self
     {
         foreach ($services as $name => $definition) {
@@ -121,6 +141,13 @@ trait Extension
         return $this;
     }
 
+    /**
+     * Restore given service or all.
+     *
+     * @param string|null $name
+     *
+     * @return self
+     */
     public function restore(string $name = null): self
     {
         if ($name && empty($this->original[$name])) {
@@ -143,6 +170,13 @@ trait Extension
         return $this;
     }
 
+    /**
+     * Register aliases for services.
+     *
+     * @param array $aliases
+     *
+     * @return self
+     */
     public function registerAliases(array $aliases = []): self
     {
         $this->aliases += $aliases;

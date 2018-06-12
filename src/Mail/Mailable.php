@@ -6,6 +6,15 @@ use Phalcon\Di;
 
 trait Mailable
 {
+    /**
+     * Mail.
+     *
+     * @param string $to
+     * @param string $subject
+     * @param array  $options The body &/or view template.
+     *
+     * @return int
+     */
     public function mail(string $to, string $subject, array $options = [])
     {
         $mailer = Di::getDefault()->resolve('mailer');

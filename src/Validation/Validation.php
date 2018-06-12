@@ -7,7 +7,12 @@ use Phalcon\Validation\Validator;
 use PhalconExt\Validators;
 
 /**
- * Validation.
+ * Phalcon Validation with batteries.
+ *
+ * @author  Jitendra Adhikari <jiten.adhikary@gmail.com>
+ * @license MIT
+ *
+ * @link    https://github.com/adhocore/phalcon-ext
  */
 class Validation extends BaseValidation
 {
@@ -73,14 +78,14 @@ class Validation extends BaseValidation
     /**
      * Registers multiple custom validation rules at once!
      *
-     * @param array $ruleDefinitions ['rule1' => <handler>, ...]
-     * @param array $messages        ['rule1' => 'message', ...]
+     * @param array $ruleHandlers ['rule1' => <handler>, ...]
+     * @param array $messages     ['rule1' => 'message', ...]
      *
      * @return Validation $this
      */
-    public function registerRules(array $ruleDefinitions, array $messages = []): self
+    public function registerRules(array $ruleHandlers, array $messages = []): self
     {
-        foreach ($ruleDefinitions as $ruleName => $handler) {
+        foreach ($ruleHandlers as $ruleName => $handler) {
             $this->register($ruleName, $handler, $messages[$ruleName] ?? '');
         }
 

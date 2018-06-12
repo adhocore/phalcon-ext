@@ -8,11 +8,19 @@ use Phalcon\Validation\Validator\Uniqueness;
 
 /**
  * Check that a field exists in the related table.
+ *
+ * @author  Jitendra Adhikari <jiten.adhikary@gmail.com>
+ * @license MIT
+ *
+ * @link    https://github.com/adhocore/phalcon-ext
  */
 class Existence extends Uniqueness
 {
     /**
      * Executes the validation.
+     *
+     * @param validation $validation
+     * @param string     $field
      */
     public function validate(Validation $validation, $field) : bool
     {
