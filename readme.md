@@ -191,7 +191,7 @@ class Ajax extends \PhalconExt\Http\BaseMiddleware
      *
      * @return bool
      */
-    protected function before(Phalcon\Http\Request $request, Phalcon\Http\Response $response): bool
+    public function before(Phalcon\Http\Request $request, Phalcon\Http\Response $response): bool
     {
         list(, $uri) = $this->getRouteNameUri();
 
