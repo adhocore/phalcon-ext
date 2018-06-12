@@ -187,9 +187,11 @@ class Ajax extends \PhalconExt\Http\BaseMiddleware
     /**
      * For any uri starting with `/ajax`, allow if only it is real ajax request.
      *
+     * Register as before handler because we will abort before actual exceution if not ajax.
+     *
      * @return bool
      */
-    protected function handle(): bool
+    protected function before(Phalcon\Http\Request $request, Phalcon\Http\Response $response): bool
     {
         list(, $uri) = $this->getRouteNameUri();
 
@@ -197,7 +199,7 @@ class Ajax extends \PhalconExt\Http\BaseMiddleware
             return true;
         }
 
-        if (!$this->di('request')->isAjax()) {
+        if (!$request->isAjax()) {
             return $this->abort(400);
         }
 
