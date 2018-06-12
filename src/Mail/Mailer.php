@@ -133,7 +133,7 @@ class Mailer
         $transport = (new \Swift_SmtpTransport)->setHost($config['host'])->setPort($config['port']);
 
         if ($config['encryption'] ?? null) {
-            $this->transport->setEncryption($config['encryption']);
+            $transport->setEncryption($config['encryption']);
         }
 
         if ($config['username'] ?? null) {
