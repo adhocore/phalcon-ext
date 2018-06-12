@@ -54,7 +54,7 @@ class Validation extends BaseValidation
     public function register(string $ruleName, $handler, string $message = ''): self
     {
         if (isset($this->validators[$ruleName])) {
-            return false;
+            return $this;
         }
 
         if ($message) {
@@ -67,7 +67,7 @@ class Validation extends BaseValidation
         }
 
         if (!\is_subclass_of($handler, Validator::class)) {
-            throw new \InvalidArgumentException('Unsupported validation rule: ' . $rule);
+            throw new \InvalidArgumentException('Unsupported validation rule: ' . $ruleName);
         }
 
         $this->validators[$ruleName] = $handler;
@@ -196,7 +196,7 @@ class Validation extends BaseValidation
     {
         $parsed = [];
 
-        foreach (explode('|', $rules) as $rule) {
+        foreach (\explode('|', $rules) as $rule) {
             if (false === \strpos($rule, ':')) {
                 $parsed[$rule] = [];
                 continue;
@@ -206,7 +206,7 @@ class Validation extends BaseValidation
             foreach (\explode(';', $options) as $parts) {
                 list($key, $value) = \explode(':', $parts) + ['', ''];
                 if (\strpos($value, ',')) {
-                    $value = explode(',', $value);
+                    $value = \explode(',', $value);
                 }
 
                 $parsed[$name][$key] = $value;
@@ -231,15 +231,11 @@ class Validation extends BaseValidation
                 throw new \InvalidArgumentException('Unknown validation rule: ' . $rule);
             }
 
-            $options   = (array) $options;
             $validator = $this->validators[$rule];
-
-            if ($this->callbacks[$rule] ?? null) {
-                $options += ['callback' => $this->callbacks[$rule]];
-            }
-            if ($this->_defaultMessages[$rule] ?? null) {
-                $options += ['message'  => $this->_defaultMessages[$rule]];
-            }
+            $options   = (array) $options + [
+                'callback' => $this->callbacks[$rule] ?? null,
+                'message'  => $this->_defaultMessages[$rule] ?? null,
+            ];
 
             $this->add($attribute, new $validator($options));
         }
