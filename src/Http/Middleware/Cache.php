@@ -21,44 +21,42 @@ class Cache extends BaseMiddleware
 
     protected $configKey = 'httpCache';
 
-    /**
-     * After route executed in mvc.
-     *
-     *@return bool
-     */
-    public function afterExecuteRoute(): bool
-    {
-        return $this->cache();
-    }
+    protected $willCache = false;
 
     /**
      * Handle the cache.
      *
-     *@return bool
+     * @param Request  $request
+     * @param Response $response
+     *
+     * @return bool
      */
-    protected function handle(): bool
+    public function before(Request $request, Response $response): bool
     {
-        if (false === $this->isCacheable()) {
+        if (false === $this->isCacheable($request, $response)) {
             return true;
         }
 
-        $this->cacheKey = $this->getCacheKey($this->di('request'));
+        $this->cacheKey = $this->getCacheKey($request);
 
-        if (!$this->hasCache()) {
-            return $this->willCache();
+        if (!$this->hasCache($this->cacheKey)) {
+            return $this->willCache = true;
         }
 
-        return $this->serve();
+        return $this->serve($response);
     }
 
     /**
      * Check if the output for current request is cachaeble.
      *
+     * @param Request  $request
+     * @param Response $response
+     *
      * @return bool
      */
-    protected function isCacheable(): bool
+    protected function isCacheable(Request $request, Response $response): bool
     {
-        if (false === $this->di('request')->isGet()) {
+        if (false === $request->isGet()) {
             return false;
         }
 
@@ -70,7 +68,7 @@ class Cache extends BaseMiddleware
             return false;
         }
 
-        $statusCode = $this->di('response')->getStatusCode();
+        $statusCode = $response->getStatusCode();
 
         return \in_array($statusCode, [200, 204, 301, null]); // null doesnt indicate failure!
     }
@@ -78,29 +76,13 @@ class Cache extends BaseMiddleware
     /**
      * Checks if there is cache for key corresponding to current request.
      *
-     * @return bool
-     */
-    protected function hasCache(): bool
-    {
-        return $this->di('redis')->exists($this->cacheKey);
-    }
-
-    /**
-     * Will cache the request after it is fulfilled and response created.
+     * @param string $cacheKey
      *
      * @return bool
      */
-    protected function willCache(): bool
+    protected function hasCache(string $cacheKey): bool
     {
-        if ($this->isMicro()) {
-            $this->di('application')->after([$this, 'cache']);
-
-            return true;
-        }
-
-        $this->di('eventsManager')->attach('dispatch:afterExecuteRoute', $this);
-
-        return true;
+        return $this->di('redis')->exists($cacheKey);
     }
 
     /**
@@ -125,12 +107,13 @@ class Cache extends BaseMiddleware
     /**
      * Output the cached response with correct header.
      *
+     * @param Response $response
+     *
      * @return bool
      */
-    protected function serve(): bool
+    protected function serve(Response $response): bool
     {
-        $response = $this->di('response');
-        $cached   = \json_decode($this->di('redis')->get($this->cacheKey));
+        $cached = \json_decode($this->di('redis')->get($this->cacheKey));
 
         foreach ($cached->headers as $name => $value) {
             $response->setHeader($name, $value);
@@ -144,11 +127,17 @@ class Cache extends BaseMiddleware
     /**
      * Write the just sent response to cache.
      *
+     * @param Request  $request
+     * @param Response $response
+     *
      * @return bool
      */
-    public function cache(): bool
+    public function after(Request $request, Response $response): bool
     {
-        $response = $this->di('response');
+        if (!$this->willCache) {
+            return true;
+        }
+
         $headers  = ['X-Cache' => \time(), 'X-Cache-ID' => $this->cacheKey];
 
         foreach ($response->getHeaders()->toArray() as $key => $value) {
@@ -182,6 +171,12 @@ class Cache extends BaseMiddleware
             return (string) $this->di('application')->getReturnedValue();
         }
 
-        return (string) $this->di('dispatcher')->getReturnedValue();
+        $value = $this->di('dispatcher')->getReturnedValue();
+
+        if (\method_exists($value, 'getContent')) {
+            return $value->getContent();
+        }
+
+        return (string) $value;
     }
 }

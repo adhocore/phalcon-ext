@@ -3,6 +3,7 @@
 namespace PhalconExt\Http\Middleware;
 
 use Phalcon\Http\Request;
+use Phalcon\Http\Response;
 use PhalconExt\Http\BaseMiddleware;
 
 class Throttle extends BaseMiddleware
@@ -15,11 +16,14 @@ class Throttle extends BaseMiddleware
     /**
      * Handle the throttle.
      *
-     *@return bool
+     * @param Request  $request
+     * @param Response $response
+     *
+     * @return bool
      */
-    protected function handle(): bool
+    public function before(Request $request, Response $response): bool
     {
-        if (null === $retryKey = $this->findRetryKey($this->di('request'))) {
+        if (null === $retryKey = $this->findRetryKey($request)) {
             return true;
         }
 
@@ -27,7 +31,7 @@ class Throttle extends BaseMiddleware
 
         $after = \ceil($this->di('redis')->getTtl($retryKey) / 60);
 
-        $this->di('response')
+        $response
             ->setContent("Too many requests. Try again in $after min.")
             ->setHeader('Retry-After', $after)
             ->setStatusCode(429)

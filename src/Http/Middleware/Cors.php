@@ -2,6 +2,8 @@
 
 namespace PhalconExt\Http\Middleware;
 
+use Phalcon\Http\Request;
+use Phalcon\Http\Response;
 use PhalconExt\Http\BaseMiddleware;
 
 class Cors extends BaseMiddleware
@@ -14,21 +16,24 @@ class Cors extends BaseMiddleware
     /**
      * Handle the cors.
      *
-     *@return bool
+     * @param Request  $request
+     * @param Response $response
+     *
+     * @return bool
      */
-    protected function handle(): bool
+    public function before(Request $request, Response $response): bool
     {
-        $this->origin = $this->di('request')->getHeader('Origin');
+        $this->origin = $request->getHeader('Origin');
 
-        if (!$this->isApplicable()) {
+        if (!$this->isApplicable($request)) {
             return true;
         }
 
-        if ($this->canPreflight()) {
-            return $this->preflight();
+        if ($this->canPreflight($request)) {
+            return $this->preflight($request, $response);
         }
 
-        return $this->serve();
+        return $this->serve($response);
     }
 
     /**
@@ -36,32 +41,28 @@ class Cors extends BaseMiddleware
      *
      * Not applicable if origin is empty or same as current host.
      *
+     * @param Request $request
+     *
      * @return bool
      */
-    protected function isApplicable(): bool
+    protected function isApplicable(Request $request): bool
     {
         if (empty($this->origin)) {
             return false;
         }
 
-        $request = $this->di('request');
-
-        if ($this->origin === $request->getScheme() . '://' . $request->getHttpHost()) {
-            return false;
-        }
-
-        return true;
+        return $this->origin !== $request->getScheme() . '://' . $request->getHttpHost();
     }
 
     /**
      * Check if request can be served as preflight.
      *
+     * @param Request $request
+     *
      * @return bool
      */
-    protected function canPreflight() : bool
+    protected function canPreflight(Request $request) : bool
     {
-        $request = $this->di('request');
-
         if (empty($request->getHeader('Access-Control-Request-Method')) ||
             $request->getMethod() !== 'OPTIONS'
         ) {
@@ -74,12 +75,13 @@ class Cors extends BaseMiddleware
     /**
      * Handle preflight.
      *
+     * @param Request  $request
+     * @param Response $response
+     *
      * @return bool
      */
-    protected function preflight(): bool
+    protected function preflight(Request $request, Response $response): bool
     {
-        $request = $this->di('request');
-
         if (!\in_array($request->getHeader('Access-Control-Request-Method'), $this->config['allowedMethods'])) {
             return $this->abort(405);
         }
@@ -90,7 +92,7 @@ class Cors extends BaseMiddleware
 
         $this->disableView();
 
-        $this->di('response')
+        $response
             ->setHeader('Access-Control-Allow-Origin', $this->origin)
             ->setHeader('Access-Control-Allow-Credentials', 'true')
             ->setHeader('Access-Control-Allow-Methods', \implode(', ', $this->config['allowedMethods']))
@@ -105,7 +107,7 @@ class Cors extends BaseMiddleware
     /**
      * Check if cors headers from client are allowed.
      *
-     * @param  $corsRequestHeaders string
+     * @param string|null $corsRequestHeaders
      *
      * @return bool
      */
@@ -127,15 +129,15 @@ class Cors extends BaseMiddleware
     /**
      * Serve cors headers.
      *
+     * @param Response $response
+     *
      * @return bool
      */
-    public function serve(): bool
+    public function serve(Response $response): bool
     {
         if (!$this->isOriginAllowed()) {
             return $this->abort(403);
         }
-
-        $response = $this->di('response');
 
         $response
             ->setHeader('Access-Control-Allow-Origin', $this->origin)
