@@ -61,7 +61,7 @@ class MicroController
         $info['resolve[NeedsDb]   =1'] = $this->di(NeedsDb::class) instanceof NeedsDb;
         $info['resolve[DeepNest]  =1'] = $this->di(DeepNest::class) instanceof DeepNest;
 
-        $info['has(NeedsDb)       =1'] = (int) $this->di('NeedsDb');
+        $info['has(NeedsDb)       =1'] = (int) $this->di()->has('NeedsDb');
         $info['ProvidesDi(di)     =1'] = (int) ((new DiProvider)->di() instanceof \Phalcon\Di);
 
         $this->di()->replace(['twig' => new \stdClass]);
