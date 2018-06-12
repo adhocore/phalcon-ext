@@ -187,9 +187,9 @@ class Ajax extends \PhalconExt\Http\BaseMiddleware
      */
     protected function handle(): bool
     {
-        list(, $url) = $this->getRouteNameUrl();
+        list(, $uri) = $this->getRouteNameUri();
 
-        if (\stripos($url, $this->config['uriPrefix']) !== 0) {
+        if (\stripos($uri, $this->config['uriPrefix']) !== 0) {
             return true;
         }
 

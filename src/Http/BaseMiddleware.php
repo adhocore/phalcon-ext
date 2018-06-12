@@ -131,7 +131,7 @@ abstract class BaseMiddleware implements MiddlewareInterface
      *
      * @return array [name, 'uri']
      */
-    protected function getRouteNameUrl(): array
+    protected function getRouteNameUri(): array
     {
         $router = $this->di('router');
         $route  = $router->getMatchedRoute();

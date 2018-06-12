@@ -62,7 +62,7 @@ class Cache extends BaseMiddleware
             return false;
         }
 
-        list($routeName, $url) = $this->getRouteNameUrl();
+        list($routeName, $url) = $this->getRouteNameUri();
 
         $allowedRoutes = \array_fill_keys($this->config['routes'], true);
 
