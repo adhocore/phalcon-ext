@@ -6,6 +6,14 @@ use Phalcon\Http\Request;
 use Phalcon\Http\Response;
 use PhalconExt\Http\BaseMiddleware;
 
+/**
+ * Cache middleware that caches request output for fast performance.
+ *
+ * @author  Jitendra Adhikari <jiten.adhikary@gmail.com>
+ * @license MIT
+ *
+ * @link    https://github.com/adhocore/phalcon-ext
+ */
 class Cache extends BaseMiddleware
 {
     /** @var string */
@@ -13,11 +21,21 @@ class Cache extends BaseMiddleware
 
     protected $configKey = 'httpCache';
 
+    /**
+     * After route executed in mvc.
+     *
+     *@return bool
+     */
     public function afterExecuteRoute(): bool
     {
         return $this->cache();
     }
 
+    /**
+     * Handle the cache.
+     *
+     *@return bool
+     */
     protected function handle(): bool
     {
         if (false === $this->isCacheable()) {
@@ -33,6 +51,11 @@ class Cache extends BaseMiddleware
         return $this->serve();
     }
 
+    /**
+     * Check if the output for current request is cachaeble.
+     *
+     * @return bool
+     */
     protected function isCacheable(): bool
     {
         if (false === $this->di('request')->isGet()) {
@@ -52,11 +75,21 @@ class Cache extends BaseMiddleware
         return \in_array($statusCode, [200, 204, 301, null]); // null doesnt indicate failure!
     }
 
+    /**
+     * Checks if there is cache for key corresponding to current request.
+     *
+     * @return bool
+     */
     protected function hasCache(): bool
     {
         return $this->di('redis')->exists($this->cacheKey);
     }
 
+    /**
+     * Will cache the request after it is fulfilled and response created.
+     *
+     * @return bool
+     */
     protected function willCache(): bool
     {
         if ($this->isMicro()) {
@@ -70,6 +103,13 @@ class Cache extends BaseMiddleware
         return true;
     }
 
+    /**
+     * Get cacheKey for current request.
+
+     * @param Request $request
+
+     * @return string
+     */
     protected function getCacheKey(Request $request): string
     {
         if ($this->cacheKey) {
@@ -82,6 +122,11 @@ class Cache extends BaseMiddleware
         return $this->cacheKey = \md5($request->getUri() . '?' . \http_build_query($query));
     }
 
+    /**
+     * Output the cached response with correct header.
+     *
+     * @return bool
+     */
     protected function serve(): bool
     {
         $response = $this->di('response');
@@ -96,6 +141,11 @@ class Cache extends BaseMiddleware
         return false;
     }
 
+    /**
+     * Write the just sent response to cache.
+     *
+     * @return bool
+     */
     public function cache(): bool
     {
         $response = $this->di('response');
@@ -115,6 +165,13 @@ class Cache extends BaseMiddleware
         return true;
     }
 
+    /**
+     * Get the content string
+     *
+     * @param Response $response
+     *
+     * @return string
+     */
     protected function getContent(Response $response): string
     {
         if (null !== $response->getContent()) {

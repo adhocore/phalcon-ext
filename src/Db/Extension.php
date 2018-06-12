@@ -6,6 +6,11 @@ use PhalconExt\Di\ProvidesDi;
 
 /**
  * A cross platform extension to phalcon db adapter.
+ *
+ * @author  Jitendra Adhikari <jiten.adhikary@gmail.com>
+ * @license MIT
+ *
+ * @link    https://github.com/adhocore/phalcon-ext
  */
 trait Extension
 {
@@ -115,6 +120,13 @@ trait Extension
         return $this->execute($sql, $binds);
     }
 
+    /**
+     * Get inclusive columns from multiple unbalanced/unorderd data dicts.
+     *
+     * @param array $data
+     *
+     * @return array
+     */
     public function getInclusiveColumns(array $data): array
     {
         $columns = [];
@@ -129,7 +141,14 @@ trait Extension
         return $columns;
     }
 
-    public function registerLogger(array $config)
+    /**
+     * Register sql logger.
+     *
+     * @param array $config
+     *
+     * @return self
+     */
+    public function registerLogger(array $config): self
     {
         $evm = $this->di('eventsManager');
 

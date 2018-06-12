@@ -11,6 +11,11 @@ class Cors extends BaseMiddleware
 
     protected $configKey = 'cors';
 
+    /**
+     * Handle the cors.
+     *
+     *@return bool
+     */
     protected function handle(): bool
     {
         $this->origin = $this->di('request')->getHeader('Origin');

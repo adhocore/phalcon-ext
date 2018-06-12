@@ -12,11 +12,13 @@ class Throttle extends BaseMiddleware
 
     protected $configKey = 'throttle';
 
+    /**
+     * Handle the throttle.
+     *
+     *@return bool
+     */
     protected function handle(): bool
     {
-        $retryKey     = null;
-        $this->config = $this->di('config')->toArray()['throttle'];
-
         if (null === $retryKey = $this->findRetryKey($this->di('request'))) {
             return true;
         }
@@ -34,6 +36,13 @@ class Throttle extends BaseMiddleware
         return false;
     }
 
+    /**
+     * Find the redis key that contains hits counter which has exceeded threshold for throttle.
+     *
+     * @param Request $request
+     *
+     * @return null|string
+     */
     protected function findRetryKey(Request $request): ?string
     {
         $retryKey = null;
@@ -57,6 +66,13 @@ class Throttle extends BaseMiddleware
         return $retryKey;
     }
 
+    /**
+     * Get the unique key for this client.
+     *
+     * @param Request $request
+     *
+     * @return string
+     */
     protected function getKey(Request $request): string
     {
         $key = $request->getClientAddress(true);

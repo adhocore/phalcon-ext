@@ -4,6 +4,14 @@ namespace PhalconExt\Mail;
 
 use PhalconExt\Logger\LogsToFile;
 
+/**
+ * Mail logger for swift mailer.
+ *
+ * @author  Jitendra Adhikari <jiten.adhikary@gmail.com>
+ * @license MIT
+ *
+ * @link    https://github.com/adhocore/phalcon-ext
+ */
 class Logger implements \Swift_Events_SendListener
 {
     use LogsToFile;
@@ -26,6 +34,11 @@ class Logger implements \Swift_Events_SendListener
         }
     }
 
+    /**
+     * Check if config is fine.
+     *
+     * @return bool
+     */
     protected function check(): bool
     {
         if (!$this->config['enabled'] || empty($this->config['logPath'])) {
@@ -41,6 +54,13 @@ class Logger implements \Swift_Events_SendListener
         return false;
     }
 
+    /**
+     * Right before mail is sent.
+     *
+     * @param \Swift_Events_SendEvent $evt
+     *
+     * @return void
+     */
     public function beforeSendPerformed(\Swift_Events_SendEvent $evt)
     {
         if (!$this->activated) {
@@ -52,7 +72,14 @@ class Logger implements \Swift_Events_SendListener
         $this->log($message);
     }
 
-    protected function formatMessage(\Swift_Mime_SimpleMessage $message)
+    /**
+     * Formats message as per type.
+     *
+     * @param  \Swift_Mime_SimpleMessage $message
+     *
+     * @return string
+     */
+    protected function formatMessage(\Swift_Mime_SimpleMessage $message): string
     {
         if ('eml' === $this->config['type']) {
             return $message->toString();
@@ -89,6 +116,13 @@ class Logger implements \Swift_Events_SendListener
         return $html;
     }
 
+    /**
+     * Get message parts.
+     *
+     * @param \Swift_Mime_SimpleMessage $message
+     *
+     * @return array
+     */
     protected function getMessageParts(\Swift_Mime_SimpleMessage $message)
     {
         $attachments = \array_filter($message->getChildren(), function ($part) {
@@ -108,6 +142,13 @@ class Logger implements \Swift_Events_SendListener
         ];
     }
 
+    /**
+     * Right after mail is sent.
+     *
+     * @param \Swift_Events_SendEvent $evt
+     *
+     * @return void
+     */
     public function sendPerformed(\Swift_Events_SendEvent $evt)
     {
         // Do nothing!

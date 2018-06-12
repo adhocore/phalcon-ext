@@ -15,6 +15,8 @@ class Mail extends \Swift_Message
     }
 
     /**
+     * Attach files.
+     *
      * @param array $filePaths
      *
      * @return $this
@@ -28,6 +30,14 @@ class Mail extends \Swift_Message
         return $this;
     }
 
+    /**
+     * Attach file.
+     *
+     * @param string      $filePath
+     * @param string|null $alias
+     *
+     * @return self
+     */
     public function attachFile(string $filePath, string $alias = null): self
     {
         return $this->attach(
@@ -35,6 +45,15 @@ class Mail extends \Swift_Message
         );
     }
 
+    /**
+     * Attach raw data.
+     *
+     * @param string $data
+     * @param string $alias
+     * @param string $type
+     *
+     * @return self
+     */
     public function attachRaw(string $data, string $alias, string $type): self
     {
         return $this->attach(
@@ -42,6 +61,11 @@ class Mail extends \Swift_Message
         );
     }
 
+    /**
+     * Mail the mail with swift mailer.
+     *
+     * @return int The count of mailed recipients.
+     */
     public function mail()
     {
         return $this->mailer->mail($this);

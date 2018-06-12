@@ -3,10 +3,16 @@
 namespace PhalconExt\Db;
 
 use Phalcon\Events\Event;
+use Phalcon\Db\Adapter;
 use PhalconExt\Logger\LogsToFile;
 
 /**
  * SQL logger implemented as db event listener.
+ *
+ * @author  Jitendra Adhikari <jiten.adhikary@gmail.com>
+ * @license MIT
+ *
+ * @link    https://github.com/adhocore/phalcon-ext
  */
 class Logger
 {
@@ -30,7 +36,15 @@ class Logger
         }
     }
 
-    public function beforeQuery(Event $event, $connection)
+    /**
+     * Run before firing query.
+     *
+     * @param Event   $event
+     * @param Adapter $connection
+     *
+     * @return void
+     */
+    public function beforeQuery(Event $event, Adapter $connection)
     {
         if (!$this->activated) {
             return;
@@ -45,7 +59,14 @@ class Logger
         $this->log($this->getHeader($index) . $this->getBacktrace() . $this->getParsedSql($connection));
     }
 
-    protected function getHeader(int $index)
+    /**
+     * Get log header like request uri and datetime.
+     *
+     * @param int $index The current position count of query.
+     *
+     * @return string
+     */
+    protected function getHeader(int $index): string
     {
         if ($index !== $this->config['skipFirst'] || !$this->config['addHeader']) {
             return '';
@@ -58,6 +79,11 @@ class Logger
             . "\n";
     }
 
+    /**
+     * Get the backtrace of paths leading to logged query.
+     *
+     * @return string
+     */
     protected function getBacktrace(): string
     {
         if ($this->config['backtraceLevel'] < 1) {
@@ -74,7 +100,14 @@ class Logger
         return $trace;
     }
 
-    protected function getParsedSql($connection)
+    /**
+     * Get the properly interpolated sql.
+     *
+     * @param Adapter $connection
+     *
+     * @return string
+     */
+    protected function getParsedSql($connection): string
     {
         $sql = $connection->getSqlStatement();
 
@@ -95,6 +128,14 @@ class Logger
         return $sql;
     }
 
+    /**
+     * Run after firing query.
+     *
+     * @param Event   $event
+     * @param Adapter $connection
+     *
+     * @return void
+     */
     public function afterQuery(Event $event, $connection)
     {
         // Do nothing.

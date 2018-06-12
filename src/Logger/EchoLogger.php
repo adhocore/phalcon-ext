@@ -7,6 +7,11 @@ use Phalcon\Logger\Formatter\Line as LineFormatter;
 
 /**
  * Echo logger targeted for CLI environment.
+ *
+ * @author  Jitendra Adhikari <jiten.adhikary@gmail.com>
+ * @license MIT
+ *
+ * @link    https://github.com/adhocore/phalcon-ext
  */
 class EchoLogger extends LoggerAdapter
 {

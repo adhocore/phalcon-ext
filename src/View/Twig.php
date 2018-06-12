@@ -6,6 +6,11 @@ use Phalcon\Mvc\View\Engine;
 
 /**
  * Twig engine for Phalcon.
+ *
+ * @author  Jitendra Adhikari <jiten.adhikary@gmail.com>
+ * @license MIT
+ *
+ * @link    https://github.com/adhocore/phalcon-ext
  */
 class Twig extends Engine
 {
