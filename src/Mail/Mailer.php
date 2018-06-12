@@ -77,9 +77,9 @@ class Mailer
     /**
      * Get the swift mailer.
      *
-     * @return \Swift_Mailer
-     *
      * @throws \InvalidArgumentException When configured driver not supported.
+     *
+     * @return \Swift_Mailer
      */
     public function getMailer(): \Swift_Mailer
     {
@@ -89,9 +89,9 @@ class Mailer
     /**
      * Get the swift transport.
      *
-     * @return \Swift_Transport
-     *
      * @throws \InvalidArgumentException When configured driver not supported.
+     *
+     * @return \Swift_Transport
      */
     public function getTransport(): \Swift_Transport
     {
@@ -109,9 +109,9 @@ class Mailer
     /**
      * Instantiate the swift transport.
      *
-     * @return \Swift_Transport
-     *
      * @throws \InvalidArgumentException When configured driver not supported.
+     *
+     * @return \Swift_Transport
      */
     protected function initTransport(): \Swift_Transport
     {

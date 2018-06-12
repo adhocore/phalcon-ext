@@ -105,9 +105,9 @@ class Cache extends BaseMiddleware
 
     /**
      * Get cacheKey for current request.
-
+     *
      * @param Request $request
-
+     *
      * @return string
      */
     protected function getCacheKey(Request $request): string
@@ -166,7 +166,7 @@ class Cache extends BaseMiddleware
     }
 
     /**
-     * Get the content string
+     * Get the content string.
      *
      * @param Response $response
      *

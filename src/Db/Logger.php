@@ -2,8 +2,8 @@
 
 namespace PhalconExt\Db;
 
-use Phalcon\Events\Event;
 use Phalcon\Db\Adapter;
+use Phalcon\Events\Event;
 use PhalconExt\Logger\LogsToFile;
 
 /**

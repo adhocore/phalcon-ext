@@ -11,7 +11,7 @@ trait Mailable
      *
      * @param string $to
      * @param string $subject
-     * @param array  $options  The body &/or view template.
+     * @param array  $options The body &/or view template.
      *
      * @return int
      */

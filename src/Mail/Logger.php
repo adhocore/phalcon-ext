@@ -75,7 +75,7 @@ class Logger implements \Swift_Events_SendListener
     /**
      * Formats message as per type.
      *
-     * @param  \Swift_Mime_SimpleMessage $message
+     * @param \Swift_Mime_SimpleMessage $message
      *
      * @return string
      */

@@ -2,8 +2,8 @@
 
 namespace PhalconExt\Cache;
 
-use Redis as PhpRedis;
 use Phalcon\Cache\Backend\Redis as BaseRedis;
+use Redis as PhpRedis;
 
 /**
  * Redis backend client.
@@ -11,7 +11,7 @@ use Phalcon\Cache\Backend\Redis as BaseRedis;
 class Redis extends BaseRedis
 {
     /**
-     * Get underlying redis connection
+     * Get underlying redis connection.
      *
      * @return null|PhpRedis
      */
