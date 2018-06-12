@@ -2,6 +2,8 @@
 
 namespace PhalconExt\Http;
 
+use Phalcon\Http\Request;
+use Phalcon\Http\Response;
 use Phalcon\Mvc\DispatcherInterface as Dispatcher;
 use Phalcon\Mvc\Micro as MicroApplication;
 use Phalcon\Mvc\Micro\MiddlewareInterface;
@@ -21,7 +23,7 @@ abstract class BaseMiddleware implements MiddlewareInterface
     use ProvidesDi;
 
     /** @var array */
-    protected $config;
+    protected $config = [];
 
     /** @var string */
     protected $configKey;
@@ -32,7 +34,7 @@ abstract class BaseMiddleware implements MiddlewareInterface
     }
 
     /**
-     * Sets itself to be triggered on `beforeExecuteRoute` (or `before` in micro) events.
+     * Sets itself to be triggered on before &/or after route execution events.
      *
      * @return void
      */
@@ -40,6 +42,7 @@ abstract class BaseMiddleware implements MiddlewareInterface
     {
         if ($this->isMicro()) {
             $this->di('application')->before($this);
+            $this->di('application')->after([$this, 'callAfter']);
 
             return;
         }
@@ -47,29 +50,57 @@ abstract class BaseMiddleware implements MiddlewareInterface
         $evm = $this->di('eventsManager');
 
         $evm->attach('dispatch:beforeExecuteRoute', $this);
+        $evm->attach('dispatch:afterExecuteRoute', $this);
 
         $this->di('dispatcher')->setEventsManager($evm);
     }
 
     /**
-     * Common handler for both micro and mvc app.
+     * Before route handler for both micro and mvc app.
+     *
+     * @param Request  $request
+     * @param Response $response
      *
      * @return bool
      */
-    abstract protected function handle(): bool;
+    abstract public function before(Request $request, Response $response): bool;
 
     /**
-     * Handler for mvc app.
+     * After route handler for both micro and mvc app.
+     *
+     * @param Request  $request
+     * @param Response $response
+     *
+     * @return bool
+     */
+    public function after(Request $request, Response $response): bool
+    {
+        // Implementing class may extend this and do the needful.
+        return true;
+    }
+
+    /**
+     * Before route executed in mvc.
      *
      * @return bool
      */
     public function beforeExecuteRoute(): bool
     {
-        return $this->handle();
+        return $this->before($this->di('request'), $this->di('response'));
     }
 
     /**
-     * Handler for micro app.
+     * After route executed in mvc.
+     *
+     *@return bool
+     */
+    public function afterExecuteRoute(): bool
+    {
+        return $this->after($this->di('request'), $this->di('response'));
+    }
+
+    /**
+     * Before handler for micro app.
      *
      * @param MicroApplication $app
      *
@@ -77,7 +108,17 @@ abstract class BaseMiddleware implements MiddlewareInterface
      */
     public function call(MicroApplication $app): bool
     {
-        return $this->handle();
+        return $this->before($this->di('request'), $this->di('response'));
+    }
+
+    /**
+     * After handler for micro app.
+     *
+     * @return bool
+     */
+    public function callAfter(): bool
+    {
+        return $this->after($this->di('request'), $this->di('response'));
     }
 
     /**
