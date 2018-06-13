@@ -134,7 +134,7 @@ class Mailer
     }
 
     /**
-     * Create new Smtp Transport
+     * Create new Smtp Transport.
      *
      * @param array $config
      *
