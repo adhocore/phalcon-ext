@@ -102,7 +102,7 @@ class MicroController
 
         // Register new validation rule (if it is used app wide- register when defining in di)
         $validation->register('gmail', function ($data) {
-            return stripos($data['email'] ?? '', '@gmail.com') > 0;
+            return stripos($this->getCurrentValue(), '@gmail.com') > 0;
         }, 'Field :field must be an email with @gmail.com');
 
         $rules = [
