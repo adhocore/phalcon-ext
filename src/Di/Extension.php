@@ -24,11 +24,7 @@ trait Extension
     // Implemented by \Phalcon\Di.
     abstract public function set($service, $definition, $shared = false);
 
-    abstract public function setShared($service, $definition);
-
     abstract public function get($service, $parameters = null);
-
-    abstract public function getShared($service, $parameters = null);
 
     abstract public function has($service);
 
@@ -45,7 +41,7 @@ trait Extension
     public function resolve(string $class, array $parameters = [])
     {
         if ($this->has($class)) {
-            return $this->get($class);
+            return $this->get($class, $parameters);
         }
 
         if ($this->aliases[$class] ?? null) {
@@ -56,16 +52,9 @@ trait Extension
             throw new \RuntimeException('Cyclic dependency for class: ' . $class);
         }
 
-        // 1. Try if we can get it normally from \Phalcon\Di.
-        // 2. Resolve with constructor injection of dependencies from \Phalcon\Di.
-        try {
-            $resolved = $this->get($class, $parameters);
-        } catch (\Throwable $e) {
-            $this->resolving[$class] = true;
-            $resolved                = $this->instantiate($class, $parameters);
-        }
-
-        $this->setShared($class, $resolved);
+        $this->resolving[$class] = true;
+        $this->set($class, $resolved = $this->instantiate($class, $parameters), true);
+        unset($this->resolving[$class]);
 
         return $resolved;
     }
@@ -116,22 +105,41 @@ trait Extension
             }
             // Already registered in DI.
             elseif ($this->has($name)) {
-                $resolved[] = $this->getShared($name);
+                $resolved[] = $this->get($name);
             }
-            // Is a class and needs to be resolved.
-            elseif ($subClass = $dependency->getClass()) {
-                $resolved[] = $this->resolve($subClass->name);
-            }
-            // Use default value.
-            elseif ($dependency->isOptional()) {
-                $resolved[] = $dependency->getDefaultValue();
-            } else {
-                throw new \RuntimeException('Cannot resolve dependency $' . $name);
+            else {
+                $resolved[] = $this->resolveDependency($dependency);
             }
         }
 
         return $resolved;
     }
+
+    /**
+     * Resolve a dependency.
+     *
+     * @param \ReflectionParameter $dependency
+     *
+     * @return mixed
+     */
+    protected function resolveDependency(\ReflectionParameter $dependency)
+    {
+        // Is a class and needs to be resolved.
+        if ($subClass = $dependency->getClass()) {
+            return $this->resolve($subClass->name);
+        }
+        // Nullable
+        elseif ($dependency->allowsNull()) {
+            return null;
+        }
+        // Use default value.
+        elseif ($dependency->isOptional()) {
+            return $dependency->getDefaultValue();
+        }
+
+        throw new \RuntimeException('Cannot resolve dependency $' . $name);
+    }
+
 
     /**
      * Replace services with another one. Great for test mocks.
@@ -175,9 +183,7 @@ trait Extension
             }
 
             $this->remove($name);
-            $this->setShared($name, $this->original[$name]);
-
-            unset($this->original[$name]);
+            $this->set($name, $this->original[$name], true);
         }
 
         return $this;
