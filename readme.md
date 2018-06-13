@@ -32,6 +32,7 @@ $di->get('redis')->getConnection()->hGet();
 $di->get('redis')->getConnection()->info();
 ```
 
+---
 ### Db.Extension
 
 #### Setup
@@ -446,7 +447,9 @@ Register a new validation rule.
 
 ```php
 $di->get('validation')->register('gmail', function ($data) {
-    return stripos($data['email'] ?? '', '@gmail.com') > 0;
+    // You can access current validation instance with `$this`
+    // You can also access current validator options with `$this->getOption(...)`
+    return stripos($this->getCurrentValue(), '@gmail.com') > 0;
 }, 'Field :field must be an email with @gmail.com');
 ```
 

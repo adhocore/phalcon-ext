@@ -4,6 +4,7 @@ namespace PhalconExt\Validation;
 
 use Phalcon\Validation as BaseValidation;
 use Phalcon\Validation\Validator;
+use Phalcon\Validation\ValidatorInterface;
 use PhalconExt\Validators;
 
 /**
@@ -42,6 +43,9 @@ class Validation extends BaseValidation
     /** @var array The custom validation callbacks */
     protected $callbacks = [];
 
+    /** @var ValidatorInterface The currently validating Validator. */
+    protected $validator;
+
     /**
      * Register a custom validation rule.
      *
@@ -61,6 +65,25 @@ class Validation extends BaseValidation
             $this->_defaultMessages += [$ruleName => $message];
         }
 
+        $this->validators[$ruleName] = $this->getHandler($ruleName, $handler);
+
+        return $this;
+    }
+
+    /**
+     * Get validation handler description].
+     *
+     * @param string $ruleName
+     * @param mixed  $handler
+     *
+     * @return string
+     */
+    protected function getHandler(string $ruleName, $handler)
+    {
+        if ($handler instanceof \Closure) {
+            $handler = \Closure::bind($handler, $this);
+        }
+
         if (\is_callable($handler)) {
             $this->callbacks[$ruleName] = $handler;
             $handler                    = Validator\Callback::class;
@@ -70,9 +93,7 @@ class Validation extends BaseValidation
             throw new \InvalidArgumentException('Unsupported validation rule: ' . $ruleName);
         }
 
-        $this->validators[$ruleName] = $handler;
-
-        return $this;
+        return $handler;
     }
 
     /**
@@ -235,9 +256,43 @@ class Validation extends BaseValidation
             $options   = (array) $options + [
                 'callback' => $this->callbacks[$rule] ?? null,
                 'message'  => $this->_defaultMessages[$rule] ?? null,
+                '__field'  => $attribute,
             ];
 
             $this->add($attribute, new $validator($options));
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function preChecking($field, ValidatorInterface $validator): bool
+    {
+        $this->validator = $validator;
+
+        return parent::preChecking($field, $validator);
+    }
+
+    /**
+     * Get current value being validated.
+     *
+     * @return mixed
+     */
+    public function getCurrentValue()
+    {
+        return $this->getValue($this->validator->getOption('__field'));
+    }
+
+    /**
+     * Delegate calls to current validator.
+     *
+     * @param string $method
+     * @param mixed  $args
+     *
+     * @return mixed
+     */
+    public function __call($method, $args)
+    {
+        return $this->validator->$method(...$args);
     }
 }
