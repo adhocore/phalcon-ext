@@ -28,7 +28,7 @@ trait Extension
 
     abstract public function get($service, $parameters = null);
 
-    abstract public function getShared($service);
+    abstract public function getShared($service, $parameters = null);
 
     abstract public function has($service);
 
