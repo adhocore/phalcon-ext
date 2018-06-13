@@ -224,14 +224,30 @@ class Validation extends BaseValidation
             }
 
             list($name, $options) = \explode(':', $rule, 2);
-            foreach (\explode(';', $options) as $parts) {
-                list($key, $value) = \explode(':', $parts) + ['', ''];
-                if (\strpos($value, ',')) {
-                    $value = \explode(',', $value);
-                }
+            $parsed[$name] = $this->parseOptions($options);
+        }
 
-                $parsed[$name][$key] = $value;
+        return $parsed;
+    }
+
+    /**
+     * Parse rule options.
+     *
+     * @param string $options
+     *
+     * @return array
+     */
+    protected function parseOptions(string $options): array
+    {
+        $parsed = [];
+
+        foreach (\explode(';', $options) as $parts) {
+            list($key, $value) = \explode(':', $parts) + ['', ''];
+            if (\strpos($value, ',')) {
+                $value = \explode(',', $value);
             }
+
+            $parsed[$key] = $value;
         }
 
         return $parsed;
