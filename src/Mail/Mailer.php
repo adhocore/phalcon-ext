@@ -130,6 +130,18 @@ class Mailer
             throw new \InvalidArgumentException(sprintf('Mail driver "%s" not supported', $driver));
         }
 
+        return $this->createSmtpTransport($config);
+    }
+
+    /**
+     * Create new Smtp Transport
+     *
+     * @param array $config
+     *
+     * @return \Swift_SmtpTransport
+     */
+    protected function createSmtpTransport(array $config): \Swift_SmtpTransport
+    {
         $transport = (new \Swift_SmtpTransport)->setHost($config['host'])->setPort($config['port']);
 
         if ($config['encryption'] ?? null) {
