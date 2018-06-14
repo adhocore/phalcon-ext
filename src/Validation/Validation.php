@@ -224,7 +224,7 @@ class Validation extends BaseValidation
             }
 
             list($name, $options) = \explode(':', $rule, 2);
-            $parsed[$name] = $this->parseOptions($options);
+            $parsed[$name]        = $this->parseOptions($options);
         }
 
         return $parsed;
