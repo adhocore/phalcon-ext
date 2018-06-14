@@ -92,12 +92,20 @@ class Logger implements \Swift_Events_SendListener
         }
 
         // Html, what else?
+        return $this->formatHtml(\array_filter($parts));
+    }
+
+    /**
+     * Format msg parts as html.
+     *
+     * @param array $parts
+     *
+     * @return string
+     */
+    protected function formatHtml(array $parts): string
+    {
         $html = "<div style='text-align: center;'>\n";
         foreach ($parts as $block => $content) {
-            if (empty($content)) {
-                continue;
-            }
-
             $html .= "<h3>$block</h3>\n";
 
             if (\is_scalar($content)) {
