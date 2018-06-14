@@ -174,6 +174,8 @@ trait Extension
                 $this->remove($name);
                 $this->set($name, $this->original[$name], true);
             }
+
+            unset($this->original[$name]);
         }
 
         return $this;
