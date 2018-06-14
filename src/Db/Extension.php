@@ -45,18 +45,13 @@ trait Extension
 
         // Ambiguous, multiple rows exist!
         if ($count > 1) {
-            throw new \InvalidArgumentException(
-                'The criteria is not enough to fetch a single row for update!'
-            );
+            throw new \InvalidArgumentException('The criteria is not enough to fetch a single row for update!');
         }
 
-        list($clause, $binds) = $this->clauseBinds($criteria);
+        list($conditions, $bind) = $this->clauseBinds($criteria);
 
         // Update the existing data by criteria!
-        return $this->updateAsDict($table, $data, [
-            'conditions' => $clause,
-            'bind'       => $binds,
-        ]);
+        return $this->updateAsDict($table, $data, \compact('conditions', 'bind'));
     }
 
     /**
