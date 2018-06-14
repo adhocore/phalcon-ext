@@ -109,23 +109,14 @@ class Logger
      */
     protected function getParsedSql($connection): string
     {
-        $sql = $connection->getSqlStatement();
+        $parts = $connection->convertBoundParams(
+            $connection->getSqlStatement(),
+            $connection->getSQLVariables() ?: []
+        );
 
-        if ([] === $bind = $connection->getSQLVariables() ?: []) {
-            return $sql;
-        }
+        $binds = $parts['params'] ?: $connection->getSQLVariables();
 
-        // Positional placeholder `?`.
-        if (\array_key_exists(0, $bind)) {
-            return \vsprintf(\str_replace('?', "'%s'", $sql), $bind);
-        }
-
-        // Named placeholder `:name`!
-        foreach ($bind as $key => $value) {
-            $sql = \preg_replace("/:$key/", "'$value'", $sql);
-        }
-
-        return $sql;
+        return \vsprintf(\str_replace('?', "'%s'", $parts['sql']), $binds);
     }
 
     /**
