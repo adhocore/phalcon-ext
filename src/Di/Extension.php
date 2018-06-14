@@ -193,15 +193,27 @@ trait Extension
         $this->aliases += $aliases;
 
         foreach ($this->_services as $name => $service) {
-            $def   = $service->getDefinition();
-            $isStr = \is_string($def);
-
-            if ($isStr || (\is_object($def) && !$def instanceof \Closure)) {
-                $alias                 = $isStr ? $def : \get_class($def);
+            if (null !== $alias = $this->inferAlias($service->getDefinition())) {
                 $this->aliases[$alias] = $name;
             }
         }
 
         return $this;
+    }
+
+    /**
+     * Infer alias of service definition.
+     *
+     * @param mixed $definition
+     *
+     * @return string|null
+     */
+    protected function inferAlias($definition): ?string
+    {
+        if (\is_object($definition) && !$definition instanceof \Closure) {
+            return \get_class($definition);
+        }
+
+        return \is_string($definition) ? $definition : null;
     }
 }

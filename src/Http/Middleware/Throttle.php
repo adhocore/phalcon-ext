@@ -6,6 +6,14 @@ use Phalcon\Http\Request;
 use Phalcon\Http\Response;
 use PhalconExt\Http\BaseMiddleware;
 
+/**
+ * A request throttling middleware.
+ *
+ * @author  Jitendra Adhikari <jiten.adhikary@gmail.com>
+ * @license MIT
+ *
+ * @link    https://github.com/adhocore/phalcon-ext
+ */
 class Throttle extends BaseMiddleware
 {
     /** @var string */
@@ -54,17 +62,11 @@ class Throttle extends BaseMiddleware
         $baseKey  = $this->getKey($request);
 
         foreach ($this->config['maxHits'] as $minutes => $maxHits) {
-            $key  = "$baseKey:$minutes";
-            $hits = $redis->exists($key) ? $redis->get($key) : 0;
-            $ttl  = $hits ? $redis->getTtl($key) : $minutes * 60;
+            $key = "$baseKey:$minutes";
 
-            if (null === $retryKey && $hits >= $maxHits) {
+            if ($this->shouldThrottle($redis, $key, $minutes, $maxHits)) {
                 $retryKey = $key;
-
-                continue;
             }
-
-            $redis->save($key, $hits + 1, $ttl);
         }
 
         return $retryKey;
@@ -82,9 +84,30 @@ class Throttle extends BaseMiddleware
         $key = $request->getClientAddress(true);
 
         if ($this->config['checkUserAgent'] ?? false) {
-            $key .= '_' . \md5($request->getUserAgent());
+            $key .= ':' . \md5($request->getUserAgent());
         }
 
         return ($this->config['prefix'] ?? '') . $key;
+    }
+
+    /**
+     * Check if we should throttle. Update hits counter if not.
+     *
+     * @param Request $request
+     *
+     * @return bool
+     */
+    protected function shouldThrottle($redis, string $key, int $minutes, int $maxHits): bool
+    {
+        $hits = $redis->get($key) ?: 0;
+        $ttl  = $hits ? $redis->getTtl($key) : $minutes * 60;
+
+        if ($hits >= $maxHits) {
+            return true;
+        }
+
+        $redis->save($key, $hits + 1, $ttl);
+
+        return false;
     }
 }

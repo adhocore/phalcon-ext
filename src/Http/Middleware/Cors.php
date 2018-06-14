@@ -6,6 +6,14 @@ use Phalcon\Http\Request;
 use Phalcon\Http\Response;
 use PhalconExt\Http\BaseMiddleware;
 
+/**
+ * Cors middleware with preflight.
+ *
+ * @author  Jitendra Adhikari <jiten.adhikary@gmail.com>
+ * @license MIT
+ *
+ * @link    https://github.com/adhocore/phalcon-ext
+ */
 class Cors extends BaseMiddleware
 {
     /** @var string */
@@ -98,7 +106,6 @@ class Cors extends BaseMiddleware
             ->setHeader('Access-Control-Allow-Methods', \implode(', ', $this->config['allowedMethods']))
             ->setHeader('Access-Control-Allow-Headers', \implode(', ', $this->config['allowedHeaders']))
             ->setHeader('Access-Control-Max-Age', $this->config['maxAge'])
-            ->setContent('')
             ->send();
 
         return false;

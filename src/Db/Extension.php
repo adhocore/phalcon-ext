@@ -17,14 +17,16 @@ trait Extension
     use ProvidesDi;
 
     // Implemented by \Phalcon\Db\Adapter.
-    abstract public function updateAsDict($table, $data, $conditions, $dataTypes);
+    abstract public function updateAsDict($table, $data, $conditions = null, $dataTypes = null);
+
+    abstract public function insertAsDict($table, $data, $dataTypes = null);
 
     /**
      * Update a row matching given criteria if exists or insert new one.
      *
      * @param string $table    The table to act upon.
      * @param array  $data     The actual data dict ([field => value]) to update/insert.
-     * @param array  $criteria The criteria dict ([field => value]) to update the row.
+     * @param array  $criteria The criteria dict ([field => value]) to match updatable row.
      *
      * @throws \InvalidArgumentException When the criteria is insufficient.
      *
@@ -32,7 +34,7 @@ trait Extension
      */
     public function upsert(string $table, array $data, array $criteria): bool
     {
-        if (empty($table) || empty($data) || empty($criteria)) {
+        if (empty($data)) {
             return false;
         }
 
