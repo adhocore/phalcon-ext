@@ -30,19 +30,27 @@ class OpcachePrimer
     {
         $cached = 0;
 
-        foreach ($paths as $path) {
-            if (false === $path = \realpath($path)) {
-                continue;
-            }
-
+        foreach ($this->normalizePaths($paths) as $path) {
             $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
 
             foreach ($this->filter($iterator) as $file) {
-                \opcache_compile_file($file->getRealPath()) && $cached++;
+                $cached += (int) \opcache_compile_file($file->getRealPath());
             }
         }
 
         return $cached;
+    }
+
+    /**
+     * Normalize paths.
+     *
+     * @param array $paths
+     *
+     * @return array
+     */
+    protected function normalizePaths(array $paths): array
+    {
+        return \array_filter(\array_map('realpath', $paths));
     }
 
     /**
