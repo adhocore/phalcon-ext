@@ -163,25 +163,17 @@ trait Extension
     /**
      * Restore given service or all.
      *
-     * @param string|null $name
+     * @param array|null $name
      *
      * @return self
      */
-    public function restore(string $name = null): self
+    public function restore(array $names = null): self
     {
-        if ($name && empty($this->original[$name])) {
-            return $this;
-        }
-
-        $names = $name ? [$name] : array_keys($this->original);
-
-        foreach ($names as $name) {
-            if (!$this->has($name)) {
-                continue;
+        foreach ($names ?? \array_keys($this->original) as $name) {
+            if ($this->has($name)) {
+                $this->remove($name);
+                $this->set($name, $this->original[$name], true);
             }
-
-            $this->remove($name);
-            $this->set($name, $this->original[$name], true);
         }
 
         return $this;
