@@ -12,6 +12,13 @@ namespace PhalconExt\Util;
  */
 class OpcachePrimer
 {
+    public function __construct()
+    {
+        if (!\function_exists('opcache_compile_file')) {
+            throw new \Exception('Opcache is not enabled');
+        }
+    }
+
     /**
      * Prime/Warm the cache for given paths.
      *
@@ -21,10 +28,6 @@ class OpcachePrimer
      */
     public function prime(array $paths): int
     {
-        if (!\function_exists('opcache_compile_file')) {
-            return 0;
-        }
-
         $cached = 0;
 
         foreach ($paths as $path) {
