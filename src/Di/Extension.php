@@ -139,7 +139,6 @@ trait Extension
         throw new \RuntimeException('Cannot resolve dependency $' . $name);
     }
 
-
     /**
      * Replace services with another one. Great for test mocks.
      *
