@@ -106,8 +106,7 @@ trait Extension
             // Already registered in DI.
             elseif ($this->has($name)) {
                 $resolved[] = $this->get($name);
-            }
-            else {
+            } else {
                 $resolved[] = $this->resolveDependency($dependency);
             }
         }
