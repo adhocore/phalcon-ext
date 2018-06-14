@@ -163,11 +163,9 @@ class Validation extends BaseValidation
      */
     public function run(array $ruleSet, array $dataSet): Validation
     {
-        if ($reset) {
-            $this->_messages = $this->_validators = [];
-        }
+        $this->_messages = $this->_validators = [];
 
-        $this->addRules($ruleSet, $dataSet, true)->validate($dataSet);
+        $this->addRules($ruleSet, $dataSet)->validate($dataSet);
 
         return $this;
     }
