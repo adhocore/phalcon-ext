@@ -163,6 +163,10 @@ class Validation extends BaseValidation
      */
     public function run(array $ruleSet, array $dataSet): Validation
     {
+        if ($reset) {
+            $this->_messages = $this->_validators = [];
+        }
+
         $this->addRules($ruleSet, $dataSet, true)->validate($dataSet);
 
         return $this;
@@ -173,24 +177,13 @@ class Validation extends BaseValidation
      *
      * @param array $ruleSet
      * @param array $dataSet
-     * @param bool  $reset   Whether to reset currently registered validators.
      *
      * @return Validation
      */
-    public function addRules(array $ruleSet, array $dataSet = [], bool $reset = false): Validation
+    public function addRules(array $ruleSet, array $dataSet = []): Validation
     {
-        if ($reset) {
-            $this->_messages = $this->_validators = [];
-        }
-
         foreach ($ruleSet as $attribute => $rules) {
-            if (\is_string($rules)) {
-                $rules = $this->parseRules($rules);
-            }
-
-            if (!\is_array($rules)) {
-                throw new \UnexpectedValueException('The rules should be an array or string');
-            }
+            $rules = $this->normalizeRules($rules);
 
             // Only validate if attribute exists in dataSet when so configured.
             if (isset($rules['if_exist']) && !\array_key_exists($attribute, $dataSet)) {
@@ -202,6 +195,26 @@ class Validation extends BaseValidation
         }
 
         return $this;
+    }
+
+    /**
+     * Normalize rules if needed.
+     *
+     * @param mixed $rules
+     *
+     * @return array
+     */
+    protected function normalizeRules($rules): array
+    {
+        if (\is_string($rules)) {
+            return $this->parseRules($rules);
+        }
+
+        if (!\is_array($rules)) {
+            throw new \UnexpectedValueException('The rules should be an array or string');
+        }
+
+        return $rules;
     }
 
     /**
