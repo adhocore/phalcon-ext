@@ -145,7 +145,7 @@ Restore the overridden services to their usual defaults.
 
 ```php
 $di->restore();          // All
-$di->restore('service'); // One
+$di->restore(['service']); // One
 ```
 
 ### Di.ProvidesDi
