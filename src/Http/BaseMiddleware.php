@@ -142,7 +142,7 @@ abstract class BaseMiddleware implements MiddlewareInterface
      */
     protected function abort(int $status): bool
     {
-        $this->di('response')->setContent('')->setStatusCode($status)->send();
+        $this->di('response')->setStatusCode($status)->send();
 
         return false;
     }
@@ -168,9 +168,9 @@ abstract class BaseMiddleware implements MiddlewareInterface
     }
 
     /**
-     * Get routeName and Url tuple.
+     * Get routeName and Uri tuple.
      *
-     * @return array [name, 'uri']
+     * @return array ['name', 'uri']
      */
     protected function getRouteNameUri(): array
     {
