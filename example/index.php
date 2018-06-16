@@ -11,7 +11,7 @@ use PhalconExt\Http\Middleware\Throttle;
 // Micro app
 
 // In micro mode, most of the di services are the same
-$di = require_once __DIR__ . '/bootstrap.php';
+$di = require __DIR__ . '/bootstrap.php';
 
 // However we will use simple view here
 $di->setShared('view', function () {
@@ -54,5 +54,9 @@ $app->mount((new Collection)
 $app->notFound(function () use ($di) {
     return $di->get('response')->setContent('')->setStatusCode(404);
 });
+
+if (getenv('APP_ENV') === 'test') {
+    return $app;
+}
 
 $app->handle();
