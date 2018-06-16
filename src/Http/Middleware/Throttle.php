@@ -31,7 +31,7 @@ class Throttle extends BaseMiddleware
      */
     public function before(Request $request, Response $response): bool
     {
-        if (null === $retryKey = $this->findRetryKey($request)) {
+        if ('' === $retryKey = $this->findRetryKey($request)) {
             return true;
         }
 
@@ -53,11 +53,11 @@ class Throttle extends BaseMiddleware
      *
      * @param Request $request
      *
-     * @return null|string
+     * @return string
      */
-    protected function findRetryKey(Request $request): ?string
+    protected function findRetryKey(Request $request): string
     {
-        $retryKey = null;
+        $retryKey = '';
         $redis    = $this->di('redis');
         $baseKey  = $this->getKey($request);
 
