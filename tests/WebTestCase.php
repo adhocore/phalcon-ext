@@ -55,14 +55,14 @@ class WebTestCase extends TestCase
 
     protected function assertResponseOk(): self
     {
-        $this->assertContains($this->response->getStatusCode(), [null, 200]);
+        $this->assertContains($this->responseCode(), [null, 200]);
 
         return $this;
     }
 
     protected function assertResponseNotOk(): self
     {
-        $this->assertNotContains($this->response->getStatusCode(), [null, 200]);
+        $this->assertNotContains($this->responseCode(), [null, 200]);
 
         return $this;
     }
@@ -97,7 +97,7 @@ class WebTestCase extends TestCase
 
     protected function assertStatusCode(int $code): self
     {
-        $this->assertEquals($code, $this->response->getStatusCode());
+        $this->assertEquals($code, $this->responseCode());
 
         return $this;
     }
@@ -107,5 +107,12 @@ class WebTestCase extends TestCase
         $this->assertHeaderContains('Content-Type', 'application/json');
 
         return $this;
+    }
+
+    protected function responseCode(): int
+    {
+        $code = $this->response->getStatusCode();
+
+        return $code === null ? 200 : (int) substr($code, 0, 3);
     }
 }
