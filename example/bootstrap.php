@@ -12,11 +12,14 @@ use PhalconExt\View\Twig;
 $loader = (new Phalcon\Loader)
     ->registerNamespaces([
         'PhalconExt' => __DIR__ . '/src/',
+        'PhalconExt\\Test' => __DIR__ . '/tests/',
     ])
-    ->registerClasses(require_once __DIR__ . '/../vendor/composer/autoload_classmap.php')
+    ->registerClasses(require __DIR__ . '/../vendor/composer/autoload_classmap.php')
     ->register();
 
-$loader->registerFiles(require_once __DIR__ . '/../vendor/composer/autoload_files.php')->loadFiles();
+if (getenv('APP_ENV') !== 'test') {
+    $loader->registerFiles(require __DIR__ . '/../vendor/composer/autoload_files.php')->loadFiles();
+}
 
 $di = new FactoryDefault;
 
