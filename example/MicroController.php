@@ -119,12 +119,16 @@ class MicroController
             'x' => 'length:5|if_exist',
         ];
 
-        // Validate against empty data
-        $validation->run($rules, []);
+        // Validate against query data
+        $validation->run($rules, $this->di('request')->getQuery());
 
         $info['pass=0']           = (int) $validation->pass();
         $info['fail=1']           = (int) $validation->fail();
         $info['errors=[0,1...6]'] = $validation->getErrorMessages();
+
+        if ($validation->fail()) {
+            $this->di('response')->setStatusCode(422);
+        }
 
         return '<pre>' . print_r($info, 1) . '<pre>';
     }
