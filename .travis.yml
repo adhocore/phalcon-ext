@@ -5,11 +5,15 @@ php:
   - 7.1
   - 7.2
 
+services:
+  - redis-server
+
 install:
   - composer install --prefer-dist
 
 before_script:
   - for P in src tests example; do find $P -type f -name '*.php' -exec php -l {} \;; done
+  - redis-server &
 
 script:
   - vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
