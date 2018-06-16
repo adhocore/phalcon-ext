@@ -43,7 +43,8 @@ $app->mount((new Collection)
     ->get('cors', 'corsAction')
     // Need to allow OPTIONS request for cors enabled endpoint!
     // (But not always, simple requests can do without it.)
-    ->mapVia('corsheader', 'corsHeaderAction', ['GET', 'OPTIONS'])
+    ->options('corsheader', 'corsHeaderAction')
+    ->get('corsheader', 'corsHeaderAction')
 );
 
 // Order: Throttle, Cors, Cache
