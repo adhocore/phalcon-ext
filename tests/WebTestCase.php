@@ -15,7 +15,7 @@ class WebTestCase extends TestCase
     }
 
     /**
-     * This is stripped down barebone version for our example/ endpoints
+     * This is stripped down barebone version for our example/ endpoints.
      */
     protected function doRequest(string $uri, array $parameters = []): self
     {
