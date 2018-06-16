@@ -11,7 +11,7 @@ use PhalconExt\View\Twig;
 
 $loader = (new Phalcon\Loader)
     ->registerNamespaces([
-        'PhalconExt' => __DIR__ . '/src/',
+        'PhalconExt'       => __DIR__ . '/src/',
         'PhalconExt\\Test' => __DIR__ . '/tests/',
     ])
     ->registerClasses(require __DIR__ . '/../vendor/composer/autoload_classmap.php')
