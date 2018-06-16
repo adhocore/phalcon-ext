@@ -5,15 +5,26 @@ php:
   - 7.1
   - 7.2
 
+env:
+  matrix:
+    - PHALCON_VERSION="v3.1.0"
+    - PHALCON_VERSION="v3.2.0"
+    - PHALCON_VERSION="v3.3.2"
+    - PHALCON_VERSION="v3.4.0"
+
 services:
   - redis-server
 
 install:
+  - git clone --depth=1 -q --branch=${PHALCON_VERSION} https://github.com/phalcon/cphalcon.git
+  - '(cd cphalcon/build; bash install &>/dev/null && phpenv config-add ../tests/_ci/phalcon.ini &> /dev/null && cd ../..;)'
+  - echo 'extension = redis.so' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - composer install --prefer-dist
 
 before_script:
   - for P in src tests example; do find $P -type f -name '*.php' -exec php -l {} \;; done
-  - redis-server &
+  - mkdir -p example/.var/mail example/.var/sql example/.var/view
+  - touch example/.var/db.db
 
 script:
   - vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
