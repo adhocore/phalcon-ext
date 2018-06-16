@@ -15,8 +15,12 @@ class Redis extends BaseRedis
      *
      * @return null|PhpRedis
      */
-    public function getConnection(): ?PhpRedis
+    public function getConnection()
     {
+        if (!$this->_redis) {
+            $this->_connect();
+        }
+
         return $this->_redis;
     }
 

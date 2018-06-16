@@ -30,7 +30,7 @@ class EchoLogger extends LoggerAdapter
     /**
      * Echoes the log message as it is in CLI!
      */
-    protected function logInternal(string $message, int $type, int $time, array $context): void
+    protected function logInternal(string $message, int $type, int $time, array $context)
     {
         echo $this->getFormatter()->format($message, $type, $time, $context);
     }

@@ -193,7 +193,7 @@ trait Extension
         $this->aliases += $aliases;
 
         foreach ($this->_services as $name => $service) {
-            if (null !== $alias = $this->inferAlias($service->getDefinition())) {
+            if ('' !== $alias = $this->inferAlias($service->getDefinition())) {
                 $this->aliases[$alias] = $name;
             }
         }
@@ -206,14 +206,14 @@ trait Extension
      *
      * @param mixed $definition
      *
-     * @return string|null
+     * @return string
      */
-    protected function inferAlias($definition): ?string
+    protected function inferAlias($definition): string
     {
         if (\is_object($definition) && !$definition instanceof \Closure) {
             return \get_class($definition);
         }
 
-        return \is_string($definition) ? $definition : null;
+        return \is_string($definition) ? $definition : '';
     }
 }
