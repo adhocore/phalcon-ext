@@ -37,18 +37,29 @@ class WebTestCase extends TestCase
     /**
      * This is stripped down barebone version for our example/ endpoints.
      */
-    protected function doRequest(string $uri, array $parameters = []): self
+    protected function doRequest(string $uri, array $parameters = [], array $headers = []): self
     {
-        // Reset request/response!
-        $this->di()->replace(['request' => new Request, 'response' => new Response]);
+        if ($uri[0] !== '/') {
+            list($method, $uri) = explode(' ', $uri, 2);
+        }
 
         $parameters['_url']        = $uri;
-        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_SERVER['REQUEST_METHOD'] = $method ?? 'GET';
         $_SERVER['QUERY_STRING']   = http_build_query($parameters);
         $_SERVER['REQUEST_URI']    = '/?' . $_SERVER['QUERY_STRING'];
         $_GET                      = $parameters;
 
+        foreach ($headers as $key => $value) {
+            if (!in_array($key, ['Origin', 'Authorization'])) {
+                $key = 'HTTP_' . strtoupper(str_replace('-', '_', $key));
+            }
+            $_SERVER[$key] = $value;
+        }
+
         $this->response = null;
+
+        // Reset request/response!
+        $this->di()->replace(['request' => new Request, 'response' => new Response]);
 
         ob_start();
         $this->app->handle($uri);
