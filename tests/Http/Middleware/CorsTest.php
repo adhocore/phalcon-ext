@@ -35,6 +35,7 @@ class CorsTest extends WebTestCase
         $this->doRequest('/corsheader', [], $headers)
             ->assertResponseOk()
             ->assertResponseJson()
+            ->assertHeaderKeys(['Access-Control-Allow-Origin', 'Access-Control-Allow-Credentials'])
             ->assertNotHeaderKeys(['Access-Control-Max-Age', 'Access-Control-Allow-Methods']);
     }
 }
