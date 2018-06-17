@@ -12,6 +12,8 @@ use PhalconExt\Test\WebTestCase;
 
 class ThrottleTest extends WebTestCase
 {
+    protected $throttleMw;
+
     public function setUp()
     {
         parent::setUp();
@@ -19,7 +21,7 @@ class ThrottleTest extends WebTestCase
         // Allow max 1 hits
         $this->configure(['throttle' => ['maxHits' => [1 => 1], 'checkUserAgent' => true]]);
 
-        $this->app->before(new Throttle);
+        $this->app->before($this->throttleMw = new Throttle);
     }
 
     public function test_throttles()
@@ -31,5 +33,7 @@ class ThrottleTest extends WebTestCase
         $this->doRequest('/')->assertResponseNotOk()->assertStatusCode(429);
 
         $this->assertResponseContains('Too many requests');
+
+        $this->di('redis')->delete($this->throttleMw->getRetryKey());
     }
 }
