@@ -51,9 +51,9 @@ class WebTestCase extends TestCase
 
         foreach ($headers as $key => $value) {
             if (!in_array($key, ['Origin', 'Authorization'])) {
-                $key = 'HTTP_' . strtoupper(str_replace('-', '_', $key));
+                $key = 'HTTP_' . str_replace('-', '_', $key);
             }
-            $_SERVER[$key] = $value;
+            $_SERVER[strtoupper($key)] = $value;
         }
 
         $this->response = null;
@@ -109,7 +109,7 @@ class WebTestCase extends TestCase
         return $this;
     }
 
-    protected function assertHeaderKeys(array $keys, bool $has = false): self
+    protected function assertHeaderKeys(array $keys, bool $has = true): self
     {
         $headers = $this->response->getHeaders()->toArray();
 
