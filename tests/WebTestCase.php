@@ -2,6 +2,9 @@
 
 namespace PhalconExt\Test;
 
+use Phalcon\Config;
+use Phalcon\Http\Request;
+use Phalcon\Http\Response;
 use PHPUnit\Framework\TestCase;
 
 class WebTestCase extends TestCase
@@ -12,6 +15,23 @@ class WebTestCase extends TestCase
     {
         // A new instance of fully configured app :)
         $this->app = include __DIR__ . '/../example/index.php';
+
+        $this->resetDi();
+    }
+
+    protected function resetDi()
+    {
+        \Phalcon\Di::reset();
+        \Phalcon\Di::setDefault($this->app->getDI());
+    }
+
+    protected function di(string $service = null)
+    {
+        if ($service) {
+            return $this->app->getDI()->resolve($service);
+        }
+
+        return $this->app->getDI();
     }
 
     /**
@@ -19,11 +39,10 @@ class WebTestCase extends TestCase
      */
     protected function doRequest(string $uri, array $parameters = []): self
     {
-        \Phalcon\Di::reset();
-        \Phalcon\Di::setDefault($this->app->getDI());
+        // Reset request/response!
+        $this->di()->replace(['request' => new Request, 'response' => new Response]);
 
-        $parameters['_url'] = $uri;
-
+        $parameters['_url']        = $uri;
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_SERVER['QUERY_STRING']   = http_build_query($parameters);
         $_SERVER['REQUEST_URI']    = '/?' . $_SERVER['QUERY_STRING'];
@@ -35,7 +54,7 @@ class WebTestCase extends TestCase
         $this->app->handle($uri);
         $content = ob_get_clean();
 
-        $response = $this->app->getDI()->getShared('response');
+        $response = $this->di('response');
 
         if (empty($response->getContent())) {
             $response->setContent($content);
@@ -48,7 +67,9 @@ class WebTestCase extends TestCase
 
     protected function configure(array $config): self
     {
-        $this->app->getDI()->getShared('config')->merge($config);
+        $config = array_merge($this->di('config')->toArray(), $config);
+
+        $this->di()->replace(['config' => new Config($config)]);
 
         return $this;
     }
