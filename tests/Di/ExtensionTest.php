@@ -51,4 +51,20 @@ class ExtensionTest extends WebTestCase
 
         $this->di->resolve(ProvidesDi::class);
     }
+
+    public function test_replace_restore()
+    {
+        $dbMock = new class {
+            public $mocked = true;
+        };
+
+        $this->di->replace(['db' => $dbMock]);
+
+        $this->assertNotInstanceOf(Adapter::class, $this->di->get('db'));
+        $this->assertTrue($this->di->get('db')->mocked);
+
+        $this->di->restore(['db']);
+
+        $this->assertInstanceOf(Adapter::class, $this->di->get('db'));        
+    }
 }
