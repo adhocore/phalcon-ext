@@ -4,7 +4,6 @@ namespace PhalconExt\Test\Di;
 
 use Phalcon\Db\Adapter;
 use Phalcon\Http\Response;
-use PhalconExt\Di\FactoryDefault;
 use PhalconExt\Di\ProvidesDi;
 use PhalconExt\Test\WebTestCase;
 
