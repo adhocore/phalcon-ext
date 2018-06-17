@@ -98,15 +98,22 @@ class WebTestCase extends TestCase
         return $this;
     }
 
-    protected function assertHeaderKeys(array $keys): self
+    protected function assertHeaderKeys(array $keys, bool $has = false): self
     {
-        $headers = $this->response->getHeaders();
+        $headers = $this->response->getHeaders()->toArray();
 
         foreach ($keys as $key) {
-            $this->assertArrayHasKey($key, $headers);
+            $has
+                ? $this->assertArrayHasKey($key, $headers)
+                : $this->assertArrayNotHasKey($key, $headers);
         }
 
         return $this;
+    }
+
+    protected function assertNotHeaderKeys(array $keys): self
+    {
+        return $this->assertHeaderKeys($keys, false);
     }
 
     protected function assertResponseContains(string $part): self
