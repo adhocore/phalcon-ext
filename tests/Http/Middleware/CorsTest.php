@@ -3,11 +3,7 @@
 namespace PhalconExt\Test\Http\Middleware;
 
 use Phalcon\Http\Request;
-use Phalcon\Http\Response;
 use PhalconExt\Http\Middleware\Cors;
-use Phalcon\Db\Adapter;
-use PhalconExt\Di\FactoryDefault;
-use PhalconExt\Di\ProvidesDi;
 use PhalconExt\Test\WebTestCase;
 
 class CorsTest extends WebTestCase
