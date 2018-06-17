@@ -47,11 +47,6 @@ $app->mount((new Collection)
     ->get('corsheader', 'corsHeaderAction')
 );
 
-// Order: Throttle, Cors, Cache
-(new Throttle)->boot();
-(new Cors)->boot();
-(new Cache)->boot();
-
 $app->notFound(function () use ($di) {
     return $di->get('response')->setContent('')->setStatusCode(404);
 });
@@ -59,5 +54,10 @@ $app->notFound(function () use ($di) {
 if (getenv('APP_ENV') === 'test') {
     return $app;
 }
+
+// Order: Throttle, Cors, Cache
+(new Throttle)->boot();
+(new Cors)->boot();
+(new Cache)->boot();
 
 $app->handle();
