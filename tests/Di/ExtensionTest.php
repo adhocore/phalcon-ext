@@ -4,7 +4,6 @@ namespace PhalconExt\Test\Di;
 
 use Phalcon\Db\Adapter;
 use Phalcon\Http\Response;
-use PhalconExt\Di\FactoryDefault;
 use PhalconExt\Di\ProvidesDi;
 use PhalconExt\Test\WebTestCase;
 
@@ -54,7 +53,7 @@ class ExtensionTest extends WebTestCase
 
     public function test_replace_restore()
     {
-        $dbMock = new class {
+        $dbMock            = new class {
             public $mocked = true;
         };
 
@@ -65,6 +64,6 @@ class ExtensionTest extends WebTestCase
 
         $this->di->restore(['db']);
 
-        $this->assertInstanceOf(Adapter::class, $this->di->get('db'));        
+        $this->assertInstanceOf(Adapter::class, $this->di->get('db'));
     }
 }

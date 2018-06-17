@@ -2,9 +2,9 @@
 
 namespace PhalconExt\Test\Cache;
 
-use Redis as PhpRedis;
 use PhalconExt\Cache\Redis;
 use PhalconExt\Test\TestCase;
+use Redis as PhpRedis;
 
 class RedisTest extends TestCase
 {

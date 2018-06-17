@@ -4,8 +4,8 @@ use Phalcon\Logger;
 use PhalconExt\Di\ProvidesDi;
 use PhalconExt\Logger\EchoLogger;
 use PhalconExt\Mail\Mailer;
-use PhalconExt\Test\Di\DiProvider;
 use PhalconExt\Test\Di\DeepNest;
+use PhalconExt\Test\Di\DiProvider;
 use PhalconExt\Test\Di\NeedsDb;
 
 /** Micro Controller */
