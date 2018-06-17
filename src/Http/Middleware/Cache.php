@@ -17,11 +17,21 @@ use PhalconExt\Http\BaseMiddleware;
 class Cache extends BaseMiddleware
 {
     /** @var string */
-    protected $cacheKey;
+    protected $cacheKey  = '';
 
     protected $configKey = 'httpCache';
 
     protected $willCache = false;
+
+    /**
+     * Get the recent cache key used.
+     *
+     * @return string
+     */
+    public function getLastKey(): string
+    {
+        return $this->cacheKey;
+    }
 
     /**
      * Handle the cache.
@@ -33,7 +43,7 @@ class Cache extends BaseMiddleware
      */
     public function before(Request $request, Response $response): bool
     {
-        if (false === $this->isCacheable($request, $response)) {
+        if (!$this->isCacheable($request, $response)) {
             return true;
         }
 
@@ -56,7 +66,7 @@ class Cache extends BaseMiddleware
      */
     protected function isCacheable(Request $request, Response $response): bool
     {
-        if (false === $request->isGet()) {
+        if (!$request->isGet()) {
             return false;
         }
 
