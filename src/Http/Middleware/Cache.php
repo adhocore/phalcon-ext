@@ -148,7 +148,7 @@ class Cache extends BaseMiddleware
             return true;
         }
 
-        $headers  = ['X-Cache' => \time(), 'X-Cache-ID' => $this->cacheKey];
+        $headers = ['X-Cache' => \time(), 'X-Cache-ID' => $this->cacheKey];
 
         foreach ($response->getHeaders()->toArray() as $key => $value) {
             if (\strpos($key, 'Access-Control-') === false) {
