@@ -4,7 +4,8 @@ namespace PhalconExt\Validation;
 
 use Phalcon\Validation;
 use Phalcon\Validation\Message;
-use Phalcon\Validation\Validator\Uniqueness;
+use Phalcon\Validation\Validator;
+use PhalconExt\Di\ProvidesDi;
 
 /**
  * Check that a field exists in the related table.
@@ -14,8 +15,10 @@ use Phalcon\Validation\Validator\Uniqueness;
  *
  * @link    https://github.com/adhocore/phalcon-ext
  */
-class Existence extends Uniqueness
+class Existence extends Validator
 {
+    use ProvidesDi;
+
     /**
      * Executes the validation.
      *
@@ -24,7 +27,16 @@ class Existence extends Uniqueness
      */
     public function validate(Validation $validation, $field) : bool
     {
-        if (!$this->isUniqueness($validation, $field)) {
+        $options = $this->_options + [
+            'table'  => $field,
+            'column' => isset($this->_options['table']) ? $field : 'id',
+        ];
+
+        $count = $this->di('db')->countBy($options['table'], [
+            $options['column'] => $validation->getValue($field),
+        ]);
+
+        if ($count > 0) {
             return true;
         }
 
