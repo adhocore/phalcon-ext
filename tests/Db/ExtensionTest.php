@@ -30,6 +30,8 @@ class ExtensionTest extends TestCase
 
     public function test_upsert_countBy()
     {
+        $this->assertFalse(self::$db->upsert('tests',[], []));
+
         $this->assertEmpty(self::$db->countBy('tests', ['prop_a' => 'A1']));
 
         $this->assertTrue(self::$db->upsert('tests', ['prop_b' => 'B1'], ['prop_a' => 'A1']));
@@ -41,6 +43,11 @@ class ExtensionTest extends TestCase
         $this->assertSame(1, self::$db->countBy('tests', ['prop_a' => 'A1', 'prop_c' => 'C1']));
 
         $this->assertSame(1, self::$db->countBy('tests', []));
+
+        static::$db->insertAsDict('tests', ['prop_a' => 'A1']);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->assertTrue(self::$db->upsert('tests', ['prop_b' => 'B1'], ['prop_a' => 'A1']));
     }
 
     public function test_clause_binds()
