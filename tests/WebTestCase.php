@@ -5,7 +5,6 @@ namespace PhalconExt\Test;
 use Phalcon\Config;
 use Phalcon\Http\Request;
 use Phalcon\Http\Response;
-use PHPUnit\Framework\TestCase;
 
 class WebTestCase extends TestCase
 {
@@ -49,11 +48,12 @@ class WebTestCase extends TestCase
         $_SERVER['REQUEST_URI']    = '/?' . $_SERVER['QUERY_STRING'];
         $_GET                      = $parameters;
 
+        $headerKeys = [];
         foreach ($headers as $key => $value) {
             if (!in_array($key, ['Origin', 'Authorization'])) {
                 $key = 'HTTP_' . str_replace('-', '_', $key);
             }
-            $_SERVER[strtoupper($key)] = $value;
+            $_SERVER[$headerKeys[] = strtoupper($key)] = $value;
         }
 
         $this->response = null;
@@ -70,15 +70,27 @@ class WebTestCase extends TestCase
         if (empty($response->getContent())) {
             $response->setContent($content);
         }
+        foreach ($headerKeys as $key) {
+            unset($_SERVER[$key]);
+        }
+        foreach ($parameters as $key) {
+            unset($_REQUEST[$key], $_GET[$key], $_POST[$key]);
+        }
 
         $this->response = $response;
 
         return $this;
     }
 
-    protected function configure(array $config): self
+    protected function config(string $path)
+    {
+        return $this->di('config')->path($path);
+    }
+
+    protected function configure(string $node, array $config): self
     {
         $config = array_merge($this->di('config')->toArray(), $config);
+        $config = array_replace_recursive($this->di('config')->toArray(), [$node => $config]);
 
         $this->di()->replace(['config' => new Config($config)]);
 
