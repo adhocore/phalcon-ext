@@ -18,6 +18,9 @@ class Logger
 {
     use LogsToFile;
 
+    /** @var int The current count of fired sqls */
+    protected $index = -1;
+
     /** @var array */
     protected $config = [];
 
@@ -50,25 +53,21 @@ class Logger
             return;
         }
 
-        static $index = -1;
-
-        if (++$index < $this->config['skipFirst']) {
+        if (++$this->index < $this->config['skipFirst']) {
             return;
         }
 
-        $this->log($this->getHeader($index) . $this->getBacktrace() . $this->getParsedSql($connection));
+        $this->log($this->getHeader() . $this->getBacktrace() . $this->getParsedSql($connection));
     }
 
     /**
      * Get log header like request uri and datetime.
      *
-     * @param int $index The current position count of query.
-     *
      * @return string
      */
-    protected function getHeader(int $index): string
+    protected function getHeader(): string
     {
-        if ($index !== $this->config['skipFirst'] || !$this->config['addHeader']) {
+        if ($this->index !== $this->config['skipFirst'] || !$this->config['addHeader']) {
             return '';
         }
 

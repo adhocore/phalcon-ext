@@ -2,7 +2,9 @@
 
 namespace PhalconExt\Test;
 
-use PHPUnit\Framework\TestCase;
+use Phalcon\Config;
+use Phalcon\Http\Request;
+use Phalcon\Http\Response;
 
 class WebTestCase extends TestCase
 {
@@ -12,33 +14,67 @@ class WebTestCase extends TestCase
     {
         // A new instance of fully configured app :)
         $this->app = include __DIR__ . '/../example/index.php';
+
+        $this->resetDi();
+    }
+
+    protected function resetDi()
+    {
+        \Phalcon\Di::reset();
+        \Phalcon\Di::setDefault($this->app->getDI());
+    }
+
+    protected function di(string $service = null)
+    {
+        if ($service) {
+            return $this->app->getDI()->resolve($service);
+        }
+
+        return $this->app->getDI();
     }
 
     /**
      * This is stripped down barebone version for our example/ endpoints.
      */
-    protected function doRequest(string $uri, array $parameters = []): self
+    protected function doRequest(string $uri, array $parameters = [], array $headers = []): self
     {
-        \Phalcon\Di::reset();
-        \Phalcon\Di::setDefault($this->app->getDI());
+        if ($uri[0] !== '/') {
+            list($method, $uri) = explode(' ', $uri, 2);
+        }
 
-        $parameters['_url'] = $uri;
-
-        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $parameters['_url']        = $uri;
+        $_SERVER['REQUEST_METHOD'] = $method ?? 'GET';
         $_SERVER['QUERY_STRING']   = http_build_query($parameters);
         $_SERVER['REQUEST_URI']    = '/?' . $_SERVER['QUERY_STRING'];
         $_GET                      = $parameters;
 
+        $headerKeys = [];
+        foreach ($headers as $key => $value) {
+            if (!in_array($key, ['Origin', 'Authorization'])) {
+                $key = 'HTTP_' . str_replace('-', '_', $key);
+            }
+            $_SERVER[$headerKeys[] = strtoupper($key)] = $value;
+        }
+
         $this->response = null;
+
+        // Reset request/response!
+        $this->di()->replace(['request' => new Request, 'response' => new Response]);
 
         ob_start();
         $this->app->handle($uri);
         $content = ob_get_clean();
 
-        $response = $this->app->getDI()->getShared('response');
+        $response = $this->di('response');
 
         if (empty($response->getContent())) {
             $response->setContent($content);
+        }
+        foreach ($headerKeys as $key) {
+            unset($_SERVER[$key]);
+        }
+        foreach ($parameters as $key) {
+            unset($_REQUEST[$key], $_GET[$key], $_POST[$key]);
         }
 
         $this->response = $response;
@@ -46,9 +82,16 @@ class WebTestCase extends TestCase
         return $this;
     }
 
-    protected function configure(array $config): self
+    protected function config(string $path)
     {
-        $this->app->getDI()->getShared('config')->merge($config);
+        return $this->di('config')->path($path);
+    }
+
+    protected function configure(string $node, array $config): self
+    {
+        $config = array_replace_recursive($this->di('config')->toArray(), [$node => $config]);
+
+        $this->di()->replace(['config' => new Config($config)]);
 
         return $this;
     }
@@ -77,15 +120,22 @@ class WebTestCase extends TestCase
         return $this;
     }
 
-    protected function assertHeaderKeys(array $keys): self
+    protected function assertHeaderKeys(array $keys, bool $has = true): self
     {
-        $headers = $this->response->getHeaders();
+        $headers = $this->response->getHeaders()->toArray();
 
         foreach ($keys as $key) {
-            $this->assertArrayHasKey($key, $headers);
+            $has
+                ? $this->assertArrayHasKey($key, $headers)
+                : $this->assertArrayNotHasKey($key, $headers);
         }
 
         return $this;
+    }
+
+    protected function assertNotHeaderKeys(array $keys): self
+    {
+        return $this->assertHeaderKeys($keys, false);
     }
 
     protected function assertResponseContains(string $part): self

@@ -4,6 +4,9 @@ use Phalcon\Logger;
 use PhalconExt\Di\ProvidesDi;
 use PhalconExt\Logger\EchoLogger;
 use PhalconExt\Mail\Mailer;
+use PhalconExt\Test\Di\DeepNest;
+use PhalconExt\Test\Di\DiProvider;
+use PhalconExt\Test\Di\NeedsDb;
 
 /** Micro Controller */
 class MicroController
@@ -147,22 +150,4 @@ class MicroController
             'response' => $response->getHeaders()->toArray(),
         ]);
     }
-}
-
-// Dummy classes for DI extension demo
-class NeedsDb
-{
-    public function __construct(\Phalcon\Db\Adapter $_db)
-    {
-    }
-}
-class DeepNest
-{
-    public function __construct(NeedsDb $n, Mailer $mailer)
-    {
-    }
-}
-class DiProvider
-{
-    use ProvidesDi;
 }

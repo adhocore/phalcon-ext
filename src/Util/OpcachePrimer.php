@@ -14,9 +14,11 @@ class OpcachePrimer
 {
     public function __construct()
     {
+        // @codeCoverageIgnoreStart
         if (!\function_exists('opcache_compile_file')) {
             throw new \Exception('Opcache is not enabled');
         }
+        // @codeCoverageIgnoreEnd
     }
 
     /**

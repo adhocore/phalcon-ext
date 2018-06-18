@@ -21,6 +21,18 @@ class Throttle extends BaseMiddleware
 
     protected $configKey = 'throttle';
 
+    protected $retryKey = '';
+
+    /**
+     * Get retry key that causes throttling.
+     *
+     * @return string
+     */
+    public function getRetryKey(): string
+    {
+        return $this->retryKey;
+    }
+
     /**
      * Handle the throttle.
      *
@@ -31,13 +43,13 @@ class Throttle extends BaseMiddleware
      */
     public function before(Request $request, Response $response): bool
     {
-        if ('' === $retryKey = $this->findRetryKey($request)) {
+        if ('' === $this->retryKey = $this->findRetryKey($request)) {
             return true;
         }
 
         $this->disableView();
 
-        $after = \ceil($this->di('redis')->getTtl($retryKey) / 60);
+        $after = \ceil($this->di('redis')->getTtl($this->retryKey) / 60);
 
         $response
             ->setContent("Too many requests. Try again in $after min.")

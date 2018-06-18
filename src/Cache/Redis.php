@@ -33,6 +33,6 @@ class Redis extends BaseRedis
      */
     public function getTtl(string $key): int
     {
-        return $this->_redis->ttl("_PHCR$key") ?: -1;
+        return $this->getConnection()->ttl("_PHCR$key") ?: -1;
     }
 }

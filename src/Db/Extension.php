@@ -65,7 +65,7 @@ trait Extension
     public function countBy(string $table, array $criteria): int
     {
         if (empty($criteria)) {
-            return 0;
+            return $this->fetchColumn("SELECT COUNT(1) FROM {$table}");
         }
 
         list($clause, $binds) = $this->clauseBinds($criteria);
