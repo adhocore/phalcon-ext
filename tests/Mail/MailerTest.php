@@ -81,7 +81,7 @@ class MailerTest extends WebTestCase
         $raw = $children[2];
 
         $this->assertInstanceOf(\Swift_Attachment::class, $raw, 'Should be instanceof \Swift_Attachment');
-        $this->assertSame('text/plain',  $raw->getContentType());
+        $this->assertSame('text/plain', $raw->getContentType());
         $this->assertSame('rawtext.txt', $raw->getFilename());
     }
 

@@ -2,8 +2,8 @@
 
 namespace PhalconExt\Test\Util;
 
-use PhalconExt\Util\OpcachePrimer;
 use PhalconExt\Test\TestCase;
+use PhalconExt\Util\OpcachePrimer;
 
 class OpcachePrimerTest extends TestCase
 {

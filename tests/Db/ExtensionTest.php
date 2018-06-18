@@ -30,7 +30,7 @@ class ExtensionTest extends TestCase
 
     public function test_upsert_countBy()
     {
-        $this->assertFalse(self::$db->upsert('tests',[], []));
+        $this->assertFalse(self::$db->upsert('tests', [], []));
 
         $this->assertEmpty(self::$db->countBy('tests', ['prop_a' => 'A1']));
 
