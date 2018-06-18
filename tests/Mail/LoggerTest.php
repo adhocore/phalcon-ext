@@ -73,12 +73,12 @@ class LoggerTest extends WebTestCase
                 "<p class='To'>test@localhost: </p>",
                 '<h3>Body</h3>',
                 "<div class='Body'>Email body</div>",
-                '</div>'
+                '</div>',
             ]],
             ['type' => 'json', 'expected' => [
                 '{"Subject":"Hey","From":{"test@localhost":"Test"},"To":{"test@localhost":null},"Body":"Email body","Attachments":[]}',
             ]],
-            ['type' => 'eml', 'expected' => "Subject: Hey\r\nFrom: Test <test@localhost>\r\nTo: test@localhost\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\nEmail body"]
+            ['type' => 'eml', 'expected' => "Subject: Hey\r\nFrom: Test <test@localhost>\r\nTo: test@localhost\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\nEmail body"],
         ];
     }
 

@@ -2,7 +2,6 @@
 
 namespace PhalconExt\Test\Validation;
 
-use PhalconExt\Validation\Existence;
 use PhalconExt\Test\WebTestCase;
 
 class ExistenceTest extends WebTestCase

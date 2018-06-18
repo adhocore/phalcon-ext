@@ -2,8 +2,8 @@
 
 namespace PhalconExt\Test\Validation;
 
-use PhalconExt\Validation\Validation;
 use PhalconExt\Test\TestCase;
+use PhalconExt\Validation\Validation;
 
 class ValidationTest extends TestCase
 {
