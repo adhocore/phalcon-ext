@@ -40,6 +40,11 @@ class Existence extends Validator
             return true;
         }
 
+        return $this->failed($validation, $field);
+    }
+
+    public function failed(Validation $validation, $field): bool
+    {
         $label = $this->getOption('label') ?: $validation->getLabel($field);
         $error = $this->getOption('message') ?: $validation->getDefaultMessage('Existence');
         $error = \strtr($error, [':field' => $label]);
