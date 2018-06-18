@@ -51,6 +51,14 @@ class ExtensionTest extends WebTestCase
         $this->di->resolve(ProvidesDi::class);
     }
 
+    public function test_unresolvable()
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot resolve dependency:');
+
+        $this->di->resolve(Three::class);
+    }
+
     public function test_replace_restore()
     {
         $dbMock            = new class {
