@@ -13,29 +13,51 @@ class CacheTest extends WebTestCase
     {
         parent::setUp();
 
-        $this->configure(['httpCache' => ['ttl' => 1, 'routes' => ['/']]]);
+        $this->configure('httpCache', ['ttl' => 1, 'routes' => ['/', '/', '/', '/']]);
 
-        $this->cacheMw = new Cache;
+        ($this->cacheMw = new Cache)->boot();
     }
 
-    public function test_caches()
+    public function test_caches_and_uses_cache()
     {
-        $this->app->before(function () {
-            return $this->cacheMw->call($this->app);
-        });
-
         // req #1 not cached
         $this->doRequest('/')->assertResponseOk()->assertNotHeaderKeys(['X-Cache', 'X-Cache-ID']);
-    }
 
-    /** @depends test_caches */
-    public function test_uses_cache()
-    {
-        $this->app->after([$this->cacheMw, 'callAfter']);
+        $this->assertTrue($this->di('redis')->exists($this->cacheMw->getLastKey()));
 
         // req #2 cached
         $this->doRequest('/')->assertResponseOk()->assertHeaderKeys(['X-Cache', 'X-Cache-ID']);
 
         $this->di('redis')->delete($this->cacheMw->getLastKey());
+    }
+
+    public function test_doesnt_cache_disallowed_route()
+    {
+        // req #1 not cached
+        $this->doRequest('/logger')->assertResponseOk()->assertNotHeaderKeys(['X-Cache', 'X-Cache-ID']);
+
+        $this->assertFalse($this->di('redis')->exists($this->cacheMw->getLastKey()));
+
+        // req #2 still not cached
+        $this->doRequest('/logger')->assertResponseOk()->assertNotHeaderKeys(['X-Cache', 'X-Cache-ID']);
+
+        $this->assertFalse($this->di('redis')->exists($this->cacheMw->getLastKey()));
+    }
+
+    public function test_doesnt_cache_POST()
+    {
+        $this->app->post('/post', function () {
+            return date('Y-m-d HIs');
+        });
+
+        // req #1 not cached
+        $this->doRequest('POST /post')->assertResponseOk()->assertNotHeaderKeys(['X-Cache', 'X-Cache-ID']);
+
+        $this->assertFalse($this->di('redis')->exists($this->cacheMw->getLastKey()));
+
+        // req #2 still not cached
+        $this->doRequest('POST /post')->assertResponseOk()->assertNotHeaderKeys(['X-Cache', 'X-Cache-ID']);
+
+        $this->assertFalse($this->di('redis')->exists($this->cacheMw->getLastKey()));
     }
 }
