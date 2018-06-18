@@ -77,7 +77,7 @@ class Cors extends BaseMiddleware
             return false;
         }
 
-        return true;
+        return $this->isOriginAllowed();
     }
 
     /**
