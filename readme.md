@@ -12,7 +12,7 @@ Miscellaneous phalcon adapters, extensions and utilities
 ## Installation
 
 ```sh
-composer require adhocore/phalcon-ext:dev-master
+composer require adhocore/phalcon-ext
 ```
 
 ---
