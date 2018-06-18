@@ -89,7 +89,6 @@ class WebTestCase extends TestCase
 
     protected function configure(string $node, array $config): self
     {
-        $config = array_merge($this->di('config')->toArray(), $config);
         $config = array_replace_recursive($this->di('config')->toArray(), [$node => $config]);
 
         $this->di()->replace(['config' => new Config($config)]);
