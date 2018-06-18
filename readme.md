@@ -493,6 +493,27 @@ $fail = $validation->fail(); // true
 $errors = $validation->getErrorMessages(); // array
 ```
 
+#### Validation.Existence
+
+Validates if something exists in database. You can optionally set table and column to check.
+
+```php
+// Checks `users` table for `id` column with value 1
+$rules = ['users' => 'exist'];
+$data  = ['users' => 1];
+
+// Checks `users` table for `username` column with value 'admin'
+$rules = ['username' => 'exist:table:users'];
+$data  = ['username' => 'admin'];
+
+// Checks `users` table for `login` column with value 'admin@localhost'
+$rules = ['email' => 'exist:table:users;column:login'];
+$data  = ['email' => 'admin@localhost'];
+
+// Run the rules
+$validation->run($rules, $data);
+```
+
 ---
 ### View.Twig
 
@@ -524,7 +545,7 @@ $di->setShared('view', function () {
 });
 
 $di->setShared('twig', function () {
-    $twig = new Twig($this->get('view'), $this);
+    $twig = new PhalconExt\View\Twig($this->get('view'), $this);
 
     // Here you can:
     // $twig->addFilter(...)
