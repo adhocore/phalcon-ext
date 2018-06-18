@@ -136,7 +136,7 @@ trait Extension
             return $dependency->getDefaultValue();
         }
 
-        throw new \RuntimeException('Cannot resolve dependency $' . $name);
+        throw new \RuntimeException('Cannot resolve dependency: $' . $dependency->name);
     }
 
     /**
