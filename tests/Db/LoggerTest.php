@@ -27,6 +27,13 @@ class LoggerTest extends TestCase
             'skipFirst'      => 2,
         ]));
 
+        $evm->attach('db', new Logger([
+            'enabled' => true,
+            'logPath' => __DIR__ . '/../../example/.var/sql/',
+        ]));
+
+        $evm->attach('db', new Logger(['enabled' => false]));
+
         self::$db->setEventsManager($evm);
 
         self::$db->execute('CREATE TABLE IF NOT EXISTS tests (
