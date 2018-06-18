@@ -19,11 +19,12 @@ class CorsTest extends WebTestCase
             'exposedHeaders' => ['X-Cache', 'X-Cache-ID'],
             'allowedMethods' => ['GET', 'GET'], // dont allow POST
         ]);
-
-        ($this->corsMw = new Cors)->boot();    }
+    }
 
     public function test_adds_cors_headers()
     {
+        ($this->corsMw = new Cors)->boot();
+
         $headers = ['Access-Control-Request-Method' => 'GET', 'Origin' => 'http://127.0.0.1:1234'];
 
         // Preflight request (OPTIONS)
@@ -44,6 +45,8 @@ class CorsTest extends WebTestCase
 
     public function test_preflight_fails()
     {
+        ($this->corsMw = new Cors)->boot();
+
         $headers = ['Access-Control-Request-Method' => 'GET', 'Origin' => 'http://invalid.origin'];
 
         $this->doRequest('OPTIONS /corsheader', [], $headers)
@@ -65,9 +68,24 @@ class CorsTest extends WebTestCase
 
     public function test_doesnt_add_cors_headers()
     {
+        ($this->corsMw = new Cors)->boot();
+
         // Normal request (GET)
         $this->doRequest('/cors', [], [])
             ->assertResponseOk()
             ->assertNotHeaderKeys(['Access-Control-Allow-Origin', 'Access-Control-Allow-Credentials']);
+    }
+
+    public function test_allow_all_origins()
+    {
+        $this->configure('cors', ['allowedOrigins' => ['*']]);
+
+        ($this->corsMw = new Cors)->boot();
+
+        $headers = ['Access-Control-Request-Method' => 'GET', 'Origin' => 'http://invalid.origin'];
+
+        $this->doRequest('/corsheader', [], $headers)
+            ->assertResponseOk()
+            ->assertHeaderKeys(['Access-Control-Allow-Origin']);
     }
 }
