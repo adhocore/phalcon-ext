@@ -14,8 +14,9 @@ class ThrottleTest extends WebTestCase
         parent::setUp();
 
         // Allow max 1 hits
-        $this->configure(['throttle' => ['maxHits' => [1 => 1], 'checkUserAgent' => true]]);
+        $this->configure('throttle', ['maxHits' => [1 => 1], 'checkUserAgent' => true]);
 
+        // We can also attach to app directly without using `boot()`
         $this->app->before($this->throttleMw = new Throttle);
     }
 
