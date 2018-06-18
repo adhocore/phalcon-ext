@@ -80,3 +80,10 @@ class Two
     {
     }
 }
+
+class Three
+{
+    public function __construct(float $something)
+    {
+    }
+}
