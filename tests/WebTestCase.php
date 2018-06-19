@@ -73,8 +73,7 @@ class WebTestCase extends TestCase
             $this->app->handle($uri);
         }
 
-        $content = ob_get_clean();
-
+        $content  = ob_get_clean();
         $response = $this->di('response');
 
         if (empty($response->getContent())) {
