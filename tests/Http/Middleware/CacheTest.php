@@ -15,7 +15,7 @@ class CacheTest extends WebTestCase
 
         $this->configure('httpCache', ['ttl' => 1, 'routes' => ['/', '/', '/', '/']]);
 
-        ($this->cacheMw = new Cache)->boot();
+        $this->middlewares = [$this->cacheMw = new Cache];
     }
 
     public function test_caches_and_uses_cache()
