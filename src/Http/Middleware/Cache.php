@@ -179,16 +179,9 @@ class Cache extends BaseMiddleware
             return $response->getContent();
         }
 
-        if ($this->isMicro()) {
-            return (string) $this->di('application')->getReturnedValue();
-        }
+        $app   = $this->di('application');
+        $value = $this->isMicro() ? $app->getReturnedValue() : $this->di('dispatcher')->getReturnedValue();
 
-        $value = $this->di('dispatcher')->getReturnedValue();
-
-        if (\method_exists($value, 'getContent')) {
-            return $value->getContent();
-        }
-
-        return (string) $value;
+        return \method_exists($value, 'getContent') ? $value->getContent() : (string) $value;
     }
 }
