@@ -2,11 +2,14 @@
 
 namespace PhalconExt\Test\Mail;
 
+use PhalconExt\Mail\Mailable;
 use PhalconExt\Mail\Mailer;
 use PhalconExt\Test\WebTestCase;
 
 class MailerTest extends WebTestCase
 {
+    use Mailable;
+
     public function test_no_driver_exception()
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -96,6 +99,17 @@ class MailerTest extends WebTestCase
         $sentCount = $mail->setTo(['test1@localhost' => 'Test1', 'test2@localhost' => 'Test2'])->mail();
 
         $this->assertSame(2, $sentCount, 'Should have sent to 2 recepients');
+    }
+
+    public function test_mailable()
+    {
+        $to = ['test1@localhost', 'test2@localhost'];
+
+        $this->di()->replace(['mailer' => $this->newMailer('null')]);
+
+        $count = $this->mail($to, 'Hmm', ['body' => 'Howdy']);
+
+        $this->assertSame(count($to), $count);
     }
 
     protected function newMailer(string $driver = 'smtp')
