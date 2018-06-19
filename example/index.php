@@ -4,6 +4,7 @@ use Phalcon\Mvc\Micro as MicroApplication;
 use Phalcon\Mvc\Micro\Collection;
 use Phalcon\Mvc\Router;
 use Phalcon\Mvc\View\Simple as SimpleView;
+use PhalconExt\Http\Middlewares;
 use PhalconExt\Http\Middleware\Cache;
 use PhalconExt\Http\Middleware\Cors;
 use PhalconExt\Http\Middleware\Throttle;
@@ -51,13 +52,9 @@ $app->notFound(function () use ($di) {
     return $di->get('response')->setContent('')->setStatusCode(404);
 });
 
+// For test return the app instance
 if (getenv('APP_ENV') === 'test') {
     return $app;
 }
 
-// Order: Throttle, Cors, Cache
-(new Throttle)->boot();
-(new Cors)->boot();
-(new Cache)->boot();
-
-$app->handle();
+(new Middlewares([Throttle::class, Cors::class, Cache::class]))->wrap($app);
