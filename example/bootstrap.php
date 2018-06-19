@@ -9,6 +9,11 @@ use PhalconExt\Mail\Mailer;
 use PhalconExt\Validation\Validation;
 use PhalconExt\View\Twig;
 
+if (getenv('APP_ENV') !== 'test') {
+    // For debug
+    (new Phalcon\Debug)->listen(true, true);
+}
+
 $loader = (new Phalcon\Loader)
     ->registerNamespaces([
         'PhalconExt'       => __DIR__ . '/src/',

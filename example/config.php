@@ -65,6 +65,8 @@ return [
             // for absolute uri, prepend forward `/`
             '/di',
             '/logger',
+            '/mail',
+            '/db',
             // or you can use route name without a `/`
             'home',
         ],
