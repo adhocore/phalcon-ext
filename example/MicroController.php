@@ -15,6 +15,8 @@ class MicroController
 
     public function indexAction()
     {
+        $this->di('response')->setHeader('Content-Type', 'text-html');
+
         return $this->di('view')->render('twig.view', ['engine' => 'Twig', 'mode' => 'MICRO']);
     }
 
