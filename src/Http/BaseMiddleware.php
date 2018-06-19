@@ -80,8 +80,8 @@ abstract class BaseMiddleware
     protected function getRouteNameUri(): array
     {
         $router = $this->di('router');
-        $route = $router->getMatchedRoute();
-        $name = $route ? $route->getName() : null;
+        $route  = $router->getMatchedRoute();
+        $name   = $route ? $route->getName() : null;
 
         return [$name, $router->getRewriteUri()];
     }

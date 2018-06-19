@@ -2,10 +2,10 @@
 
 use Phalcon\Mvc\Application;
 use Phalcon\Mvc\Router;
-use PhalconExt\Http\Middlewares;
 use PhalconExt\Http\Middleware\Cache;
 use PhalconExt\Http\Middleware\Cors;
 use PhalconExt\Http\Middleware\Throttle;
+use PhalconExt\Http\Middlewares;
 
 // MVC app
 

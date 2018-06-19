@@ -4,10 +4,10 @@ use Phalcon\Mvc\Micro as MicroApplication;
 use Phalcon\Mvc\Micro\Collection;
 use Phalcon\Mvc\Router;
 use Phalcon\Mvc\View\Simple as SimpleView;
-use PhalconExt\Http\Middlewares;
 use PhalconExt\Http\Middleware\Cache;
 use PhalconExt\Http\Middleware\Cors;
 use PhalconExt\Http\Middleware\Throttle;
+use PhalconExt\Http\Middlewares;
 
 // Micro app
 

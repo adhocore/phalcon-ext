@@ -12,6 +12,7 @@ class MiddlewaresTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('The app instance is not one of micro or mvc');
 
-        (new Middlewares([]))->wrap(new class extends \Phalcon\Di\Injectable {});
+        (new Middlewares([]))->wrap(new class extends \Phalcon\Di\Injectable {
+        });
     }
 }
