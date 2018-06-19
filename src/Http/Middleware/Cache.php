@@ -129,6 +129,8 @@ class Cache extends BaseMiddleware
             $response->setHeader($name, $value);
         }
 
+        $this->stop();
+
         $response->setContent($cached->content)->send();
 
         return false;
