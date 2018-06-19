@@ -55,6 +55,8 @@ abstract class BaseMiddleware
      */
     protected function abort(int $status, string $body = null): bool
     {
+        $this->stop();
+
         $this->di('response')->setStatusCode($status)->setContent($body)->send();
 
         return false;
