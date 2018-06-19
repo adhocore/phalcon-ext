@@ -9,7 +9,7 @@ use PhalconExt\Http\Middleware\Throttle;
 
 // MVC app
 
-$di = require_once __DIR__ . '/bootstrap.php';
+$di = require __DIR__ . '/bootstrap.php';
 
 $di->get('router')->setUriSource(Router::URI_SOURCE_GET_URL);
 
