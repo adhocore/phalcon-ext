@@ -9,6 +9,8 @@ class MvcWebTestCase extends WebTestCase
         // A new instance of fully configured app :)
         $this->app = include __DIR__ . '/../example/mvc.php';
 
+        $this->middlewares = [];
+
         $this->resetDi();
     }
 }
