@@ -182,7 +182,7 @@ $di->setShared('config', new \Phalcon\Config([
 
 class Ajax extends \PhalconExt\Http\BaseMiddleware
 {
-    /** @var string */
+    /** @var string The root key in config having settings for Ajax middleware */
     protected $configKey = 'ajax';
 
     /**
@@ -201,6 +201,7 @@ class Ajax extends \PhalconExt\Http\BaseMiddleware
         }
 
         if (!$request->isAjax()) {
+            // Aborts/stops the app. All other middlewares down the line are skipped
             return $this->abort(400);
         }
 
@@ -208,8 +209,10 @@ class Ajax extends \PhalconExt\Http\BaseMiddleware
     }
 }
 
-// Usage: same for micro or mvc app :)
-(new Ajax)->boot();
+// Usage is pretty simple:
+$app = new Phalcon\Mvc\Application($di);
+
+(new PhalconExt\Http\Middlewares([Ajax::class])->wrap($app);
 ```
 
 #### Http.Middleware.Cache
@@ -233,9 +236,6 @@ $di->setShared('config', new \Phalcon\Config([
         ],
     ],
 ]);
-
-// Usage: same for micro or mvc app :)
-(new \PhalconExt\Http\Middleware\Cache)->boot();
 ```
 
 #### Http.Middleware.Cors
@@ -261,8 +261,6 @@ $di->setShared('config', new \Phalcon\Config([
     ],
 ]);
 
-// Usage: same for micro or mvc app :)
-(new \PhalconExt\Http\Middleware\Cors)->boot();
 ```
 
 #### Http.Middleware.Throttle
@@ -286,8 +284,30 @@ $di->setShared('config', new \Phalcon\Config([
     ],
 ]);
 
-// Usage: same for micro or mvc app :)
-(new \PhalconExt\Http\Middleware\Throttle)->boot();
+```
+
+#### Usage
+
+Middlewares can be used as a wrapper to app using `PhalconExt\Http\Middlewares` manager.
+
+```php
+$app = new Phalcon\Mvc\Micro($di);
+
+// Set all your middlewares in an array using class FQCN, they are lazily loaded
+// They are executed in order of their presence
+// If a middleware returns `false` from its `before()` or `after()` events,
+// all other middlewares down the line are skipped
+$middlewares = new PhalconExt\Http\Middlewares([
+    PhalconExt\Http\Middleware\Throttle::class,
+    PhalconExt\Http\Middleware\Cors::class,
+    PhalconExt\Http\Middleware\Cache::class,
+]);
+
+// Wrap and run the app!
+$middlewares->wrap($app);
+
+// The app is wrapped and run automatically so you dont have to do:
+// $app->handle();
 ```
 
 ---
