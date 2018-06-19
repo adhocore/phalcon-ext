@@ -36,17 +36,17 @@ class Middlewares
      */
     public function wrap(Injectable $app)
     {
-        $isMicro = $app instanceof MicroApplication;
+        if ($app instanceof MicroApplication) {
+            return $this->handleMicro($app);
+        }
 
-        if (!$app instanceof Application && !$isMicro) {
+        if (!$app instanceof Application) {
             throw new \InvalidArgumentException('The app instance is not one of micro or mvc');
         }
 
-        if (!$this->di()->has('application')) {
-            $this->di()->setShared('application', $app);
-        }
+        $this->di()->setShared('application', $app);
 
-        $isMicro ? $this->handleMicro($app) : $this->handleMvc($app);
+        $this->handleMvc($app);
     }
 
     /**
@@ -107,12 +107,12 @@ class Middlewares
 
     public function beforeHandleRequest(): bool
     {
-        return $this->invoke('before');
+        return $this->relay('before');
     }
 
     public function beforeSendResponse(): bool
     {
-        return $this->invoke('after');
+        return $this->relay('after');
     }
 
     /**
@@ -122,24 +122,35 @@ class Middlewares
      *
      * @return bool
      */
-    protected function invoke(string $event): bool
+    protected function relay(string $event): bool
     {
-        $args = [$this->di('request'), $this->di('response')];
-
         foreach ($this->middlewares as $middleware) {
-            if (\is_string($middleware)) {
-                $middleware = $this->di($middleware);
-            }
-
-            if (!\method_exists($middleware, $event)) {
-                continue;
-            }
-
-            if (!$middleware->$event(...$args)) {
+            if (!$this->call($event, $middleware)) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    /**
+     * Call event method on middleware.
+     *
+     * @param string $event
+     * @param mixed  $middleware
+     *
+     * @return bool
+     */
+    protected function call(string $event, $middleware): bool
+    {
+        if (\is_string($middleware)) {
+            $middleware = $this->di($middleware);
+        }
+
+        if (!\method_exists($middleware, $event)) {
+            return true;
+        }
+
+        return $middleware->$event($this->di('request'), $this->di('response'));
     }
 }
