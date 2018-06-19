@@ -9,13 +9,13 @@ trait Mailable
     /**
      * Mail.
      *
-     * @param string $to
+     * @param mixed  $to      Recepient address(es) [array/string]
      * @param string $subject
      * @param array  $options The body &/or view template.
      *
      * @return int
      */
-    public function mail(string $to, string $subject, array $options = [])
+    public function mail($to, string $subject, array $options = []): int
     {
         $mailer = Di::getDefault()->resolve('mailer');
 
