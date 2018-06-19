@@ -21,6 +21,9 @@ redis-server &
 
 # start php server
 php -S localhost:1234 -t example &
+
+# to clear all redis cache
+redis-cli -n 0 flushall
 ```
 
 Then visit [localhost:1234](http://localhost:1234)
