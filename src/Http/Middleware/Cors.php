@@ -91,14 +91,14 @@ class Cors extends BaseMiddleware
     protected function preflight(Request $request, Response $response): bool
     {
         if (!\in_array($request->getHeader('Access-Control-Request-Method'), $this->config['allowedMethods'])) {
-            return $this->abort(405);
+            return $this->abort(405, 'Request method not allowed.');
         }
 
         if (!$this->areHeadersAllowed($request->getHeader('Access-Control-Request-Headers'))) {
-            return $this->abort(403);
+            return $this->abort(403, 'Request header not allowed');
         }
 
-        $this->disableView();
+        $this->stop();
 
         $response
             ->setHeader('Access-Control-Allow-Origin', $this->origin)
