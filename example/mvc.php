@@ -2,6 +2,7 @@
 
 use Phalcon\Mvc\Application;
 use Phalcon\Mvc\Router;
+use PhalconExt\Http\Middlewares;
 use PhalconExt\Http\Middleware\Cache;
 use PhalconExt\Http\Middleware\Cors;
 use PhalconExt\Http\Middleware\Throttle;
@@ -21,9 +22,9 @@ $di->get('router')->add('/mail', ['controller' => 'index', 'action' => 'mail']);
 $di->get('router')->add('/cors', ['controller' => 'index', 'action' => 'cors']);
 $di->get('router')->add('/corsheader', ['controller' => 'index', 'action' => 'corsheader'], ['GET', 'OPTIONS']);
 
-// Order: Throttle, Cors, Cache
-(new Throttle)->boot();
-(new Cors)->boot();
-(new Cache)->boot();
+// For test return the app instance
+if (getenv('APP_ENV') === 'test') {
+    return $app;
+}
 
-echo $app->handle()->getContent();
+(new Middlewares([Throttle::class, Cors::class, Cache::class]))->wrap($app);
