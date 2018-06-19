@@ -5,15 +5,20 @@ namespace PhalconExt\Test;
 use Phalcon\Config;
 use Phalcon\Http\Request;
 use Phalcon\Http\Response;
+use PhalconExt\Http\Middlewares;
 
 class WebTestCase extends TestCase
 {
     protected $app;
 
+    protected $middlewares = [];
+
     public function setUp()
     {
         // A new instance of fully configured app :)
         $this->app = include __DIR__ . '/../example/index.php';
+
+        $this->middlewares = [];
 
         $this->resetDi();
     }
@@ -62,7 +67,12 @@ class WebTestCase extends TestCase
         $this->di()->replace(['request' => new Request, 'response' => new Response]);
 
         ob_start();
-        $this->app->handle($uri);
+        if ($this->middlewares) {
+            (new Middlewares($this->middlewares))->wrap($this->app);
+        } else {
+            $this->app->handle($uri);
+        }
+
         $content = ob_get_clean();
 
         $response = $this->di('response');
