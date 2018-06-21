@@ -22,20 +22,34 @@ class Twig extends Engine
 
     /**
      * Renders a view using the twig template engine.
+     *
+     * @param string $path      View path
+     * @param array  $params    View params
+     * @param bool   $mustClean [<internal>]
+     *
+     * @return string Rendered content
      */
-    public function render($path, $params, $mustClean = false)
+    public function render($path, $params = [], $mustClean = false)
     {
         $this->initTwig();
 
-        $this->_view->setContent(
-            $this->twig->render($this->normalizePath($path), empty($params) ? [] : (array) $params)
-        );
+        $content = $this->twig->render($this->normalizePath($path), empty($params) ? [] : (array) $params);
+
+        $this->_view->setContent($content);
+
+        return $content;
     }
 
     /**
      * Renders a view block using the twig template engine.
+     *
+     * @param string $path      View path
+     * @param string $block     Block name
+     * @param array  $params    View params
+     *
+     * @return string Rendered block content
      */
-    public function renderBlock(string $path, string $block, array $params): string
+    public function renderBlock(string $path, string $block, array $params = []): string
     {
         $this->initTwig();
 
@@ -94,6 +108,8 @@ class Twig extends Engine
      */
     public function __call(string $method, array $args = [])
     {
+        $this->initTwig();
+
         return $this->twig->$method(...$args);
     }
 }
