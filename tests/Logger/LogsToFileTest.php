@@ -1,0 +1,35 @@
+<?php
+
+namespace PhalconExt\Test\Logger;
+
+use Phalcon\Logger;
+use Phalcon\Logger\Formatter\Line as LineFormatter;
+use PhalconExt\Logger\LogsToFile;
+use PhalconExt\Test\TestCase;
+
+class LogsToFileTest extends TestCase
+{
+    use LogsToFile;
+
+    protected $fileExtension = '.txt';
+
+    public function test_log()
+    {
+        $this->assertEmpty($this->log('Wont be logged'));
+
+        $this->activate(__DIR__);
+        $this->log('Would be logged');
+
+        $this->assertFileExists(__DIR__ . '/' . date('Y-m-d') . $this->fileExtension);
+
+        $logs = file_get_contents(__DIR__ . '/' . date('Y-m-d') . $this->fileExtension);
+
+        $this->assertContains('Would be logged', $logs);
+        $this->assertNotContains('Wont be logged', $logs);
+    }
+
+    public function tearDown()
+    {
+        unlink(__DIR__ . '/' . date('Y-m-d') . $this->fileExtension);
+    }
+}
