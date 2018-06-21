@@ -138,7 +138,7 @@ class Logger implements \Swift_Events_SendListener
         });
 
         $attachments = \array_map(function ($part) {
-            return $part->getName();
+            return $part->getFileName();
         }, $attachments);
 
         return [
