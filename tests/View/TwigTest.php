@@ -34,7 +34,7 @@ class TwigTest extends WebTestCase
 
         $this->twig->setLoader(new \Twig_Loader_String);
 
-        $string = $this->twig->render("{{ fruit|p|raw }}", ['fruit' => 'Apple']);
+        $string = $this->twig->render('{{ fruit|p|raw }}', ['fruit' => 'Apple']);
 
         $this->assertSame('<p>Apple</p>', $string);
     }

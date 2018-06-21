@@ -2,8 +2,6 @@
 
 namespace PhalconExt\Test\Logger;
 
-use Phalcon\Logger;
-use Phalcon\Logger\Formatter\Line as LineFormatter;
 use PhalconExt\Logger\LogsToFile;
 use PhalconExt\Test\TestCase;
 

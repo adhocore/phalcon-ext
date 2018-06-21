@@ -43,9 +43,9 @@ class Twig extends Engine
     /**
      * Renders a view block using the twig template engine.
      *
-     * @param string $path      View path
-     * @param string $block     Block name
-     * @param array  $params    View params
+     * @param string $path   View path
+     * @param string $block  Block name
+     * @param array  $params View params
      *
      * @return string Rendered block content
      */
