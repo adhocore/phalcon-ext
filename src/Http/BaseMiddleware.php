@@ -46,18 +46,25 @@ abstract class BaseMiddleware
     }
 
     /**
-     * Abort with failure response.
+     * Abort with response.
      *
      * @param int    $status
      * @param string $body
+     * @param array  $headers
      *
-     * @return bool
+     * @return bool Always false
      */
-    protected function abort(int $status, string $body = null): bool
+    protected function abort(int $status, string $body = null, array $headers = []): bool
     {
         $this->stop();
 
-        $this->di('response')->setStatusCode($status)->setContent($body)->send();
+        $response = $this->di('response');
+
+        foreach ($headers as $key => $value) {
+            $response->setHeader($key, $value);
+        }
+
+        $response->setStatusCode($status)->setContent($body)->send();
 
         return false;
     }

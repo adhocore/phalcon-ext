@@ -23,11 +23,16 @@ class LoggerTest extends WebTestCase
     /** @dataProvider cases */
     public function test_logs(string $type, $expected)
     {
-        $this->newMailer(['type' => $type])->newMail()
+        $mail = $this->newMailer(['type' => $type])->newMail()
             ->setTo('test@localhost')
             ->setSubject('Hey')
-            ->setBody('Email body')
-            ->mail();
+            ->setBody('Email body');
+
+        if ($type !== 'eml') {
+            $mail->attachFile(__DIR__ . '/../bootstrap.php');
+        }
+
+        $mail->mail();
 
         $log = trim(file_get_contents($this->log . '.' . $type));
 
@@ -73,10 +78,12 @@ class LoggerTest extends WebTestCase
                 "<p class='To'>test@localhost: </p>",
                 '<h3>Body</h3>',
                 "<div class='Body'>Email body</div>",
+                '<h3>Attachments</h3>',
+                "<p class='Attachments'>0: bootstrap.php</p>",
                 '</div>',
             ]],
             ['type' => 'json', 'expected' => [
-                '{"Subject":"Hey","From":{"test@localhost":"Test"},"To":{"test@localhost":null},"Body":"Email body","Attachments":[]}',
+                '{"Subject":"Hey","From":{"test@localhost":"Test"},"To":{"test@localhost":null},"Body":"Email body","Attachments":["bootstrap.php"]}',
             ]],
             ['type' => 'eml', 'expected' => "Subject: Hey\r\nFrom: Test <test@localhost>\r\nTo: test@localhost\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\nEmail body"],
         ];

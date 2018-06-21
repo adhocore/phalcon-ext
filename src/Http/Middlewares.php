@@ -33,6 +33,8 @@ class Middlewares
      * Wraps app with middlewares and runs the app.
      *
      * @param Injectable $app The app instance: micro or mvc
+     *
+     * @return mixed
      */
     public function wrap(Injectable $app)
     {
@@ -46,7 +48,7 @@ class Middlewares
 
         $this->di()->setShared('application', $app);
 
-        $this->handleMvc($app);
+        return $this->handleMvc($app);
     }
 
     /**
@@ -54,7 +56,7 @@ class Middlewares
      *
      * @param Injectable $app
      *
-     * @return void
+     * @return mixed
      */
     protected function handleMicro(Injectable $app)
     {
@@ -62,7 +64,7 @@ class Middlewares
             ->before([$this, 'beforeHandleRequest'])
             ->after([$this, 'beforeSendResponse']);
 
-        $this->handleApp($app);
+        return $this->handleApp($app);
     }
 
     /**
@@ -82,7 +84,7 @@ class Middlewares
 
         $this->di('dispatcher')->setEventsManager($evm);
 
-        $this->handleApp($app);
+        return $this->handleApp($app);
     }
 
     /**

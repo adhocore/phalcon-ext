@@ -98,17 +98,13 @@ class Cors extends BaseMiddleware
             return $this->abort(403, 'Request header not allowed');
         }
 
-        $this->stop();
-
-        $response
-            ->setHeader('Access-Control-Allow-Origin', $this->origin)
-            ->setHeader('Access-Control-Allow-Credentials', 'true')
-            ->setHeader('Access-Control-Allow-Methods', \implode(', ', $this->config['allowedMethods']))
-            ->setHeader('Access-Control-Allow-Headers', \implode(', ', $this->config['allowedHeaders']))
-            ->setHeader('Access-Control-Max-Age', $this->config['maxAge'])
-            ->send();
-
-        return false;
+        return $this->abort(200, null, [
+            'Access-Control-Allow-Origin'      => $this->origin,
+            'Access-Control-Allow-Credentials' => 'true',
+            'Access-Control-Allow-Methods'     => \implode(',', $this->config['allowedMethods']),
+            'Access-Control-Allow-Headers'     => \implode(',', $this->config['allowedHeaders']),
+            'Access-Control-Max-Age'           => $this->config['maxAge'],
+        ]);
     }
 
     /**
@@ -143,7 +139,7 @@ class Cors extends BaseMiddleware
     public function serve(Response $response): bool
     {
         if (!$this->isOriginAllowed()) {
-            return $this->abort(403);
+            return $this->abort(403, 'Forbidden Origin');
         }
 
         $response

@@ -171,6 +171,7 @@ class AnyClass
 ### Http.BaseMiddleware
 
 A base implementation for middlewares on top of which you can create your own middlewares.
+You just have to implement one or both of `before()` &/or `after()` methods that recieves `request` and `response` objects.
 See an example for Ajax middleware:
 
 ```php
@@ -210,8 +211,12 @@ class Ajax extends \PhalconExt\Http\BaseMiddleware
 }
 
 // Usage is pretty simple:
+// Create an app!
 $app = new Phalcon\Mvc\Application($di);
+// OR micro
+$app = new Phalcon\Mvc\Micro($di);
 
+// Wrap the app with middleware and run it
 (new PhalconExt\Http\Middlewares([Ajax::class])->wrap($app);
 ```
 

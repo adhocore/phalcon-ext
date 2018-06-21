@@ -47,13 +47,9 @@ class Throttle extends BaseMiddleware
             return true;
         }
 
-        $this->stop();
-
-        $after = \ceil($this->di('redis')->getTtl($this->retryKey) / 60);
-
-        $response->setHeader('Retry-After', $after);
-
-        return $this->abort(429, "Too many requests. Try again in $after min.");
+        return $this->abort(429, 'Too many requests. Try again later.', [
+            'Retry-After' => \ceil($this->di('redis')->getTtl($this->retryKey) / 60),
+        ]);
     }
 
     /**

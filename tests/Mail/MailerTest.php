@@ -101,9 +101,35 @@ class MailerTest extends WebTestCase
         $this->assertSame(2, $sentCount, 'Should have sent to 2 recepients');
     }
 
-    public function test_mailable()
+    /** @dataProvider mailable */
+    public function test_mailable($to, $subject, $params)
     {
-        $to = ['test1@localhost', 'test2@localhost'];
+        $this->configure('mail', ['driver' => 'null']);
+
+        $count = $this->mail($to, $subject, $params);
+
+        $this->assertSame(count($to), $count);
+    }
+
+    public function mailable()
+    {
+        return [
+            'body' => [
+                'to'      => ['test1@localhost', 'test2@localhost'],
+                'subject' => 'Hey',
+                'params'  => ['body' => 'Howdy'],
+            ],
+            'body' => [
+                'to'      => ['test1@localhost', 'test2@localhost', 'test3@localhost'],
+                'subject' => 'Hy',
+                'params'  => ['template' => 'mail.template'],
+            ],
+        ];
+    }
+
+    public function test_mailable_view()
+    {
+        $to = ['test1@localhost', 'test2@localhost', 'test3@localhost'];
 
         $this->di()->replace(['mailer' => $this->newMailer('null')]);
 
