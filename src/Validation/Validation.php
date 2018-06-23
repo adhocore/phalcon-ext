@@ -53,7 +53,7 @@ class Validation extends BaseValidation
      * @param callable|Validator $handler
      * @param string             $message  Message to use when validation fails
      *
-     * @return Validation $this
+     * @return self
      */
     public function register(string $ruleName, $handler, string $message = ''): self
     {
@@ -102,7 +102,7 @@ class Validation extends BaseValidation
      * @param array $ruleHandlers ['rule1' => <handler>, ...]
      * @param array $messages     ['rule1' => 'message', ...]
      *
-     * @return Validation $this
+     * @return self
      */
     public function registerRules(array $ruleHandlers, array $messages = []): self
     {
@@ -154,37 +154,72 @@ class Validation extends BaseValidation
     }
 
     /**
-     * Runs a validation with given ruleSet against given arbitrary dataSet.
+     * self validation with given ruleSet against given arbitrary dataSet.
      *
-     * @param array $ruleSet
-     * @param array $dataSet
+     * @param array        $ruleSet
+     * @param array|object $dataSet
      *
-     * @return Validation $this
+     * @return self
      */
-    public function run(array $ruleSet, array $dataSet): Validation
+    public function run(array $ruleSet, $dataSet): self
     {
         $this->_messages = $this->_validators = [];
 
-        $this->addRules($ruleSet, $dataSet)->validate($dataSet);
+        // See if it is arrayable!
+        if (\is_object($dataSet)) {
+            $dataSet = $this->prepareDate($dataSet);
+        }
+
+        // OK, must be entity!
+        if (\is_object($dataSet)) {
+            $this->_entity = $dataSet;
+        } else {
+            $this->_data = $dataSet;
+        }
+
+        $this->addRules($ruleSet)->validate();
 
         return $this;
+    }
+
+    /**
+     * Prepare data &/or entity.
+     *
+     * @param array|object $dataSet
+     *
+     * @return array|object
+     */
+    protected function prepareDate($dataSet)
+    {
+        if ($dataSet instanceof \stdClass) {
+            return (array) $dataSet;
+        }
+
+        if (\method_exists($dataSet, 'toArray')) {
+            return $dataSet->toArray();
+        }
+
+        if (\method_exists($dataSet, 'getData')) {
+            return $dataSet->getData();
+        }
+
+        return $dataSet;
     }
 
     /**
      * Run the validation rules on data set.
      *
      * @param array $ruleSet
-     * @param array $dataSet
      *
-     * @return Validation
+     * @return self
      */
-    public function addRules(array $ruleSet, array $dataSet = []): Validation
+    protected function addRules(array $ruleSet): self
     {
         foreach ($ruleSet as $attribute => $rules) {
             $rules = $this->normalizeRules($rules);
 
             // Only validate if attribute exists in dataSet when so configured.
-            if (isset($rules['if_exist']) && !\array_key_exists($attribute, $dataSet)) {
+            if (isset($rules['if_exist']) && null === $this->getValue($attribute)) {
                 continue;
             }
 
