@@ -16,6 +16,9 @@ touch example/.var/db.db
 # composer
 composer install -o
 
+# setup db
+php example/setup.php
+
 # start redis server
 redis-server &
 

@@ -48,13 +48,13 @@ abstract class BaseMiddleware
     /**
      * Abort with response.
      *
-     * @param int    $status
-     * @param string $body
-     * @param array  $headers
+     * @param int   $status
+     * @param mixed $content If not string, will be json encoded
+     * @param array $headers
      *
      * @return bool Always false
      */
-    protected function abort(int $status, string $body = null, array $headers = []): bool
+    protected function abort(int $status, $content = null, array $headers = []): bool
     {
         $this->stop();
 
@@ -64,7 +64,13 @@ abstract class BaseMiddleware
             $response->setHeader($key, $value);
         }
 
-        $response->setStatusCode($status)->setContent($body)->send();
+        if ($content && !\is_scalar($content)) {
+            $response->setJsonContent($content);
+        } else {
+            $response->setContent($content);
+        }
+
+        $response->setStatusCode($status)->send();
 
         return false;
     }

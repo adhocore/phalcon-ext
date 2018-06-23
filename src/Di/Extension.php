@@ -123,20 +123,43 @@ trait Extension
      */
     protected function resolveDependency(\ReflectionParameter $dependency)
     {
-        // Is a class and needs to be resolved.
+        $allowsNull = $dependency->allowsNull();
+
+        // Is a class and needs to be resolved OR is nullable.
         if ($subClass = $dependency->getClass()) {
-            return $this->resolve($subClass->name);
+            return $this->resolveSubClassOrNullable($subClass->name, $allowsNull);
         }
-        // Nullable
-        elseif ($dependency->allowsNull()) {
+        if ($allowsNull) {
             return null;
         }
+
         // Use default value.
-        elseif ($dependency->isOptional()) {
+        if ($dependency->isOptional()) {
             return $dependency->getDefaultValue();
         }
 
         throw new \RuntimeException('Cannot resolve dependency: $' . $dependency->name);
+    }
+
+    /**
+     * Resolve subClass or nullable.
+     *
+     * @param string $subClass
+     * @param bool   $allowsNull
+     *
+     * @return mixed
+     */
+    protected function resolveSubClassOrNullable(string $subClass, bool $allowsNull = false)
+    {
+        try {
+            return $this->resolve($subClass);
+        } catch (\Throwable $e) {
+            if (!$allowsNull) {
+                throw $e;
+            }
+        }
+
+        return null;
     }
 
     /**

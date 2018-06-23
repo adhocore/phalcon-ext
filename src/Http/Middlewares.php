@@ -61,8 +61,12 @@ class Middlewares
     protected function handleMicro(Injectable $app)
     {
         $app
-            ->before([$this, 'beforeHandleRequest'])
-            ->after([$this, 'beforeSendResponse']);
+            ->before(function () {
+                return $this->relay('before');
+            })
+            ->after(function () {
+                return $this->relay('after');
+            });
 
         return $this->handleApp($app);
     }

@@ -43,15 +43,19 @@ class WebTestCase extends TestCase
      */
     protected function doRequest(string $uri, array $parameters = [], array $headers = []): self
     {
+        $method = 'GET';
+
         if ($uri[0] !== '/') {
             list($method, $uri) = explode(' ', $uri, 2);
         }
 
-        $parameters['_url']        = $uri;
-        $_SERVER['REQUEST_METHOD'] = $method ?? 'GET';
-        $_SERVER['QUERY_STRING']   = http_build_query($parameters);
-        $_SERVER['REQUEST_URI']    = '/?' . $_SERVER['QUERY_STRING'];
-        $_GET                      = $parameters;
+        $_GET                      = ['_url' => $uri];
+        $_SERVER['REQUEST_METHOD'] = $method;
+        $_REQUEST                  = $parameters;
+
+        $method === 'POST' ? $_POST = $parameters : $_GET += $parameters;
+        $_SERVER['QUERY_STRING']    = http_build_query($_GET);
+        $_SERVER['REQUEST_URI']     = '/?' . $_SERVER['QUERY_STRING'];
 
         $headerKeys = [];
         foreach ($headers as $key => $value) {
@@ -107,14 +111,14 @@ class WebTestCase extends TestCase
 
     protected function assertResponseOk(): self
     {
-        $this->assertContains($this->responseCode(), [null, 200]);
+        $this->assertContains($this->responseCode(), [204, 200]);
 
         return $this;
     }
 
     protected function assertResponseNotOk(): self
     {
-        $this->assertNotContains($this->responseCode(), [null, 200]);
+        $this->assertNotContains($this->responseCode(), [204, 200]);
 
         return $this;
     }
@@ -173,5 +177,34 @@ class WebTestCase extends TestCase
         $code = $this->response->getStatusCode();
 
         return $code === null ? 200 : (int) substr($code, 0, 3);
+    }
+
+    protected function assertResponseKey($key, $value = null)
+    {
+        $this->assertArrayHasKey($key, $json = $this->getJson());
+
+        if (func_get_args() === 2) {
+            $this->assertEquals($json[$key], $value);
+        }
+
+        return $this;
+    }
+
+    protected function assertResponseKeys(array $keys)
+    {
+        $json = $this->getJson();
+
+        foreach ($keys as $key) {
+            $this->assertArrayHasKey($key, $json);
+        }
+
+        return $this;
+    }
+
+    protected function getJson()
+    {
+        $this->assertResponseJson();
+
+        return json_decode($this->response->getContent(), true);
     }
 }

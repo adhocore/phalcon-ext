@@ -24,30 +24,17 @@ class MicroController
     {
         $db = $this->di('db');
 
-        // Assuming we use sqlite for this example
-        // This table is used to test/demonstrate db extension
-        $db->execute('CREATE TABLE IF NOT EXISTS phalcon_ext (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name VARCHAR(25),
-            details VARCHAR(255),
-            status VARCHAR(10)
-        )');
-
-        $db->execute('DELETE FROM phalcon_ext'); // Cleanup so we can test a fresh
-
-        $info['bulk_insert=1'] = (int) $db->insertAsBulk('phalcon_ext', [
-            ['name' => 'name1', 'status' => 'status1'],
-            ['details' => 'detail2', 'name' => 'name2'], // columns dont need to be ordered or balanced
+        $info['bulk_insert=1'] = (int) $db->insertAsBulk('tests', [
+            ['prop_a' => 1, 'prop_c' => 3],
+            ['prop_b' => 2, 'prop_a' => 3],
+            ['prop_c' => 2, 'prop_b' => 1],
         ]);
 
-        $info['count_by[name1]=1']         = $db->countBy('phalcon_ext', ['name' => 'name1']);
-        $info['count_by[name2,detail3]=0'] = $db->countBy('phalcon_ext', [
-            'name'    => 'name1',
-            'details' => 'detail3',
-        ]);
+        $info['count_by[prop_a:1]=1']          = $db->countBy('tests', ['prop_a' => 1]);
+        $info['count_by[prop_b:1,prop_c:3]=0'] = $db->countBy('tests', ['prop_b' => 1, 'prop_c' => 3]);
 
-        $info['upsert=1']            = (int) $db->upsert('phalcon_ext', ['details' => 'detail1'], ['name' => 'name1']);
-        $info['count_by[detail1]=1'] = $db->countBy('phalcon_ext', ['name' => 'name1']);
+        $info['upsert=1']             = (int) $db->upsert('tests', ['prop_b' => 2], ['prop_b' => 1]);
+        $info['count_by[prop_b:2]=1'] = $db->countBy('tests', ['prop_b' => 2]);
 
         return '<pre>' . print_r($info, 1) . '</pre>'
             . '<p>You can check sql logs in <code>example/.var/sql/</code></p>';
@@ -151,5 +138,10 @@ class MicroController
             'request'  => $this->di('request')->getHeaders(),
             'response' => $response->getHeaders()->toArray(),
         ]);
+    }
+
+    public function authAction()
+    {
+        // Do nothing. (It will be intercepted and handled by ApiAuth middleware).
     }
 }

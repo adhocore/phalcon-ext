@@ -4,6 +4,7 @@ use Phalcon\Mvc\Micro as MicroApplication;
 use Phalcon\Mvc\Micro\Collection;
 use Phalcon\Mvc\Router;
 use Phalcon\Mvc\View\Simple as SimpleView;
+use PhalconExt\Http\Middleware\ApiAuth;
 use PhalconExt\Http\Middleware\Cache;
 use PhalconExt\Http\Middleware\Cors;
 use PhalconExt\Http\Middleware\Throttle;
@@ -46,10 +47,11 @@ $app->mount((new Collection)
     // (But not always, simple requests can do without it.)
     ->options('corsheader', 'corsHeaderAction')
     ->get('corsheader', 'corsHeaderAction')
+    ->post('api/auth', 'authAction')
 );
 
 $app->notFound(function () use ($di) {
-    return $di->get('response')->setContent('')->setStatusCode(404);
+    return $di->get('response')->setContent('404 Not Found')->setStatusCode(404);
 });
 
 // For test return the app instance
@@ -57,4 +59,4 @@ if (getenv('APP_ENV') === 'test') {
     return $app;
 }
 
-(new Middlewares([Throttle::class, Cors::class, Cache::class]))->wrap($app);
+(new Middlewares([Throttle::class, ApiAuth::class, Cors::class, Cache::class]))->wrap($app);

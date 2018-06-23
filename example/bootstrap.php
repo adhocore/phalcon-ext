@@ -1,5 +1,6 @@
 <?php
 
+use Ahc\Jwt\JWT;
 use Phalcon\Cache\Frontend\None as CacheFront;
 use Phalcon\Mvc\View;
 use PhalconExt\Cache\Redis;
@@ -70,6 +71,12 @@ $di->setShared('redis', function () {
 // Since it is registered as FQCN, it is auto aliased when calling `registerAliases()`.
 $di->setShared('validation', Validation::class);
 
+$di->setShared('jwt', function () {
+    $config = $this->get('config')->toArray()['apiAuth']['jwt'];
+
+    return new JWT($config['keys'], $config['algo'], $config['maxAge'], $config['leeway'], $config['passphrase']);
+});
+
 // Aliasing is totally optional. This helps you to leverage power of di->resolve()
 // Alternatively the service name in DI can be used as the name of constructor params in classes
 //  to be resolved and that works without aliasing.
@@ -78,6 +85,7 @@ $di->registerAliases([
     View::class   => 'view',
     Twig::class   => 'twig',
     Mailer::class => 'mailer',
+    JWT::class    => 'jwt',
     // Some like to call it validator!
     'validator'   => 'validation',
 ]);

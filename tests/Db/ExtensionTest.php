@@ -14,13 +14,6 @@ class ExtensionTest extends TestCase
         self::$db = new Sqlite([
             'dbname' => __DIR__ . '/../../example/.var/db.db',
         ]);
-
-        self::$db->execute('CREATE TABLE IF NOT EXISTS tests (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            prop_a VARCHAR(25),
-            prop_b VARCHAR(255),
-            prop_c VARCHAR(10)
-        )');
     }
 
     public function setUp()

@@ -5,3 +5,6 @@
 /example/.var/
 /vendor/
 composer.lock
+*.db
+*.rdb
+*.local.*

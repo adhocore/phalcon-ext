@@ -11,7 +11,7 @@ return [
         'logPath'        => __DIR__ . '/.var/sql/', // directory
         'addHeader'      => true,
         'backtraceLevel' => 5,
-        'skipFirst'      => 2, // skip create/delete
+        'skipFirst'      => 1, // skip delete
     ],
     'mail' => [
         'driver' => 'null',
@@ -69,6 +69,40 @@ return [
             '/db',
             // or you can use route name without a `/`
             'home',
+        ],
+    ],
+    'apiAuth' => [
+        // 14 days in seconds (http://stackoverflow.com/questions/15564486/why-do-refresh-tokens-expire-after-14-days)
+        'refreshMaxAge'  => 1209600,
+        // Prefix to use in stored tokens (max 4 chars)
+        'tokenPrefix'    => 'RF/',
+        // The route to generate/refresh access tokens.
+        // genrerate: curl -XPOST -d 'grant_type=password&username=&password=' /api/auth
+        // refresh:   curl -XPOST -d 'grant_type=refresh_token&refresh_token=' /api/auth
+        // It can also accept json payload:
+        //   -H 'content-type: application/json' -d {"grant_type":"refresh_token","refresh_token":""}
+        'authUri' => '/api/auth',
+
+        // The permission scopes required for a route
+        'scopes' => [
+            '/some/uri' => 'admin',
+            '/next/uri' => 'user',
+        ],
+
+        // Json Web tokens configuration.
+        'jwt'            => [
+            'keys'       => [
+                // kid => key (first one is default always)
+                'default' => '*((**@$#@@KJJNN!!#D^G&(U)KOIHIYGTFD',
+            ],
+            'algo'       => 'HS256',
+            // 15 minutes in seconds.
+            'maxAge'     => 900,
+            // Grace time in seconds.
+            'leeway'     => 10,
+            'passphrase' => '',
+            // Name of the app/project
+            'issuer'     => 'phalcon-ext',
         ],
     ],
 ];

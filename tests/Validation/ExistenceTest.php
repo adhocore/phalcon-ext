@@ -6,30 +6,15 @@ use PhalconExt\Test\WebTestCase;
 
 class ExistenceTest extends WebTestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-
-        $this->di('db')->execute('CREATE TABLE IF NOT EXISTS tests (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            prop_a VARCHAR(25),
-            prop_b VARCHAR(255),
-            prop_c VARCHAR(10)
-        )');
-
-        $this->di('db')->execute('DELETE FROM tests');
-        $this->di('db')->execute('DELETE FROM SQLITE_SEQUENCE WHERE name = "tests"');
-    }
-
     public function test_validate_without_options()
     {
         $rules = ['tests' => 'required|exist'];
-        $vldtr = $this->di('validation')->run($rules, ['tests' => 1]);
+        $vldtr = $this->di('validation')->run($rules, ['tests' => 0]);
 
         $this->assertFalse($vldtr->pass());
 
         $this->di('db')->insertAsDict('tests', ['prop_a' => 'A']);
-        $vldtr = $this->di('validation')->run($rules, ['tests' => 1]);
+        $vldtr = $this->di('validation')->run($rules, ['tests' => $this->di('db')->lastInsertId()]);
 
         $this->assertTrue($vldtr->pass());
     }

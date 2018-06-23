@@ -25,7 +25,8 @@
         }
     },
     "require": {
-        "php": ">=7.0"
+        "php": ">=7.0",
+        "adhocore/jwt": "^0.0.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.0.0",
