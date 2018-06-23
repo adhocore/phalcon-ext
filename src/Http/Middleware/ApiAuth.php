@@ -20,6 +20,7 @@ class ApiAuth extends BaseMiddleware
 {
     protected $configKey = 'apiAuth';
 
+    /** @var ApiAuthenticator */
     protected $authenticator;
 
     public function __construct(ApiAuthenticator $authenticator = null)
@@ -131,17 +132,17 @@ class ApiAuth extends BaseMiddleware
 
     protected function validateScope(Request $request, string $requiredScope = null): bool
     {
-        $jwt = $request->getHeader('Authorization');
-        $msg = 'Permission denied';
+        $claimedScopes = [];
+        $msg           = 'Permission denied';
+        $jwt           = $request->getHeader('Authorization');
 
         try {
             $claimedScopes = $this->getClaimedScopes($jwt);
         } catch (\InvalidArgumentException $e) {
-            $claimedScopes = [];
-            $msg           = $e->getMessage();
+            $msg = $e->getMessage();
         }
 
-        if ($requiredScope && (isset($e) || !\in_array($requiredScope, $claimedScopes))) {
+        if ($requiredScope && !\in_array($requiredScope, $claimedScopes)) {
             return $this->abort(403, $msg);
         }
 
