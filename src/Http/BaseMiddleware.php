@@ -48,9 +48,9 @@ abstract class BaseMiddleware
     /**
      * Abort with response.
      *
-     * @param int    $status
-     * @param mixed  $content If not string, will be json encoded
-     * @param array  $headers
+     * @param int   $status
+     * @param mixed $content If not string, will be json encoded
+     * @param array $headers
      *
      * @return bool Always false
      */

@@ -139,7 +139,7 @@ trait Extension
     }
 
     /**
-     * Resolve subClass or nullable
+     * Resolve subClass or nullable.
      *
      * @param mixed $subClass
      * @param bool  $allowsNull

@@ -30,10 +30,10 @@ class MicroController
             ['prop_c' => 2, 'prop_b' => 1],
         ]);
 
-        $info['count_by[prop_a:1]=1']       = $db->countBy('tests', ['prop_a' => 1]);
+        $info['count_by[prop_a:1]=1']          = $db->countBy('tests', ['prop_a' => 1]);
         $info['count_by[prop_b:1,prop_c:3]=0'] = $db->countBy('tests', ['prop_b' => 1, 'prop_c' => 3]);
 
-        $info['upsert=1']            = (int) $db->upsert('tests', ['prop_b' => 2], ['prop_b' => 1]);
+        $info['upsert=1']             = (int) $db->upsert('tests', ['prop_b' => 2], ['prop_b' => 1]);
         $info['count_by[prop_b:2]=1'] = $db->countBy('tests', ['prop_b' => 2]);
 
         return '<pre>' . print_r($info, 1) . '</pre>'

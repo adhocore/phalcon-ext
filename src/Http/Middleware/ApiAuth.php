@@ -5,8 +5,8 @@ namespace PhalconExt\Http\Middleware;
 use Phalcon\Http\Request;
 use Phalcon\Http\Response;
 use PhalconExt\Contract\ApiAuthenticator;
-use PhalconExt\Http\BaseMiddleware;
 use PhalconExt\Factory\ApiAuthenticator as FactoryAuthenticator;
+use PhalconExt\Http\BaseMiddleware;
 
 /**
  * Check authentication &/or authorization for api requests.

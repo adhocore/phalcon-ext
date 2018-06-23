@@ -2,7 +2,6 @@
 
 namespace PhalconExt\Factory;
 
-use Phalcon\Config;
 use Phalcon\Db\Adapter as Db;
 use Phalcon\Security\Random;
 use PhalconExt\Contract\ApiAuthenticator as Contract;

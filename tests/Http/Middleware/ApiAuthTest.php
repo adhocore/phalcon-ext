@@ -21,7 +21,6 @@ class ApiAuthTest extends WebTestCase
             ->assertStatusCode(401)
             ->assertResponseContains('Credentials missing');
 
-
         $credentials = ['grant_type' => 'password'];
 
         $this->doRequest('POST /api/auth', $credentials)
@@ -103,7 +102,7 @@ class ApiAuthTest extends WebTestCase
         $this->assertSame(1, $this->di('authenticator')->getSubject());
 
         // With invalid jwt
-        $this->doRequest('/corsheader', [], ['Authorization' => "Bearer invalid"])
+        $this->doRequest('/corsheader', [], ['Authorization' => 'Bearer invalid'])
             ->assertResponseNotOk()
             ->assertStatusCode(403)
             ->assertResponseContains('Invalid token');
