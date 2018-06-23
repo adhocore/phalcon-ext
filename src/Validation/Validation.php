@@ -223,11 +223,34 @@ class Validation extends BaseValidation
                 continue;
             }
 
+            $rules = $this->cancelOnFail($rules);
+
             unset($rules['if_exist']);
             $this->attributeRules($attribute, $rules);
         }
 
         return $this;
+    }
+
+    /**
+     * Make the validator cancel on fail i.e bail on first ever invalid field.
+     *
+     * @param array $rules
+     *
+     * @return array
+     */
+    protected function cancelOnFail(array $rules): array
+    {
+        if (!isset($rules['abort'])) {
+            return $rules;
+        }
+
+        unset($rules['abort']);
+        foreach ($rules as &$rule) {
+            $rule = (array) $rule + ['cancelOnFail' => true];
+        }
+
+        return $rules;
     }
 
     /**
