@@ -139,4 +139,9 @@ class MicroController
             'response' => $response->getHeaders()->toArray(),
         ]);
     }
+
+    public function authAction()
+    {
+        // Do nothing. (It will be intercepted and handled by ApiAuth middleware).
+    }
 }
