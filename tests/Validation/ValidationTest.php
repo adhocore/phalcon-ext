@@ -17,13 +17,13 @@ class ValidationTest extends TestCase
     public function test_str_rules()
     {
         $rules = ['apple' => 'if_exist|length:min:3;max:5'];
-        $vldtr = $this->validation->run($rules, []);
+        $vldtr = $this->validation->run($rules, new \stdClass);
 
         $this->assertTrue($vldtr->pass());
         $this->assertFalse($vldtr->fail());
         $this->assertSame([], $vldtr->getErrorMessages());
 
-        $vldtr = $this->validation->run($rules, ['apple' => 'A']);
+        $vldtr = $this->validation->run($rules, new ToArray);
 
         $this->assertFalse($vldtr->pass());
         $this->assertTrue($vldtr->fail());
@@ -37,14 +37,14 @@ class ValidationTest extends TestCase
     public function test_array_rules()
     {
         $rules = ['ball' => ['required' => true, 'length' => ['min' => 3, 'max' => 5]]];
-        $vldtr = $this->validation->run($rules, ['ball' => 'ABCDEF']);
+        $vldtr = $this->validation->run($rules, new GetData);
 
         $this->assertSame('Field ball must not exceed 5 characters long', $vldtr->getErrorMessages()[0]['message']);
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Unknown validation rule: asdf');
 
-        $this->validation->run(['a' => 'asdf'], []);
+        $this->validation->run(['a' => 'asdf'], new Entity);
     }
 
     public function test_invalid_rules()
