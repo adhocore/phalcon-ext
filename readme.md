@@ -586,7 +586,7 @@ $di->setShared('twig', function () {
 // standalone
 $di->get('twig')->render('template.twig', ['view' => 'params']);
 // or as view
-$di->get('twig')->render('template.twig', ['view' => 'params']); // .twig is optional
+$di->get('view')->render('template.twig', ['view' => 'params']); // .twig is optional
 ```
 
 ---
