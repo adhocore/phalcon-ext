@@ -59,9 +59,13 @@ class ApiAuthenticator implements Contract
      */
     protected function findUser(string $column, $value, $password = null): array
     {
-        $user = $this->db->fetchOne("SELECT * FROM users WHERE $column = ?", \PDO::FETCH_ASSOC, [$value]);
-        $hash = $user['password'] ?? null;
+        $user = $this->db->fetchOne(
+            "SELECT * FROM users WHERE $column = ?",
+            \PDO::FETCH_ASSOC,
+            [$value]
+        );
 
+        $hash = $user['password'] ?? null;
         if ($password && !\password_verify($password, $hash)) {
             return [];
         }
@@ -82,7 +86,7 @@ class ApiAuthenticator implements Contract
             ['refresh', $refreshToken]
         );
 
-        if (!$token /* @todo check if token expired */) {
+        if (!$token || new \DateTime > new \DateTime($token['expire_at'])) {
             return false;
         }
 
@@ -112,9 +116,11 @@ class ApiAuthenticator implements Contract
         $refreshToken = $prefix . \bin2hex($random);
 
         $this->db->insertAsDict('tokens', [
-            'type'    => 'refresh',
-            'token'   => $refreshToken,
-            'user_id' => $this->user['id'],
+            'type'       => 'refresh',
+            'token'      => $refreshToken,
+            'user_id'    => $this->user['id'],
+            'created_at' => \date('Y-m-d H:i:s'),
+            'expire_at'  => \date('Y-m-d H:i:s', \time() + $this->config['refreshMaxAge']),
         ]);
 
         return $refreshToken;
