@@ -11,13 +11,18 @@ use PhalconExt\Contract\ApiAuthenticator as Contract;
  *
  * Uses `users` table with `id`, `username`, `password`, `scopes`, `created_at` fields.
  * And `tokens` table with `id`, `user_id`, `type`, `token`, `created_at`, `expire_at` fields.
+ *
+ * You can access the current authenticator application wide as: `$di->get('authenticator')`.
  */
 class ApiAuthenticator implements Contract
 {
+    /** @var Db */
     protected $db;
 
-    protected $user;
+    /** @var array User data */
+    protected $user = [];
 
+    /** @var array Config options */
     protected $config = [];
 
     public function __construct(Db $db)
@@ -25,11 +30,17 @@ class ApiAuthenticator implements Contract
         $this->db = $db;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function configure(array $config)
     {
         $this->config = $config;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function byCredential(string $username, string $password): bool
     {
         $this->user = $this->findUser('username', $username, $password);
@@ -37,6 +48,15 @@ class ApiAuthenticator implements Contract
         return !empty($this->user);
     }
 
+    /**
+     * Find user based on given property and value. If password is provided it it validated.
+     *
+     * @param string      $column
+     * @param int|string  $value
+     * @param null|string $password
+     *
+     * @return array User detail, empty on failure.
+     */
     protected function findUser(string $column, $value, $password = null): array
     {
         $user = $this->db->fetchOne("SELECT * FROM users WHERE $column = ?", \PDO::FETCH_ASSOC, [$value]);
@@ -51,6 +71,9 @@ class ApiAuthenticator implements Contract
         return $user ?: [];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function byRefreshToken(string $refreshToken): bool
     {
         $token = $this->db->fetchOne(
@@ -66,6 +89,9 @@ class ApiAuthenticator implements Contract
         return $this->bySubject($token['user_id']);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function bySubject(int $subject): bool
     {
         $this->user = $this->findUser('id', $subject);
@@ -73,6 +99,9 @@ class ApiAuthenticator implements Contract
         return !empty($this->user);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function createRefreshToken(): string
     {
         $this->mustBeAuthenticated();
@@ -105,6 +134,9 @@ class ApiAuthenticator implements Contract
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getSubject(): int
     {
         $this->mustBeAuthenticated();
@@ -112,6 +144,9 @@ class ApiAuthenticator implements Contract
         return $this->user['id'];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getScopes(): array
     {
         $this->mustBeAuthenticated();
