@@ -178,4 +178,33 @@ class WebTestCase extends TestCase
 
         return $code === null ? 200 : (int) substr($code, 0, 3);
     }
+
+    protected function assertResponseKey($key, $value = null)
+    {
+        $this->assertArrayHasKey($key, $json = $this->getJson());
+
+        if (func_get_args() === 2) {
+            $this->assertEquals($json[$key], $value);
+        }
+
+        return $this;
+    }
+
+    protected function assertResponseKeys(array $keys)
+    {
+        $json = $this->getJson();
+
+        foreach ($keys as $key) {
+            $this->assertArrayHasKey($key, $json);
+        }
+
+        return $this;
+    }
+
+    protected function getJson()
+    {
+        $this->assertResponseJson();
+
+        return json_decode($this->response->getContent(), true);
+    }
 }
