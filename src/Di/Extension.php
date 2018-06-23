@@ -126,8 +126,11 @@ trait Extension
         $allowsNull = $dependency->allowsNull();
 
         // Is a class and needs to be resolved OR is nullable.
-        if ($dependency->getClass() || $allowsNull) {
-            return $this->resolveSubClassOrNullable($dependency->getClass(), $allowsNull);
+        if ($subClass = $dependency->getClass()) {
+            return $this->resolveSubClassOrNullable($subClass->name, $allowsNull);
+        }
+        if ($allowsNull) {
+            return null;
         }
 
         // Use default value.
@@ -141,19 +144,15 @@ trait Extension
     /**
      * Resolve subClass or nullable.
      *
-     * @param mixed $subClass
-     * @param bool  $allowsNull
+     * @param string $subClass
+     * @param bool   $allowsNull
      *
      * @return mixed
      */
-    protected function resolveSubClassOrNullable($subClass = null, bool $allowsNull = false)
+    protected function resolveSubClassOrNullable(string $subClass, bool $allowsNull = false)
     {
-        if (!$subClass && $allowsNull) {
-            return null;
-        }
-
         try {
-            return $this->resolve($subClass->name);
+            return $this->resolve($subClass);
         } catch (\Throwable $e) {
             if (!$allowsNull) {
                 throw $e;
