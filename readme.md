@@ -1,6 +1,6 @@
 ## adhocore/phalcon-ext
 
-Miscellaneous phalcon adapters, extensions and utilities
+Useful phalcon adapters, middlewares, extensions and utilities!
 
 [![Travis Build](https://travis-ci.com/adhocore/phalcon-ext.svg?branch=master)](https://travis-ci.com/adhocore/phalcon-ext?branch=master)
 [![Latest Version](https://img.shields.io/github/release/adhocore/phalcon-ext.svg?style=flat-square)](https://github.com/adhocore/phalcon-ext/releases)
@@ -220,6 +220,62 @@ $app = new Phalcon\Mvc\Micro($di);
 (new PhalconExt\Http\Middlewares([Ajax::class])->wrap($app);
 ```
 
+#### Http.Middleware.ApiAuth
+
+JWT based api authentication middleware that intercepts `POST /api/auth` request and generates or refreshes `access_token` based on `grant_type`.
+For all other requests it checks `Authorization: Bearer <JWT>` and only allows if that is valid and the scopes are met. You can configure scopes on per endpoint basis.
+You can access currently authenticated user through out the app using:
+```php
+$di->getShared('authenticator')->getSubject();
+```
+
+#### Setup
+
+```php
+$di->setShared('config', new \Phalcon\Config([
+    'apiAuth' => [
+        // 14 days in seconds (http://stackoverflow.com/questions/15564486/why-do-refresh-tokens-expire-after-14-days)
+        'refreshMaxAge'  => 1209600,
+        // Prefix to use in stored tokens (max 4 chars)
+        'tokenPrefix'    => 'RF/',
+        // The route to generate/refresh access tokens.
+        // genrerate: curl -XPOST -d 'grant_type=password&username=&password=' /api/auth
+        // refresh:   curl -XPOST -d 'grant_type=refresh_token&refresh_token=' /api/auth
+        // It can also accept json payload:
+        //   -H 'content-type: application/json' -d {"grant_type":"refresh_token","refresh_token":""}
+        'authUri' => '/api/auth',
+
+        // The permission scopes required for a route
+        'scopes' => [
+            '/some/uri' => 'admin',
+            '/next/uri' => 'user',
+        ],
+
+        // Json Web tokens configuration.
+        'jwt'            => [
+            'keys'       => [
+                // kid => key (first one is default always)
+                'default' => '*((**@$#@@KJJNN!!#D^G&(U)KOIHIYGTFD',
+            ],
+            'algo'       => 'HS256',
+            // 15 minutes in seconds.
+            'maxAge'     => 900,
+            // Grace time in seconds.
+            'leeway'     => 10,
+            // Only for RS algo.
+            'passphrase' => '',
+            // Name of the app/project.
+            'issuer'     => '',
+        ],
+    ],
+]);
+
+// Usage:
+new PhalconExt\Http\Middlewares([
+    PhalconExt\Http\Middleware\ApiAuth::class,
+])->wrap(new Phalcon\Mvc\Micro($di));
+```
+
 #### Http.Middleware.Cache
 
 Caches output for requests to boost performance heavily. Requires redis service.
@@ -304,6 +360,7 @@ $app = new Phalcon\Mvc\Micro($di);
 // all other middlewares down the line are skipped
 $middlewares = new PhalconExt\Http\Middlewares([
     PhalconExt\Http\Middleware\Throttle::class,
+    PhalconExt\Http\Middleware\ApiAuth::class,
     PhalconExt\Http\Middleware\Cors::class,
     PhalconExt\Http\Middleware\Cache::class,
 ]);
