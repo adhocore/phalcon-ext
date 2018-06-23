@@ -9,6 +9,8 @@ namespace PhalconExt\Util;
  * @license MIT
  *
  * @link    https://github.com/adhocore/phalcon-ext
+ *
+ * @codeCoverageIgnore Only feasible based on opcache availability &/or setting. Shouldnt affect coverage :/.
  */
 class OpcachePrimer
 {
