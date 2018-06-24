@@ -555,19 +555,22 @@ $di->get('validation')->registerRules([
 $validation = $this->di('validation');
 
 $rules = [
-    // Can be string
-    'id'    => 'required|length:min:1;max:2;|in:domain:1,12,30',
+    // Can be string (With `abort` if the field `id` is invalid, following validations are aborted)
+    'id'    => 'required|length:min:1;max:2;|in:domain:1,12,30|abort',
     // Can be an array too
     'email' => [
         'required' => true,
         'gmail'    => true,
+        // With `abort` if the field `email` is invalid, following validations are aborted
+        'abort'   => true,
     ],
     // validate if only exist in dataset
     'xyz' => 'length:5|if_exist',
 ];
 
-// Validate against empty data
-$validation->run($rules, []);
+// Validate against empty data (can be array or object)
+$data = []; // OR $data = new \stdClas OR $data = new SomeClass($someData)
+$validation->run($rules, $data);
 
 $pass = $validation->pass(); // false
 $fail = $validation->fail(); // true
@@ -582,15 +585,15 @@ Validates if something exists in database. You can optionally set table and colu
 ```php
 // Checks `users` table for `id` column with value 1
 $rules = ['users' => 'exist'];
-$data  = ['users' => 1];
+$data  = ['users' => 1]; // Data can be array
 
 // Checks `users` table for `username` column with value 'admin'
 $rules = ['username' => 'exist:table:users'];
-$data  = ['username' => 'admin'];
+$data  = new User(['username' => 'admin']); // Data can be model/entity
 
 // Checks `users` table for `login` column with value 'admin@localhost'
 $rules = ['email' => 'exist:table:users;column:login'];
-$data  = ['email' => 'admin@localhost'];
+$data  = (object) ['email' => 'admin@localhost']; // Data can be any Object
 
 // Run the rules
 $validation->run($rules, $data);
