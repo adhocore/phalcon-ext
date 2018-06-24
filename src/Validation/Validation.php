@@ -46,6 +46,14 @@ class Validation extends BaseValidation
     /** @var ValidatorInterface The currently validating Validator. */
     protected $validator;
 
+    /** @var Rules */
+    protected $rulesHelper;
+
+    public function initialize()
+    {
+        $this->rulesHelper = new Rules($this);
+    }
+
     /**
      * Register a custom validation rule.
      *
@@ -53,7 +61,7 @@ class Validation extends BaseValidation
      * @param callable|Validator $handler
      * @param string             $message  Message to use when validation fails
      *
-     * @return Validation $this
+     * @return self
      */
     public function register(string $ruleName, $handler, string $message = ''): self
     {
@@ -102,7 +110,7 @@ class Validation extends BaseValidation
      * @param array $ruleHandlers ['rule1' => <handler>, ...]
      * @param array $messages     ['rule1' => 'message', ...]
      *
-     * @return Validation $this
+     * @return self
      */
     public function registerRules(array $ruleHandlers, array $messages = []): self
     {
@@ -154,37 +162,72 @@ class Validation extends BaseValidation
     }
 
     /**
-     * Runs a validation with given ruleSet against given arbitrary dataSet.
+     * self validation with given ruleSet against given arbitrary dataSet.
      *
-     * @param array $ruleSet
-     * @param array $dataSet
+     * @param array        $ruleSet
+     * @param array|object $dataSet
      *
-     * @return Validation $this
+     * @return self
      */
-    public function run(array $ruleSet, array $dataSet): Validation
+    public function run(array $ruleSet, $dataSet): self
     {
         $this->_messages = $this->_validators = [];
 
-        $this->addRules($ruleSet, $dataSet)->validate($dataSet);
+        // See if it is arrayable!
+        if (\is_object($dataSet)) {
+            $dataSet = $this->prepareDate($dataSet);
+        }
+
+        // OK, must be entity!
+        if (\is_object($dataSet)) {
+            $this->_entity = $dataSet;
+        } else {
+            $this->_data = $dataSet;
+        }
+
+        $this->addRules($ruleSet)->validate();
 
         return $this;
+    }
+
+    /**
+     * Prepare data &/or entity.
+     *
+     * @param array|object $dataSet
+     *
+     * @return array|object
+     */
+    protected function prepareDate($dataSet)
+    {
+        if ($dataSet instanceof \stdClass) {
+            return (array) $dataSet;
+        }
+
+        if (\method_exists($dataSet, 'toArray')) {
+            return $dataSet->toArray();
+        }
+
+        if (\method_exists($dataSet, 'getData')) {
+            return $dataSet->getData();
+        }
+
+        return $dataSet;
     }
 
     /**
      * Run the validation rules on data set.
      *
      * @param array $ruleSet
-     * @param array $dataSet
      *
-     * @return Validation
+     * @return self
      */
-    public function addRules(array $ruleSet, array $dataSet = []): Validation
+    protected function addRules(array $ruleSet): self
     {
         foreach ($ruleSet as $attribute => $rules) {
-            $rules = $this->normalizeRules($rules);
+            $rules = $this->rulesHelper->normalizeRules($rules);
 
             // Only validate if attribute exists in dataSet when so configured.
-            if (isset($rules['if_exist']) && !\array_key_exists($attribute, $dataSet)) {
+            if (isset($rules['if_exist']) && null === $this->getValue($attribute)) {
                 continue;
             }
 
@@ -193,75 +236,6 @@ class Validation extends BaseValidation
         }
 
         return $this;
-    }
-
-    /**
-     * Normalize rules if needed.
-     *
-     * @param mixed $rules
-     *
-     * @return array
-     */
-    protected function normalizeRules($rules): array
-    {
-        if (\is_string($rules)) {
-            return $this->parseRules($rules);
-        }
-
-        if (!\is_array($rules)) {
-            throw new \UnexpectedValueException('The rules should be an array or string');
-        }
-
-        return $rules;
-    }
-
-    /**
-     * Parse string representation of the rules and make it array.
-     *
-     * Rule Format: `rule1:key1:value11,value12;key2:value22|rule2:key21:value21|rule3`
-     *
-     * @param string $rules Example: 'required|length:min:1;max:2;|in:domain:1,12,30'
-     *
-     * @return array
-     */
-    protected function parseRules(string $rules): array
-    {
-        $parsed = [];
-
-        foreach (\explode('|', $rules) as $rule) {
-            if (false === \strpos($rule, ':')) {
-                $parsed[$rule] = [];
-                continue;
-            }
-
-            list($name, $options) = \explode(':', $rule, 2);
-            $parsed[$name]        = $this->parseOptions($options);
-        }
-
-        return $parsed;
-    }
-
-    /**
-     * Parse rule options.
-     *
-     * @param string $options
-     *
-     * @return array
-     */
-    protected function parseOptions(string $options): array
-    {
-        $parsed = [];
-
-        foreach (\explode(';', $options) as $parts) {
-            list($key, $value) = \explode(':', $parts) + ['', ''];
-            if (\strpos($value, ',')) {
-                $value = \explode(',', $value);
-            }
-
-            $parsed[$key] = $value;
-        }
-
-        return $parsed;
     }
 
     /**

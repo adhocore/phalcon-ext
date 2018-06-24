@@ -17,13 +17,13 @@ class ValidationTest extends TestCase
     public function test_str_rules()
     {
         $rules = ['apple' => 'if_exist|length:min:3;max:5'];
-        $vldtr = $this->validation->run($rules, []);
+        $vldtr = $this->validation->run($rules, new \stdClass);
 
         $this->assertTrue($vldtr->pass());
         $this->assertFalse($vldtr->fail());
         $this->assertSame([], $vldtr->getErrorMessages());
 
-        $vldtr = $this->validation->run($rules, ['apple' => 'A']);
+        $vldtr = $this->validation->run($rules, new ToArray);
 
         $this->assertFalse($vldtr->pass());
         $this->assertTrue($vldtr->fail());
@@ -37,14 +37,14 @@ class ValidationTest extends TestCase
     public function test_array_rules()
     {
         $rules = ['ball' => ['required' => true, 'length' => ['min' => 3, 'max' => 5]]];
-        $vldtr = $this->validation->run($rules, ['ball' => 'ABCDEF']);
+        $vldtr = $this->validation->run($rules, new GetData);
 
         $this->assertSame('Field ball must not exceed 5 characters long', $vldtr->getErrorMessages()[0]['message']);
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Unknown validation rule: asdf');
 
-        $this->validation->run(['a' => 'asdf'], []);
+        $this->validation->run(['a' => 'asdf'], new Entity);
     }
 
     public function test_invalid_rules()
@@ -84,5 +84,24 @@ class ValidationTest extends TestCase
         $this->expectExceptionMessage('Unsupported validation rule: abc');
 
         $this->validation->register('abc', 'invalid rule');
+    }
+
+    public function test_abort()
+    {
+        $rules = ['field_a' => 'required', 'field_b' => 'required|abort', 'field_c' => 'required'];
+        $vldtr = $this->validation->run($rules, []);
+
+        $this->assertTrue($vldtr->fail());
+        $this->assertCount(2, $vldtr->getErrorMessages(),
+            'Even though 3 fields are required, it should bail from first abort in second field'
+        );
+
+        $rules = ['field_a' => ['required' => true, 'length' => ['min' => 3], 'abort' => true]];
+        $vldtr = $this->validation->run($rules, []);
+
+        $this->assertTrue($vldtr->fail());
+        $this->assertCount(1, $vldtr->getErrorMessages(),
+            'Even though two rules are not met, it should bail from first rule'
+        );
     }
 }
