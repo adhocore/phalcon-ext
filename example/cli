@@ -1,0 +1,40 @@
+#!/usr/bin/env php
+<?php
+
+use Ahc\Cli\Writer;
+use PhalconExt\Cli\Console;
+use Phalcon\Cli\Dispatcher;
+use Phalcon\Cli\Router;
+
+// Di instance can be same as for web app!
+$di  = require __DIR__ . '/bootstrap.php';
+
+// But here we use cli router, dispatcher and writer!
+$di->setShared('dispatcher', Dispatcher::class);
+$di->setShared('router', Router::class);
+$di->setShared('cliWriter', Writer::class);
+
+require_once __DIR__ . '/MainTask.php';
+
+// Attach app version
+$cli = (new Console($di))->version('0.0.1');
+
+// Required
+$di->setShared('console', $cli);
+
+$cli->addTask('main:main', 'MainTask')
+    ->option('-n, --name <name>', 'Name')
+    ->option('-a, --age [age]', 'Age', 'intval', 0)
+    ->option('-h, --hobbies [...]', 'Hobbies')
+;
+// PS:
+// You dont have to do `$cli->addTask()` here for 100s of tasks
+// You can just add them in `SomeTask::onConstruct()`
+
+try {
+    $cli->handle($_SERVER['argv']);
+} catch (\Throwable $e) {
+    $di->get('cliWriter')->errorBold->write($e->getMessage(), true);
+
+    exit(255);
+}
