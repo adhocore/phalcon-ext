@@ -86,7 +86,9 @@ trait Extension
     {
         $task = new ArgvParser($taskId, $descr, $allowUnknown);
 
-        return $task->version($this->version);
+        return $task->version($this->version)->onExit(function () {
+            return false;
+        });
     }
 
     protected function bindEvents()
@@ -110,6 +112,10 @@ trait Extension
             // Allow unknown as it is not explicitly defined with $cli->addTask()
             : $this->newTask($this->taskId, '', true);
 
+        if ($this->isHelp()) {
+            return $parser->emit('help');
+        }
+
         $parser->parse($this->argv);
 
         $this->di()->setShared('argv', $parser);
@@ -117,17 +123,20 @@ trait Extension
         return true;
     }
 
-    protected function isGlobalHelp()
+    protected function isGlobalHelp(): bool
     {
-        $isHelp = \array_search('--help', $this->argv) || \array_search('-h', $this->argv);
-
         // For a specific help, it would be [cmd, task, action, --help]
         // If it is just [cmd, --help] then we deduce it is global help!
 
         $isGlobal = \substr($this->argv[1] ?? '-', 0, 1) === '-'
             && \substr($this->argv[2] ?? '-', 0, 1) === '-';
 
-        return $isHelp && $isGlobal;
+        return $isGlobal && $this->isHelp();
+    }
+
+    protected function isHelp(): bool
+    {
+        return \array_search('--help', $this->argv) || \array_search('-h', $this->argv);
     }
 
     protected function globalHelp()
