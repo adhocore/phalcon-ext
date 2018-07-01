@@ -1,7 +1,6 @@
 <?php
 
 use Phalcon\Cli\Task;
-use PhalconExt\Cli\Console;
 
 class MainTask extends Task
 {
