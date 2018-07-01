@@ -10,7 +10,7 @@ use PhalconExt\Mail\Mailer;
 use PhalconExt\Validation\Validation;
 use PhalconExt\View\Twig;
 
-if (getenv('APP_ENV') !== 'test') {
+if (getenv('APP_ENV') !== 'test' && PHP_SAPI !== 'cli') {
     // For debug
     (new Phalcon\Debug)->listen(true, true);
 }
