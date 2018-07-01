@@ -16,11 +16,7 @@ $di->setShared('cliWriter', Writer::class);
 
 require_once __DIR__ . '/MainTask.php';
 
-// Attach app version
-$cli = (new Console($di))->version('0.0.1');
-
-// Required
-$di->setShared('console', $cli);
+$cli = new Console($di, 'ExampleApp', '0.0.1');
 
 $cli->addTask('main:main', 'MainTask')
     ->option('-n, --name <name>', 'Name')
