@@ -3,6 +3,8 @@
 namespace PhalconExt\Cli;
 
 use Ahc\Cli\ArgvParser;
+use Phalcon\Cli\Task;
+use Phalcon\DiInterface;
 use PhalconExt\Di\ProvidesDi;
 
 trait Extension
@@ -14,20 +16,24 @@ trait Extension
 
     protected $argv = [];
 
+    protected $name;
+
     protected $version = '0.0.1';
 
-    public function version(string $version): self
+    public function __construct(DiInterface $di, string $name, string $version = '0.0.1')
     {
-        $this->version = $version;
+        parent::__construct($di);
 
-        return $this;
+        $di->setShared('application', $this);
+        $di->setShared('console', $this);
+
+        $this->name    = $name;
+        $this->version = $version;
     }
 
     public function handle(array $argv = null)
     {
         $this->argv = $argv ?? $_SERVER['argv'];
-
-        $this->di()->setShared('application', $this);
 
         $this->bindEvents();
 
@@ -37,7 +43,7 @@ trait Extension
         parent::handle($parameters);
     }
 
-    public function addTask(string $task, string $descr = null, bool $allowUnknown = false): ArgvParser
+    public function addTask(string $task, string $descr = '', bool $allowUnknown = false): ArgvParser
     {
         $taskId = \str_ireplace(['task', 'action'], '', $task);
 
@@ -57,9 +63,11 @@ trait Extension
             if ($value[0] === '-') {
                 break;
             }
-            if (!isset($taskId[1])) {
-                $taskAction[] = \str_ireplace(['task', 'action'], '', $value);
+            if (!isset($taskAction[1])) {
+                $task = \str_ireplace(['task', 'action'], '', $value);
                 unset($argv[$i]);
+
+                $taskAction = \explode(':', $task, 2);
             }
         }
 
@@ -74,11 +82,11 @@ trait Extension
         ];
     }
 
-    protected function newTask(string $taskId, string $descr = null, bool $allowUnknown = false)
+    protected function newTask(string $taskId, string $descr = '', bool $allowUnknown = false)
     {
         $task = new ArgvParser($taskId, $descr, $allowUnknown);
 
-        return $task->version($this->version)->arguments('<task> [action:main]');
+        return $task->version($this->version);
     }
 
     protected function bindEvents()
@@ -93,6 +101,10 @@ trait Extension
 
     public function beforeExecuteRoute()
     {
+        if ($this->isGlobalHelp()) {
+            return $this->globalHelp();
+        }
+
         $parser = isset($this->tasks[$this->taskId])
             ? $this->tasks[$this->taskId]
             // Allow unknown as it is not explicitly defined with $cli->addTask()
@@ -103,5 +115,58 @@ trait Extension
         $this->di()->setShared('argv', $parser);
 
         return true;
+    }
+
+    protected function isGlobalHelp()
+    {
+        $isHelp = \array_search('--help', $this->argv) || \array_search('-h', $this->argv);
+
+        // For a specific help, it would be [cmd, task, action, --help]
+        // If it is just [cmd, --help] then we deduce it is global help!
+
+        $isGlobal = \substr($this->argv[1] ?? '-', 0, 1) === '-'
+            && \substr($this->argv[2] ?? '-', 0, 1) === '-';
+
+        return $isHelp && $isGlobal;
+    }
+
+    protected function globalHelp()
+    {
+        $this->loadAllTasks();
+
+        ($w = $this->di('cliWriter'))
+            ->bold("{$this->name}, version {$this->version}", true)->eol()
+            ->boldGreen('Commands:', true);
+
+        $commands = [];
+        foreach ($this->tasks as $task) {
+            $commands[$task->getName()] = $task->getDesc();
+        }
+
+        $maxLen = \max(\array_map('strlen', \array_keys($commands)));
+
+        foreach ($commands as $name => $desc) {
+            $w->bold('  ' . \str_pad($name, $maxLen + 2))->comment($desc, true);
+        }
+
+        $w->eol()->yellow('Run `<command> --help` for specific help', true);
+
+        return false;
+    }
+
+    protected function loadAllTasks()
+    {
+        if ($tasks = $this->di('config')->path('console.tasks')) {
+            $classes = $tasks->toArray();
+        } elseif ($this->di()->has('loader')) {
+            $classes = \array_keys($this->di('loader')->getClasses());
+        }
+
+        foreach ($classes as $class) {
+            if (\substr($class, -4) === 'Task') {
+                // Force load!
+                $this->di->resolve($class);
+            }
+        }
     }
 }
