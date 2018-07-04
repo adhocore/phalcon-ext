@@ -28,7 +28,8 @@
     "require": {
         "php": ">=7.0",
         "adhocore/jwt": "^0.0.4",
-        "adhocore/cli": "^0.0.1"
+        "adhocore/cli": "^0.0.1",
+        "adhocore/cron-expr": "^0.0.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.0.0",
