@@ -4,6 +4,8 @@
 /.idea/
 /example/.var/
 /vendor/
+clover.xml
+coverage.xml
 composer.lock
 *.db
 *.rdb
