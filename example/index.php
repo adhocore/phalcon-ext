@@ -4,6 +4,7 @@ use Phalcon\Mvc\Micro as MicroApplication;
 use Phalcon\Mvc\Micro\Collection;
 use Phalcon\Mvc\Router;
 use Phalcon\Mvc\View\Simple as SimpleView;
+use PhalconExt\Example\MicroController;
 use PhalconExt\Http\Middleware\ApiAuth;
 use PhalconExt\Http\Middleware\Cache;
 use PhalconExt\Http\Middleware\Cors;
@@ -30,8 +31,6 @@ $di->setShared('view', function () {
 $app = new MicroApplication($di);
 
 $app->getRouter()->setUriSource(Router::URI_SOURCE_GET_URL);
-
-require_once __DIR__ . '/MicroController.php';
 
 $app->mount((new Collection)
     ->setPrefix('/')
