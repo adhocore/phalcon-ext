@@ -2,9 +2,6 @@
 
 namespace PhalconExt\Cli;
 
-use Ahc\Cli\Helper\OutputHelper;
-use Ahc\Cli\Input\Command;
-use Ahc\Cli\Output\Writer;
 use Phalcon\Cli\Console;
 
 trait MiddlewareTrait

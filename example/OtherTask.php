@@ -2,9 +2,7 @@
 
 namespace PhalconExt\Example;
 
-use Ahc\Cron\Expression;
 use Phalcon\Cli\Task;
-use PhalconExt\Cli\Console;
 
 class OtherTask extends Task
 {
