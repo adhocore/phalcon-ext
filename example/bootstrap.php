@@ -18,8 +18,8 @@ if (getenv('APP_ENV') !== 'test' && PHP_SAPI !== 'cli') {
 $loader = (new Phalcon\Loader)
     ->registerNamespaces([
         'PhalconExt\\Example' => __DIR__ . '/',
-        'PhalconExt\\Test' => __DIR__ . '/../tests/',
-        'PhalconExt'       => __DIR__ . '/../src/',
+        'PhalconExt\\Test'    => __DIR__ . '/../tests/',
+        'PhalconExt'          => __DIR__ . '/../src/',
     ])
     ->registerClasses(require __DIR__ . '/../vendor/composer/autoload_classmap.php')
     ->register();

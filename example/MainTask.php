@@ -2,7 +2,6 @@
 
 namespace PhalconExt\Example;
 
-use Ahc\Cron\Expression;
 use Phalcon\Cli\Task;
 
 class MainTask extends Task

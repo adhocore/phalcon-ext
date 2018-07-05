@@ -3,7 +3,6 @@
 namespace PhalconExt\Cli;
 
 use Ahc\Cli\Application;
-use Ahc\Cli\Helper\OutputHelper;
 use Ahc\Cli\Input\Command;
 use Ahc\Cli\IO\Interactor;
 use Phalcon\Cli\Task;
@@ -22,7 +21,7 @@ trait Extension
     /** @var array Tasks provided by package already */
     protected $factoryTasks = [];
 
-    /** @var array Scheduled taskIds mapped to schedule time  */
+    /** @var array Scheduled taskIds mapped to schedule time */
     protected $scheduled = [];
 
     /** @var array Raw argv sent to handle() [OR read from $_SERVER] */

@@ -2,12 +2,9 @@
 
 namespace PhalconExt\Cli\Middleware;
 
-use Ahc\Cli\Helper\OutputHelper;
 use Ahc\Cli\Input\Command;
-use Ahc\Cli\Output\Writer;
 use Phalcon\Cli\Console;
 use Phalcon\Cli\Task;
-use Phalcon\DiInterface;
 use PhalconExt\Di\ProvidesDi;
 
 /**
