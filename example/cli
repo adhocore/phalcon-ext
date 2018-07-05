@@ -1,10 +1,14 @@
 #!/usr/bin/env php
 <?php
 
-use Ahc\Cli\Writer;
-use PhalconExt\Cli\Console;
+use Ahc\Cli\Input\Interactor;
+use Ahc\Cli\Output\Writer;
 use Phalcon\Cli\Dispatcher;
 use Phalcon\Cli\Router;
+use Phalcon\Config;
+use PhalconExt\Cli\Console;
+use PhalconExt\Example\MainTask;
+use PhalconExt\Example\OtherTask;
 
 // Di instance can be same as for web app!
 $di  = require __DIR__ . '/bootstrap.php';
@@ -12,25 +16,26 @@ $di  = require __DIR__ . '/bootstrap.php';
 // But here we use cli router, dispatcher and writer!
 $di->setShared('dispatcher', Dispatcher::class);
 $di->setShared('router', Router::class);
-$di->setShared('cliWriter', Writer::class);
 
-require_once __DIR__ . '/MainTask.php';
+$di->get('config')->merge(new Config([
+    // You might want to have console config in some file
+    'console' => [
+        'tasks' => [
+            // Name => FQCN
+            'main'  => MainTask::class,
+            'other' => OtherTask::class,
+        ],
+    ],
+]));
 
 $cli = new Console($di, 'ExampleApp', '0.0.1');
-
-$cli->addTask('main:main', 'MainTask')
-    ->option('-n, --name <name>', 'Name')
-    ->option('-a, --age [age]', 'Age', 'intval', 0)
-    ->option('-h, --hobbies [...]', 'Hobbies')
-;
-// PS:
-// You dont have to do `$cli->addTask()` here for 100s of tasks
-// You can just add them in `SomeTask::onConstruct()`
 
 try {
     $cli->handle($_SERVER['argv']);
 } catch (\Throwable $e) {
-    $di->get('cliWriter')->errorBold->write($e->getMessage(), true);
+    $di->get('interactor')->eol()
+        ->errorBold($e->getMessage(), true)
+        ->comment($e->getTraceAsString(), true);
 
     exit(255);
 }
