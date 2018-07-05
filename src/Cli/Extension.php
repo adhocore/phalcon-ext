@@ -2,73 +2,127 @@
 
 namespace PhalconExt\Cli;
 
-use Ahc\Cli\ArgvParser;
+use Ahc\Cli\Application;
+use Ahc\Cli\Helper\OutputHelper;
+use Ahc\Cli\Input\Command;
+use Ahc\Cli\IO\Interactor;
 use Phalcon\Cli\Task;
 use Phalcon\DiInterface;
+use PhalconExt\Cli\Task\ScheduleTask;
 use PhalconExt\Di\ProvidesDi;
 
 trait Extension
 {
     use ProvidesDi;
+    use MiddlewareTrait;
 
-    /** @var ArgvParser[] Registered tasks */
-    protected $tasks = [];
+    /** @var array Tasks namespaces */
+    protected $namespaces = [];
 
+    /** @var array Tasks provided by package already */
+    protected $factoryTasks = [];
+
+    /** @var array Scheduled taskIds mapped to schedule time  */
+    protected $scheduled = [];
+
+    /** @var array Raw argv sent to handle() [OR read from $_SERVER] */
     protected $argv = [];
 
-    protected $name;
-
-    protected $version = '0.0.1';
+    /** @var string */
+    protected $lastTask;
 
     public function __construct(DiInterface $di, string $name, string $version = '0.0.1')
     {
         parent::__construct($di);
 
-        $di->setShared('application', $this);
         $di->setShared('console', $this);
+        $di->setShared('interactor', Interactor::class);
 
-        $this->name    = $name;
-        $this->version = $version;
+        $this->initialize($name, $version);
+        $this->bindEvents($this);
+    }
+
+    protected function initialize(string $name, string $version)
+    {
+        $this->app = new Application($name, $version, function () {
+            return false;
+        });
+
+        $this->factoryTasks = [
+            'schedule' => ScheduleTask::class,
+        ];
+
+        $this->initTasks();
+    }
+
+    public function app()
+    {
+        return $this->app;
+    }
+
+    public function argv(): array
+    {
+        return $this->argv;
     }
 
     public function handle(array $argv = null)
     {
         $this->argv = $argv ?? $_SERVER['argv'];
+        $parameters = $this->getTaskParameters($this->argv);
 
-        $this->bindEvents();
-
-        $parameters   = $this->getTaskParameters($this->argv);
-        $this->taskId = $parameters['task'] . ':' . $parameters['action'];
-
-        parent::handle($parameters);
+        return $this->doHandle($parameters);
     }
 
-    public function addTask(string $task, string $descr = '', bool $allowUnknown = false): ArgvParser
+    public function doHandle(array $parameters)
     {
-        $taskId = \str_ireplace(['task', 'action'], '', $task);
-
-        if (isset($this->tasks[$taskId])) {
-            throw new \InvalidArgumentException(
-                \sprintf('The task "%s" is already registered', $taskId)
-            );
+        if (isset($this->namespaces[$parameters['task']])) {
+            $parameters['task'] = $this->namespaces[$parameters['task']];
         }
 
-        return $this->tasks[$taskId] = $this->newTask($taskId, $descr, $allowUnknown);
+        return parent::handle($parameters);
+    }
+
+    public function addTask(string $task, string $descr = '', bool $allowUnknown = false): Command
+    {
+        $this->lastTask = $taskId = \str_ireplace(['task', 'action'], '', $task);
+
+        if (\strpos($task, ':main')) {
+            $alias = \str_replace(':main', '', $taskId);
+        }
+
+        if (\strpos($task, ':') === false) {
+            $alias = $taskId . ':main';
+        }
+
+        return $this->app->command($taskId, $descr, $allowUnknown, $alias ?? '');
+    }
+
+    public function schedule(string $cronExpr, string $taskId = ''): self
+    {
+        $taskId = $taskId ?: $this->lastTask;
+
+        $this->scheduled[$taskId] = $cronExpr;
+
+        return $this;
+    }
+
+    public function scheduled(): array
+    {
+        return $this->scheduled;
     }
 
     protected function getTaskParameters(array $argv)
     {
         $taskAction = [];
-        foreach (\array_slice($argv, 1) as $i => $value) {
-            if ($value[0] === '-') {
+        \array_shift($argv);
+
+        foreach ($argv as $i => $value) {
+            if ($value[0] === '-' || isset($taskAction[1])) {
                 break;
             }
-            if (!isset($taskAction[1])) {
-                $task = \str_ireplace(['task', 'action'], '', $value);
-                unset($argv[$i]);
 
-                $taskAction = \explode(':', $task, 2);
-            }
+            $taskAction = \array_merge($taskAction, \explode(':', $value, 2));
+            unset($argv[$i]);
         }
 
         // Respect phalcon default.
@@ -82,100 +136,26 @@ trait Extension
         ];
     }
 
-    protected function newTask(string $taskId, string $descr = '', bool $allowUnknown = false)
+    public function initTasks()
     {
-        $task = new ArgvParser($taskId, $descr, $allowUnknown);
+        foreach ($this->getTaskClasses() as $name => $class) {
+            if (!$this->di()->has($class)) {
+                // Force load!
+                $this->di($class);
+            }
 
-        return $task->version($this->version)->onExit(function () {
-            return false;
-        });
-    }
-
-    protected function bindEvents()
-    {
-        $evm = $this->di('eventsManager');
-
-        $evm->attach('dispatch', $this);
-        $this->setEventsManager($evm);
-
-        $this->di('dispatcher')->setEventsManager($evm);
-    }
-
-    public function beforeExecuteRoute()
-    {
-        if ($this->isGlobalHelp()) {
-            return $this->globalHelp();
+            $this->namespaces[$name] = \preg_replace('#Task$#', '', $class);
         }
 
-        $parser = isset($this->tasks[$this->taskId])
-            ? $this->tasks[$this->taskId]
-            // Allow unknown as it is not explicitly defined with $cli->addTask()
-            : $this->newTask($this->taskId, '', true);
-
-        if ($this->isHelp()) {
-            return $parser->emit('help');
-        }
-
-        $parser->parse($this->argv);
-
-        $this->di()->setShared('argv', $parser);
-
-        return true;
+        return $this;
     }
 
-    protected function isGlobalHelp(): bool
-    {
-        // For a specific help, it would be [cmd, task, action, --help]
-        // If it is just [cmd, --help] then we deduce it is global help!
-
-        $isGlobal = \substr($this->argv[1] ?? '-', 0, 1) === '-'
-            && \substr($this->argv[2] ?? '-', 0, 1) === '-';
-
-        return $isGlobal && $this->isHelp();
-    }
-
-    protected function isHelp(): bool
-    {
-        return \array_search('--help', $this->argv) || \array_search('-h', $this->argv);
-    }
-
-    protected function globalHelp()
-    {
-        $this->loadAllTasks();
-
-        ($w = $this->di('cliWriter'))
-            ->bold("{$this->name}, version {$this->version}", true)->eol()
-            ->boldGreen('Commands:', true);
-
-        $commands = [];
-        foreach ($this->tasks as $task) {
-            $commands[$task->getName()] = $task->getDesc();
-        }
-
-        $maxLen = \max(\array_map('strlen', \array_keys($commands)));
-
-        foreach ($commands as $name => $desc) {
-            $w->bold('  ' . \str_pad($name, $maxLen + 2))->comment($desc, true);
-        }
-
-        $w->eol()->yellow('Run `<command> --help` for specific help', true);
-
-        return false;
-    }
-
-    protected function loadAllTasks()
+    protected function getTaskClasses(): array
     {
         if ($tasks = $this->di('config')->path('console.tasks')) {
-            $classes = $tasks->toArray();
-        } elseif ($this->di()->has('loader')) {
-            $classes = \array_keys($this->di('loader')->getClasses());
+            $tasks = $tasks->toArray();
         }
 
-        foreach ($classes as $class) {
-            if (\substr($class, -4) === 'Task') {
-                // Force load!
-                $this->di->resolve($class);
-            }
-        }
+        return $this->factoryTasks + ($tasks ?: []);
     }
 }
