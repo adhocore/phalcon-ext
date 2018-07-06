@@ -16,19 +16,20 @@ class Factory
 
     public function before(Console $console)
     {
-        $argv    = $console->argv();
+        $rawArgv = $console->argv($raw = true);
+        $argv    = $console->argv($raw = false);
         $app     = $console->app();
         $command = $app->commandFor($argv);
 
-        if ($this->isVersion($argv)) {
+        if ($this->isVersion($rawArgv)) {
             return $command->showVersion();
         }
 
-        if ($this->isGlobalHelp($argv)) {
+        if ($this->isGlobalHelp($rawArgv)) {
             return $app->showHelp();
         }
 
-        if ($this->isHelp($argv)) {
+        if ($this->isHelp($rawArgv)) {
             return $command->showHelp();
         }
 
