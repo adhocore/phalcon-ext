@@ -93,7 +93,7 @@ trait Extension
             $alias = $taskId . ':main';
         }
 
-        return $this->app->command($taskId, $descr, $allowUnknown, $alias ?? '');
+        return $this->app->command($taskId, $descr, $alias ?? '', $allowUnknown);
     }
 
     public function schedule(string $cronExpr, string $taskId = ''): self
