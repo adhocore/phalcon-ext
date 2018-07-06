@@ -25,6 +25,9 @@ trait Extension
     protected $scheduled = [];
 
     /** @var array Raw argv sent to handle() [OR read from $_SERVER] */
+    protected $rawArgv = [];
+
+    /** @var array Normalized argv */
     protected $argv = [];
 
     /** @var string */
@@ -59,17 +62,28 @@ trait Extension
         return $this->app;
     }
 
-    public function argv(): array
+    public function argv(bool $raw = true): array
     {
+        if ($raw) {
+            return $this->rawArgv;
+        }
+
         return $this->argv;
     }
 
     public function handle(array $argv = null)
     {
-        $this->argv = $argv ?? $_SERVER['argv'];
-        $parameters = $this->getTaskParameters($this->argv);
+        $this->rawArgv = $argv ?? $_SERVER['argv'];
 
-        return $this->doHandle($parameters);
+        $params = $this->getTaskParameters($this->rawArgv);
+
+        // Normalize in the form: ['app', 'task:action', 'param1', 'param2', ...]
+        $this->argv = \array_merge(
+            [$argv[0] ?? null, $params['task'] . ':' . $params['action']],
+            $params['params']
+        );
+
+        return $this->doHandle($params);
     }
 
     public function doHandle(array $parameters)
