@@ -55,11 +55,25 @@ trait Extension
         $this->initTasks();
     }
 
-    public function app()
+    /**
+     * Get the console Application.
+     *
+     * @return Application The instance of Ahc\Cli\Application.
+     */
+    public function app(): Application
     {
         return $this->app;
     }
 
+    /**
+     * Get the raw or processed argv values.
+     *
+     * By processed it means the task/action segment has been merged or shifted.
+     *
+     * @param bool $raw If true default raw values are returned, otherwise processed values.
+     *
+     * @return array
+     */
     public function argv(bool $raw = true): array
     {
         if ($raw) {
@@ -69,6 +83,13 @@ trait Extension
         return $this->argv;
     }
 
+    /**
+     * Handle console request.
+     *
+     * @param  array|null $argv
+     *
+     * @return mixed But mostly the task instance that was executed.
+     */
     public function handle(array $argv = null)
     {
         $this->rawArgv = $argv ?? $_SERVER['argv'];
@@ -84,6 +105,13 @@ trait Extension
         return $this->doHandle($params);
     }
 
+    /**
+     * Handle cli request.
+     *
+     * @param array $parameters ['task' => ..., 'action' => ..., 'params' => []]
+     *
+     * @return mixed But mostly the task instance that was executed.
+     */
     public function doHandle(array $parameters)
     {
         if (isset($this->namespaces[$parameters['task']])) {
@@ -93,6 +121,21 @@ trait Extension
         return parent::handle($parameters);
     }
 
+    /**
+     * Add a task to be managed/scheduled by console.
+     *
+     * This allows you to define args/options which are not only auto validated but
+     * injected to DI container by the name `command`.
+     *
+     * (You can still run tasks without adding it here)
+     *
+     * @param string  $task         Preferred format is 'task:action'.
+     *                              (for 'main' action, it can be 'task' only)
+     * @param string  $descr        Task description in short.
+     * @param bool    $allowUnknown Whether to allow unkown options.
+     *
+     * @return Command The cli command for which you can define args/options fluenlty.
+     */
     public function addTask(string $task, string $descr = '', bool $allowUnknown = false): Command
     {
         $this->lastTask = $taskId = \str_ireplace(['task', 'action'], '', $task);
@@ -108,6 +151,15 @@ trait Extension
         return $this->app->command($taskId, $descr, $alias ?? '', $allowUnknown);
     }
 
+    /**
+     * Schedule a task to run at the time when given cron expression evaluates truthy.
+     *
+     * @param string $cronExpr Eg: `@hourly` (Take a look at Ahc\Cli\Expression for predefined values)
+     * @param string $taskId   This is optional (by default it schedules last task added via `addTask()`)
+     *                         If given, the name should match the name you passed to `addTask($name)`
+     *
+     * @return self
+     */
     public function schedule(string $cronExpr, string $taskId = ''): self
     {
         $taskId = $taskId ?: $this->lastTask;
@@ -117,6 +169,11 @@ trait Extension
         return $this;
     }
 
+    /**
+     * Get all the scheduled items.
+     *
+     * @return array
+     */
     public function scheduled(): array
     {
         return $this->scheduled;
@@ -147,7 +204,12 @@ trait Extension
         ];
     }
 
-    public function initTasks()
+    /**
+     * Inits task. It is done automatically if you have listed them in `console.tasks` config.
+     *
+     * @return self
+     */
+    public function initTasks(): self
     {
         foreach ($this->getTaskClasses() as $name => $class) {
             if (!$this->di()->has($class)) {
