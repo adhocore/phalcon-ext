@@ -1,8 +1,6 @@
 #!/usr/bin/env php
 <?php
 
-use Ahc\Cli\Input\Interactor;
-use Ahc\Cli\Output\Writer;
 use Phalcon\Cli\Dispatcher;
 use Phalcon\Cli\Router;
 use Phalcon\Config;
