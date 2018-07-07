@@ -4,6 +4,7 @@ namespace PhalconExt\Mail;
 
 use Phalcon\Di;
 use Phalcon\Mvc\View\Simple;
+use PhalconExt\Di\ProvidesDi;
 
 /**
  * A swift mailer tuned for phalcon.
@@ -15,6 +16,8 @@ use Phalcon\Mvc\View\Simple;
  */
 class Mailer
 {
+    use ProvidesDi;
+
     /** @var array */
     protected $config = [];
 
@@ -65,7 +68,7 @@ class Mailer
     {
         $dirName  = \dirname($viewFile);
         $fileName = \basename($viewFile);
-        $view     = Di::getDefault()->getShared('view');
+        $view     = $this->di('view');
 
         $markup = $view instanceof Simple
             ? $view->render($viewFile, $viewParams)
