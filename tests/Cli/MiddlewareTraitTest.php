@@ -22,7 +22,7 @@ class MiddlewareTraitTest extends ConsoleTestCase
 }
 
 /**
- * Sometimes you feel so low, someone need to remind you that you are awesome
+ * Sometimes you feel so low, someone need to remind you that you are awesome.
  *
  * One day this will be a real middleware in `src/Cli/Middleware`, but for now it is a test stub
  */
