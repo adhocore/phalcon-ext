@@ -8,7 +8,7 @@ use Phalcon\Cli\Task;
 use PhalconExt\Di\ProvidesDi;
 
 /**
- * Factory middleware that injects Parser instance and responses to `--help` or `--version`.
+ * Factory middleware that injects Command and responds to `--help` or `--version`.
  */
 class Factory
 {
@@ -20,17 +20,18 @@ class Factory
         $argv    = $console->argv($raw = false);
         $app     = $console->app();
         $command = $app->commandFor($argv);
+        $writer  = $this->di('interactor')->writer();
 
         if ($this->isVersion($rawArgv)) {
-            return $command->showVersion();
+            return $command->showVersion($writer);
         }
 
         if ($this->isGlobalHelp($rawArgv)) {
-            return $app->showHelp();
+            return $app->showHelp($writer);
         }
 
         if ($this->isHelp($rawArgv)) {
-            return $command->showHelp();
+            return $command->showHelp($writer);
         }
 
         $this->di()->setShared('command', $app->parse($argv));
