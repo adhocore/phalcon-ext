@@ -11,6 +11,7 @@ class MiddlewareTraitTest extends ConsoleTestCase
     public function test_middlewares()
     {
         $this->app->middleware(Awesome::class);
+        $this->app->middlewares([Awesome::class, static::class]);
 
         $this->assertContains(Awesome::class, $this->app->middlewares());
         $this->assertContains(Factory::class, $this->app->middlewares());

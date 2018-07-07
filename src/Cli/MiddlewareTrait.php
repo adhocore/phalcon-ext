@@ -27,8 +27,21 @@ trait MiddlewareTrait
         return $this;
     }
 
-    public function middlewares(): array
+    /**
+     * Bulk setter/getter.
+     *
+     * @param array $middlewares Class names.
+     *
+     * @return array|self
+     */
+    public function middlewares(array $middlewares = [])
     {
+        if (\func_num_args() > 0) {
+            $this->middlewares = \array_unique(\array_merge($this->middlewares, $middlewares));
+
+            return $this;
+        }
+
         return $this->middlewares;
     }
 
