@@ -19,7 +19,9 @@ trait Extension
     protected $namespaces = [];
 
     /** @var array Tasks provided by package already */
-    protected $factoryTasks = [];
+    protected $factoryTasks =  [
+        'schedule' => ScheduleTask::class,
+    ];
 
     /** @var array Scheduled taskIds mapped to schedule time */
     protected $scheduled = [];
@@ -49,10 +51,6 @@ trait Extension
         $this->app = new Application($name, $version, function () {
             return false;
         });
-
-        $this->factoryTasks = [
-            'schedule' => ScheduleTask::class,
-        ];
 
         $this->initTasks();
     }
