@@ -74,4 +74,14 @@ class ExtensionTest extends WebTestCase
 
         $this->assertInstanceOf(Adapter::class, $this->di->get('db'));
     }
+
+    public function test_services()
+    {
+        $this->assertNotEmpty($s = $this->di->services());
+
+        $this->assertContains('db', $s);
+        $this->assertContains('config', $s);
+        $this->assertContains('Phalcon\\Config', $s);
+        $this->assertContains('Phalcon\\Loader', $s);
+    }
 }
