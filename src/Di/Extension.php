@@ -37,6 +37,19 @@ trait Extension
     abstract public function remove($service);
 
     /**
+     * Get names/aliases/class names of registered services.
+     *
+     * @return array
+     */
+    public function services(): array
+    {
+        return \array_merge(
+            \array_keys($this->_services),
+            \array_keys($this->aliases)
+        );
+    }
+
+    /**
      * Resolve all the dependencies for a class FQCN and instantiate it.
      *
      * @param string $class      FQCN
