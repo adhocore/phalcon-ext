@@ -86,7 +86,7 @@ trait Extension
     /**
      * Handle console request.
      *
-     * @param  array|null $argv
+     * @param array|null $argv
      *
      * @return mixed But mostly the task instance that was executed.
      */
@@ -129,10 +129,10 @@ trait Extension
      *
      * (You can still run tasks without adding it here)
      *
-     * @param string  $task         Preferred format is 'task:action'.
-     *                              (for 'main' action, it can be 'task' only)
-     * @param string  $descr        Task description in short.
-     * @param bool    $allowUnknown Whether to allow unkown options.
+     * @param string $task         Preferred format is 'task:action'.
+     *                             (for 'main' action, it can be 'task' only)
+     * @param string $descr        Task description in short.
+     * @param bool   $allowUnknown Whether to allow unkown options.
      *
      * @return Command The cli command for which you can define args/options fluenlty.
      */

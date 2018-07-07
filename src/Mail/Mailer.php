@@ -2,7 +2,6 @@
 
 namespace PhalconExt\Mail;
 
-use Phalcon\Di;
 use Phalcon\Mvc\View\Simple;
 use PhalconExt\Di\ProvidesDi;
 
