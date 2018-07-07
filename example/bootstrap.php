@@ -10,15 +10,16 @@ use PhalconExt\Mail\Mailer;
 use PhalconExt\Validation\Validation;
 use PhalconExt\View\Twig;
 
-if (getenv('APP_ENV') !== 'test') {
+if (getenv('APP_ENV') !== 'test' && PHP_SAPI !== 'cli') {
     // For debug
     (new Phalcon\Debug)->listen(true, true);
 }
 
 $loader = (new Phalcon\Loader)
     ->registerNamespaces([
-        'PhalconExt'       => __DIR__ . '/src/',
-        'PhalconExt\\Test' => __DIR__ . '/tests/',
+        'PhalconExt\\Example' => __DIR__ . '/',
+        'PhalconExt\\Test'    => __DIR__ . '/../tests/',
+        'PhalconExt'          => __DIR__ . '/../src/',
     ])
     ->registerClasses(require __DIR__ . '/../vendor/composer/autoload_classmap.php')
     ->register();

@@ -1,5 +1,7 @@
 <?php
 
+namespace PhalconExt\Example;
+
 use Phalcon\Logger;
 use PhalconExt\Di\ProvidesDi;
 use PhalconExt\Logger\EchoLogger;

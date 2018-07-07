@@ -33,6 +33,143 @@ $di->get('redis')->getConnection()->info();
 ```
 
 ---
+### Cli.Extension
+
+Definitely check how it works in [adhocore/cli](https://github.com/adhocore/cli) and how it is integrated & used in [example/cli](./example/cli), [example/MainTask.php](./example/MainTask.php)
+
+#### Setup
+
+```php
+$di = new PhalconExt\Di\FactoryDefault;
+
+$di->setShared('dispatcher', Phalcon\Cli\Dispatcher::class);
+$di->setShared('router', Phalcon\Cli\Router::class);
+
+$di->setShared('config', new Phalcon\Config([
+    'console' => [
+        'tasks' => [
+            // Register your tasks here: 'name' => class
+            // You will define their options/arguments in respective `onConstruct()`
+            'main' => Your\MainTask::class,
+        ],
+    ],
+]));
+
+$console = new PhalconExt\Cli\Console($di, 'MyApp', 'v1.0.1');
+
+// Or if you have your own Console extends, just use the trait
+class YourConsole extends \Phalcon\Cli\Console
+{
+    use PhalconExt\Cli\Extension;
+}
+```
+
+#### addTask(string $task, string $descr = '', bool $allowUnknown = false): Ahc\Cli\Command
+
+You can add task in the bootstrap if few or you can organise them in `SomeTask::onConstruct()` like so:
+
+```php
+class MainTask extends Phalcon\Cli\Task
+{
+    public function onConstruct()
+    {
+        ($console = $this->getDI()->get('console'))
+            ->addTask('main', 'Main task ...', false)
+                ->arguments('<requiredPath> [optional:default]');
+                ->option('-s --stuff', 'Description', 'callable:filter', 'default')
+                ->tap($console) // for fluency
+            ->schedule('7-9 * */9 * *')
+            ->addTask('main:other', ...)
+                ->option('')
+                ->option('')
+                ->tap($console)
+            ->schedule('@5mintues') // @10minutes, @15minutes, @weekly, @daily, @yearly, @hourly ...
+        ;
+    }
+
+    public function mainAction()
+    {
+        $io = $this->interactor;
+
+        // Access defined args/opts for writing to terminal:
+        $io->write($this->command->requiredPath, true);
+        $io->write($this->command->stuff, true);
+    }
+}
+```
+
+Now everytime you run command `php cli.php main main the-path --stuff whatever`, it will print `the-path` and `whatever`!
+`cli.php` can be anything of your choosing that should be equivalent to [example/cli](./example/cli).
+
+#### initTasks(void): self
+
+Inits the loadable tasks. It is done automatically if you have listed them in `console.tasks` config (see Setup section above).
+If you have loaded tasks dyanamically or late in the process call it manually: `$console->initTasks()`.
+
+#### Cli.MiddlewareTrait
+
+Enables you to define, register and fire middlewares for the cli in simplest possible way!
+`PhalconExt/Cli/Middleware/Factory` is registered by default for convenience. It injects relevant command instance (`Ahc\Cli\Input\Command`) to DI and is auto triggered for `--help`, `--version`.
+
+**Define middleware**
+```php
+class HelloConsole
+{
+    // Prints hello every time you run a console cmd, just before execution
+    public function before(PhalconExt\Cli\Console $console)
+    {
+        $console->getDI()->get('interactor')->bgGreenBold('Hello', true);
+
+        return true; // Indicates success and no-objection!
+    }
+}
+```
+
+**Register/retrieve middleware(s)**
+
+```php
+// Single:
+$console->middleware(HelloConsole::class);
+
+// Multiple:
+$console->middlewares([HelloConsole::class, Another::class]);
+
+// Get em: (It already contains PhalconExt/Cli/Middleware/Factory)
+$console->middlewares(); // array
+```
+
+**Firing middlewares**
+
+You dont have to. The `before` and `after` methods of all middlewares are automatically invoked as console lifecycle event.
+
+### Cli.Task.ScheduleTask
+
+Being factory feature of `adhocore/phalcon-ext` it is auto loaded so you dont have to put in config's `console.tasks` array.
+
+It provides for commands `schedule:list` (or `schedule list`) and `schedule:run` or `schedule run` to respectively list all scheduled commands and run all commands due at that specific moment.
+
+Registering tasks to be scheduled is a cheese too. Check `addTask()` section above, you can schedule a task in fluent interface like so:
+
+```php
+$console
+    ->addTask('task:action', ...)
+        ->arguments(...)->option(...)
+        ->tap($console)
+    ->schedule('crontab expression') // You can also use humanly phrases: @daily, @hourly
+;
+```
+
+As you can see, all you need to do in crontab is add the entry:
+`* * * * * php /path/to/your/phalcon-app-using-phalcon-ext/src/cli.php schedule:run`
+... and manage everything here in the code!
+
+#### Caution
+
+Any tasks scheduled to run by automation like this should preferably **not** define required arguments or options of the form `<name>`, as firstly they are not validated when being run as scheduled task, and secondly the philosphy of scheduling is to register single crontab script `* * * * * php /app/src/cli.php schedule:run` with no any args/options. (and these are made to run unattended if you want third point!)
+
+However if you insist, it is possible to append `--option-name value` after `schedule:run` segment but this value goes to all of the due tasks runnable at the moment. They all can read it with `$this->command->optionName`.
+
+---
 ### Db.Extension
 
 #### Setup
@@ -59,12 +196,14 @@ class YourDb extends \Phalcon\Db\Adapter
 ```
 
 #### upsert(string $table, array $data, array $criteria): bool
+
 Insert or update data row in given table as per given criteria.
 ```php
 $di->get('db')->upsert('users', ['name' => 'John'], ['username' => 'johnny']);
 ```
 
 #### insertAsBulk(string $table, array $data): bool
+
 Insert many items at once - in one query - no loop.
 ```php
 $di->get('db')->insertAsBulk('table', [
@@ -82,6 +221,7 @@ $di->get('db')->countBy('table', ['name' => 'name1', 'status' => 'ok']);
 ```
 
 ### Db.Logger
+
 Hook into the db as an event listener and log all the sql queries- binds are interpolated.
 ```php
 $di->setShared('config', new \Phalcon\Config([
@@ -99,6 +239,8 @@ $di->get('db')->registerLogger($di->get('config')->toArray()['sqllogger']);
 
 ---
 ### Di.Extension
+
+**Foreword** This whole example and the entire `phalcon-ext` package almost always used `$di->get('service')` and not `$di->getShared('service')`, this is because if you have set 'service' as shared, `get()` will return that same shared instance again and again and if not then it will spawn new instance- the point is if we dont want new instance why dont we `setShared()` it? One has to consciously think whether to `setShared()` or `set()` instead of `getShared()` or `get()`.
 
 #### Setup
 
@@ -226,7 +368,7 @@ JWT based api authentication middleware that intercepts `POST /api/auth` request
 For all other requests it checks `Authorization: Bearer <JWT>` and only allows if that is valid and the scopes are met. You can configure scopes on per endpoint basis.
 You can access currently authenticated user through out the app using:
 ```php
-$di->getShared('authenticator')->getSubject();
+$di->get('authenticator')->getSubject();
 ```
 
 #### Setup
@@ -652,3 +794,10 @@ $di->get('view')->render('template.twig', ['view' => 'params']); // .twig is opt
 ---
 
 You can also see the [example](./example) codes for all these. Read [more](./example/readme.md).
+
+
+### Related Projects
+
+- [adhocore/cli](https://github.com/adhocore/cli)
+- [adhocore/jwt](https://github.com/adhocore/jwt)
+- [adhocore/cron-expr](https://github.com/adhocore/cron-expr)

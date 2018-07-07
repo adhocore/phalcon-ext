@@ -21,14 +21,33 @@ trait Extension
     /** @var array The aliases of services */
     protected $aliases   = [];
 
-    // Implemented by \Phalcon\Di.
-    abstract public function set($service, $definition, $shared = false);
+    public function set($service, $definition, $shared = false)
+    {
+        if ('' !== $alias = $this->inferAlias($definition)) {
+            $this->aliases[$alias] = $service;
+        }
+
+        return parent::set($service, $definition, $shared);
+    }
 
     abstract public function get($service, $parameters = null);
 
     abstract public function has($service);
 
     abstract public function remove($service);
+
+    /**
+     * Get names/aliases/class names of registered services.
+     *
+     * @return array
+     */
+    public function services(): array
+    {
+        return \array_merge(
+            \array_keys($this->_services),
+            \array_keys($this->aliases)
+        );
+    }
 
     /**
      * Resolve all the dependencies for a class FQCN and instantiate it.
@@ -73,6 +92,10 @@ trait Extension
 
         if (!$reflector->isInstantiable()) {
             throw new \RuntimeException('Cannot instantiate class: ' . $class);
+        }
+
+        if (!$reflector->getConstructor()) {
+            return $reflector->newInstance();
         }
 
         if ([] === $dependencies = $reflector->getConstructor()->getParameters()) {
