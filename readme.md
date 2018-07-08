@@ -15,6 +15,50 @@ Useful phalcon adapters, middlewares, extensions and utilities!
 composer require adhocore/phalcon-ext
 ```
 
+### What's included
+
+**Cache**
+- [Redis](#cacheredis)
+
+**Cli**
+- [Extension](#cliextension)
+- [Middleware](#climiddlewaretrait)
+- [Scheduling](#clitaskscheuletask)
+
+**Db**
+- [Extension](#dbextension)
+- [Logger](#dblogger)
+
+**Di**
+- [Extension](#diextension)
+- [Provider](#diprovidesdi)
+
+**Http**
+- [Base Middleware](#httpbasemiddleware)
+- [ApiAuth Middleware](#httpmiddlewareapiauth)
+- [Cache Middleware](#httpmiddlewarecache)
+- [Throttle Middleware](#httpmiddlewarethrottle)
+
+**Logger**
+- [Echo Logger](#loggerechologger)
+- [File Logging](#loggerelogstofile)
+
+**Mail**
+- [Mailer](#mailmailer)
+- [Mail](#mailmail)
+- [Mailable](#mailmail)
+- [Logger](#maillogger)
+
+**Util**
+- [Opcache Primer](#utilopcacheprimer)
+
+**Validation**
+- [Validation Wrapper](#validationvalidation)
+- [Db Existence Validator](#validationexistence)
+
+**View**
+- [Twig](#viewtwig)
+
 ---
 ### Cache.Redis
 
