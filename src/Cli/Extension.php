@@ -33,7 +33,7 @@ trait Extension
     protected $argv = [];
 
     /** @var string */
-    protected $lastTask;
+    protected $lastCommand;
 
     public function __construct(DiInterface $di, string $name, string $version = '0.0.1')
     {
@@ -122,49 +122,49 @@ trait Extension
     }
 
     /**
-     * Add a task to be managed/scheduled by console.
+     * Register a new command to be managed/scheduled by console.
      *
      * This allows you to define args/options which are not only auto validated but
      * injected to DI container by the name `command`.
      *
      * (You can still run tasks without adding it here)
      *
-     * @param string $task         Preferred format is 'task:action'.
+     * @param string $command      Preferred format is 'task:action'.
      *                             (for 'main' action, it can be 'task' only)
      * @param string $descr        Task description in short.
      * @param bool   $allowUnknown Whether to allow unkown options.
      *
      * @return Command The cli command for which you can define args/options fluenlty.
      */
-    public function addTask(string $task, string $descr = '', bool $allowUnknown = false): Command
+    public function command(string $command, string $descr = '', bool $allowUnknown = false): Command
     {
-        $this->lastTask = $taskId = \str_ireplace(['task', 'action'], '', $task);
+        $this->lastCommand = $command;
 
-        if (\strpos($task, ':main')) {
-            $alias = \str_replace(':main', '', $taskId);
+        if (\strpos($command, ':main')) {
+            $alias = \str_replace(':main', '', $command);
         }
 
-        if (\strpos($task, ':') === false) {
-            $alias = $taskId . ':main';
+        if (\strpos($command, ':') === false) {
+            $alias = $command . ':main';
         }
 
-        return $this->app->command($taskId, $descr, $alias ?? '', $allowUnknown);
+        return $this->app->command($command, $descr, $alias ?? '', $allowUnknown);
     }
 
     /**
-     * Schedule a task to run at the time when given cron expression evaluates truthy.
+     * Schedule a command to run at the time when given cron expression evaluates truthy.
      *
      * @param string $cronExpr Eg: `@hourly` (Take a look at Ahc\Cli\Expression for predefined values)
-     * @param string $taskId   This is optional (by default it schedules last task added via `addTask()`)
+     * @param string $command  This is optional (by default it schedules last command added via `command()`)
      *                         If given, the name should match the name you passed to `addTask($name)`
      *
      * @return self
      */
-    public function schedule(string $cronExpr, string $taskId = ''): self
+    public function schedule(string $cronExpr, string $command = ''): self
     {
-        $taskId = $taskId ?: $this->lastTask;
+        $command = $command ?: $this->lastCommand;
 
-        $this->scheduled[$taskId] = $cronExpr;
+        $this->scheduled[$command] = $cronExpr;
 
         return $this;
     }
@@ -205,7 +205,7 @@ trait Extension
     }
 
     /**
-     * Inits task. It is done automatically if you have listed them in `console.tasks` config.
+     * Inits tasks. It is done automatically if you have listed them in `console.tasks` config.
      *
      * @return self
      */
