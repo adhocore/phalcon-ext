@@ -23,7 +23,7 @@ composer require adhocore/phalcon-ext
 **Cli**
 - [Extension](#cliextension)
 - [Middleware](#climiddlewaretrait)
-- [Scheduling](#clitaskscheuletask)
+- [Scheduling](#clitaskscheduletask)
 
 **Db**
 - [Extension](#dbextension)
@@ -41,12 +41,12 @@ composer require adhocore/phalcon-ext
 
 **Logger**
 - [Echo Logger](#loggerechologger)
-- [File Logging](#loggerelogstofile)
+- [File Logging](#loggerlogstofile)
 
 **Mail**
 - [Mailer](#mailmailer)
 - [Mail](#mailmail)
-- [Mailable](#mailmail)
+- [Mailable](#mailmailable)
 - [Logger](#maillogger)
 
 **Util**
@@ -635,6 +635,18 @@ $mail = $di->get('mailer')->newMail();
 $mail = $di->get('mailer')->newTemplateMail('view/file.twig', ['view' => 'params']);
 
 $mail->setTo('test@localhost')->setSubject('Hi')->setBody('Hello')->mail();
+
+// Attachments:
+$mail->attachFile('/path/to/file', 'optional attachment name');
+
+$mail->attachFiles(['/path/to/file1', '/path/to/file2']);
+// OR
+$mail->attachFiles([
+    'attachment name 1' => '/path/to/file1',
+    'attachment name 2' => '/path/to/file2',
+]);
+
+$mail->attachRaw('Raw plain text data', 'rawtext.txt', 'text/plain');
 ```
 
 ### Mail.Mailable
