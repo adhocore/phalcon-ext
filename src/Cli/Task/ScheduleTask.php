@@ -14,9 +14,9 @@ class ScheduleTask extends Task
     public function onConstruct()
     {
         ($console = $this->di('console'))
-            ->addTask('schedule:list', 'List scheduled tasks (if any)', false)
+            ->command('schedule:list', 'List scheduled tasks (if any)', false)
                 ->tap($console)
-            ->addTask('schedule:run', 'Run scheduled tasks that are due', true);
+            ->command('schedule:run', 'Run scheduled tasks that are due', true);
     }
 
     public function listAction()
