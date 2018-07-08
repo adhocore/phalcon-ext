@@ -9,7 +9,7 @@ class MainTask extends Task
     public function onConstruct()
     {
         $this->console
-            ->addTask('main', 'MainTask::main', true)
+            ->command('main', 'MainTask::main', true)
                 ->arguments('[dummy]')
                 ->option('-d --doo [doo]', 'Doo');
     }
@@ -27,7 +27,7 @@ class SomeTask extends Task
     public function onConstruct()
     {
         $this->console
-            ->addTask('some:main', 'SomeTask::main', true)
+            ->command('some:main', 'SomeTask::main', true)
                 ->option('-s --some [some]', 'Some');
     }
 
