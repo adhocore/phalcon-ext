@@ -9,7 +9,7 @@ class OtherTask extends Task
     public function onConstruct()
     {
         ($console = $this->console)
-            ->addTask('other:main', 'Other task')
+            ->command('other:main', 'Other task')
                 ->tap($console)
                 ->schedule('@always');
     }

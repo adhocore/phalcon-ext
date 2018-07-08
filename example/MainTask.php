@@ -9,19 +9,19 @@ class MainTask extends Task
     public function onConstruct()
     {
         ($console = $this->console)
-            ->addTask('main:main', 'MainTask')
+            ->command('main:main', 'MainTask')
                 ->option('-n, --name <name>', 'Name')
                 ->option('-a, --age [age]', 'Age', 'intval', 0)
                 ->option('-h, --hobbies [...]', 'Hobbies')
                 ->tap($console)
-            ->addTask('main:run', 'MainTask@run', true)
+            ->command('main:run', 'MainTask@run', true)
                 ->option('-c --config <path>', 'Config file')
                 ->tap($console)
                 ->schedule('@always')
-            ->addTask('main:joke', 'A random joke for you', false)
+            ->command('main:joke', 'A random joke for you', false)
                 ->tap($console)
                 // joke task doesnt need args/options and doesnt need to be scheduled
-            ->addTask('main:interact', 'Interactive demo', false);
+            ->command('main:interact', 'Interactive demo', false);
     }
 
     public function mainAction()
