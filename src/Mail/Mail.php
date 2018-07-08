@@ -23,8 +23,8 @@ class Mail extends \Swift_Message
      */
     public function attachFiles(array $filePaths): self
     {
-        foreach ($filePaths as $filePath) {
-            $this->attachFile($filePath);
+        foreach ($filePaths as $alias => $filePath) {
+            $this->attachFile($filePath, \is_int($alias) ? null : $alias);
         }
 
         return $this;
