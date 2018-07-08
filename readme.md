@@ -108,9 +108,9 @@ class YourConsole extends \Phalcon\Cli\Console
 }
 ```
 
-#### addTask(string $task, string $descr = '', bool $allowUnknown = false): Ahc\Cli\Command
+#### command(string $command, string $descr = '', bool $allowUnknown = false): Ahc\Cli\Command
 
-You can add task in the bootstrap if few or you can organise them in `SomeTask::onConstruct()` like so:
+You can register command in the bootstrap if few or you can organise them in `SomeTask::onConstruct()` like so:
 
 ```php
 class MainTask extends Phalcon\Cli\Task
@@ -118,12 +118,12 @@ class MainTask extends Phalcon\Cli\Task
     public function onConstruct()
     {
         ($console = $this->getDI()->get('console'))
-            ->addTask('main', 'Main task ...', false)
+            ->command('main', 'Main task ...', false)
                 ->arguments('<requiredPath> [optional:default]');
                 ->option('-s --stuff', 'Description', 'callable:filter', 'default')
                 ->tap($console) // for fluency
             ->schedule('7-9 * */9 * *')
-            ->addTask('main:other', ...)
+            ->command('main:other', ...)
                 ->option('')
                 ->option('')
                 ->tap($console)
@@ -192,11 +192,11 @@ Being factory feature of `adhocore/phalcon-ext` it is auto loaded so you dont ha
 
 It provides for commands `schedule:list` (or `schedule list`) and `schedule:run` or `schedule run` to respectively list all scheduled commands and run all commands due at that specific moment.
 
-Registering tasks to be scheduled is a cheese too. Check `addTask()` section above, you can schedule a task in fluent interface like so:
+Registering tasks to be scheduled is a cheese too. Check `command()` section above, you can schedule a task in fluent interface like so:
 
 ```php
 $console
-    ->addTask('task:action', ...)
+    ->command('task:action', ...)
         ->arguments(...)->option(...)
         ->tap($console)
     ->schedule('crontab expression') // You can also use humanly phrases: @daily, @hourly
