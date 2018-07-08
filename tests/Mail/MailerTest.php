@@ -68,18 +68,19 @@ class MailerTest extends WebTestCase
     {
         $mail = $this->newMailer('sendmail')->newMail();
 
-        $mail->attachFiles([__FILE__, __DIR__ . '/LoggerTest.php']);
+        $mail->attachFiles([__FILE__, 'logger-test.php' => __DIR__ . '/LoggerTest.php']);
         $mail->attachRaw('Raw plain text data', 'rawtext.txt', 'text/plain');
 
         $children = $mail->getChildren();
 
-        $this->assertCount(3, $children, 'Should have 2 attachments');
+        $this->assertCount(3, $children, 'Should have 3 attachments');
 
         $file = $children[0];
 
         $this->assertInstanceOf(\Swift_Attachment::class, $file, 'Should be instanceof \Swift_Attachment');
         $this->assertSame('application/x-php', $file->getContentType());
         $this->assertSame('MailerTest.php', $file->getFilename());
+        $this->assertSame('logger-test.php', $children[1]->getFilename());
 
         $raw = $children[2];
 
