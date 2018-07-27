@@ -38,7 +38,9 @@ class ConsoleTestCase extends TestCase
         // A new instance of fully configured app :)
         $this->app = new MockConsole($di, 'test', '0.0.1-test');
 
-        $di->setShared('interactor', $this->newInteractor($this->mockedInput));
+        $io = $this->newInteractor($this->mockedInput);
+        $di->setShared('interactor', $io);
+        $this->app->app()->io($io);
 
         file_put_contents(static::$in, '');
         file_put_contents(static::$ou, '');
@@ -109,7 +111,9 @@ class ConsoleTestCase extends TestCase
         ob_start();
 
         $fn();
-        $this->taskBuffer = ob_end_clean();
+        if ('' === $this->taskBuffer = ob_end_clean()) {
+            $this->taskBuffer = null;
+        }
     }
 }
 
