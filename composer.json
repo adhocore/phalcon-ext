@@ -28,13 +28,13 @@
     "require": {
         "php": ">=7.0",
         "adhocore/jwt": "^0.0.4",
-        "adhocore/cli": "^0.0.2",
+        "adhocore/cli": "^0.0.9",
         "adhocore/cron-expr": "^0.0.3"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6.0.0",
+        "phpunit/phpunit": "^6.5",
         "swiftmailer/swiftmailer": "^6.0.0",
-        "twig/twig": "^1.3.3"
+        "twig/twig": "^1.3 || ^2.4"
     },
     "config": {
         "optimize-autoloader": true,
