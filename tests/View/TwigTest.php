@@ -32,9 +32,9 @@ class TwigTest extends WebTestCase
             return "<p>$x</p>";
         }));
 
-        $this->twig->setLoader(new \Twig_Loader_String);
+        $this->twig->setLoader(new \Twig_Loader_Array(['test' => '{{ fruit|p|raw }}']));
 
-        $string = $this->twig->render('{{ fruit|p|raw }}', ['fruit' => 'Apple']);
+        $string = $this->twig->render('test', ['fruit' => 'Apple']);
 
         $this->assertSame('<p>Apple</p>', $string);
     }
