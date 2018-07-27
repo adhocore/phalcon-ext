@@ -20,18 +20,17 @@ class Factory
         $argv    = $console->argv($raw = false);
         $app     = $console->app();
         $command = $app->commandFor($argv);
-        $writer  = $this->di('interactor')->writer();
 
         if ($this->isVersion($rawArgv)) {
-            return $command->showVersion($writer);
+            return $command->showVersion();
         }
 
         if ($this->isGlobalHelp($rawArgv)) {
-            return $app->showHelp($writer);
+            return $app->showHelp();
         }
 
         if ($this->isHelp($rawArgv)) {
-            return $command->showHelp($writer);
+            return $command->showHelp();
         }
 
         $this->di()->setShared('command', $app->parse($argv));
