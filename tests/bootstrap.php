@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the PHALCON-EXT package.
+ *
+ * (c) Jitendra Adhikari <jiten.adhikary@gmail.com>
+ *     <https//:github.com/adhocore>
+ *
+ * Licensed under MIT license.
+ */
+
 putenv('APP_ENV=test');
 
 // @see http://php.net/manual/en/function.class-uses.php#110752

@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the PHALCON-EXT package.
+ *
+ * (c) Jitendra Adhikari <jiten.adhikary@gmail.com>
+ *     <https//:github.com/adhocore>
+ *
+ * Licensed under MIT license.
+ */
+
 use Ahc\Jwt\JWT;
 use Phalcon\Cache\Frontend\None as CacheFront;
 use Phalcon\Mvc\View;
