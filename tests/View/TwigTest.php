@@ -12,7 +12,6 @@
 namespace PhalconExt\Test\View;
 
 use PhalconExt\Test\WebTestCase;
-use PhalconExt\View\Twig;
 
 class TwigTest extends WebTestCase
 {

@@ -12,10 +12,7 @@
 namespace PhalconExt\Http;
 
 use Phalcon\Di\Injectable;
-use Phalcon\Http\Request;
-use Phalcon\Http\Response;
 use Phalcon\Mvc\Application;
-use Phalcon\Mvc\DispatcherInterface as Dispatcher;
 use Phalcon\Mvc\Micro as MicroApplication;
 use PhalconExt\Di\ProvidesDi;
 
