@@ -12,7 +12,6 @@
 namespace PhalconExt\Http;
 
 use Phalcon\Http\Response;
-use Phalcon\Mvc\Application;
 use Phalcon\Mvc\Micro as MicroApplication;
 use Phalcon\Mvc\View;
 use PhalconExt\Di\ProvidesDi;
