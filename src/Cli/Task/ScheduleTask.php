@@ -74,12 +74,9 @@ class ScheduleTask extends Task
 
         $dues = [];
         $now  = \time();
-        $cron = new Expression;
 
-        foreach ($tasks as $taskId => $schedule) {
-            if ($cron->isCronDue($schedule, $now)) {
-                $dues[] = \explode(':', $taskId) + ['', 'main'];
-            }
+        foreach ((new Expression)->filter($tasks, $now) as $taskId) {
+            $dues[] = \explode(':', $taskId) + ['', 'main'];
         }
 
         return $dues;
