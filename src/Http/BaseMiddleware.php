@@ -36,7 +36,7 @@ abstract class BaseMiddleware
 
     public function __construct()
     {
-        $this->config = $this->di('config')->toArray()[$this->configKey];
+        $this->config = $this->di('config')->path($this->configKey)->toArray();
     }
 
     /**

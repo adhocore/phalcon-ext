@@ -403,7 +403,7 @@ $app = new Phalcon\Mvc\Application($di);
 $app = new Phalcon\Mvc\Micro($di);
 
 // Wrap the app with middleware and run it
-(new PhalconExt\Http\Middlewares([Ajax::class])->wrap($app);
+(new PhalconExt\Http\Middlewares([Ajax::class]))->wrap($app);
 ```
 
 #### Http.Middleware.ApiAuth
@@ -457,9 +457,9 @@ $di->setShared('config', new \Phalcon\Config([
 ]);
 
 // Usage:
-new PhalconExt\Http\Middlewares([
+(new PhalconExt\Http\Middlewares([
     PhalconExt\Http\Middleware\ApiAuth::class,
-])->wrap(new Phalcon\Mvc\Micro($di));
+]))->wrap(new Phalcon\Mvc\Micro($di));
 ```
 
 #### Http.Middleware.Cache
