@@ -1,3 +1,9 @@
+## [v0.0.10](https://github.com/adhocore/phalcon-ext/releases/tag/v0.0.10) (2019-10-23)
+
+### Miscellaneous
+- Provide phpunit options (Jitendra Adhikari) [_b5bffaa_](https://github.com/adhocore/phalcon-ext/commit/b5bffaa)
+
+
 ## [v0.0.9](https://github.com/adhocore/phalcon-ext/releases/tag/v0.0.9) (2019-09-22)
 
 ### Internal Refactors
@@ -9,5 +15,3 @@
 
 ### Miscellaneous
 - **Composer**: Bump deps (Jitendra Adhikari) [_89c6980_](https://github.com/adhocore/phalcon-ext/commit/89c6980)
-
-
