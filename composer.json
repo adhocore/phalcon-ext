@@ -28,7 +28,7 @@
     "require": {
         "php": ">=7.0",
         "adhocore/jwt": "^1.0",
-        "adhocore/cli": "^0.5",
+        "adhocore/cli": "^0.6",
         "adhocore/cron-expr": "^1.0"
     },
     "require-dev": {
