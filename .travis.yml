@@ -4,6 +4,8 @@ php:
   - 7.0
   # - 7.1
   - 7.2
+  - 7.3
+  # - 7.4
 
 env:
   matrix:
@@ -11,6 +13,7 @@ env:
     # - PHALCON_VERSION="v3.2.0"
     - PHALCON_VERSION="v3.3.2"
     - PHALCON_VERSION="v3.4.0"
+    # - PHALCON_VERSION="v4.0.0"
 
 services:
   - redis-server
@@ -27,7 +30,7 @@ before_script:
   - touch example/.var/db.db
 
 script:
-  - vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
+  - composer test:cov
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
