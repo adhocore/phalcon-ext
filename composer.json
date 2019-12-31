@@ -29,7 +29,7 @@
         "php": ">=7.0",
         "adhocore/jwt": "^1.0",
         "adhocore/cli": "^0.7",
-        "adhocore/cron-expr": "^1.0"
+        "adhocore/cron-expr": "^1.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.5 || ^7.5",
@@ -43,6 +43,7 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/phpunit"
+        "test": "phpunit",
+        "test:cov": "phpunit --coverage-text --coverage-clover coverage.xml --coverage-html vendor/cov"
     }
 }
