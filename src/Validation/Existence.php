@@ -34,7 +34,7 @@ class Existence extends Validator
      * @param validation $validation
      * @param string     $field
      */
-    public function validate(Validation $validation, $field) : bool
+    public function validate(Validation $validation, $field): bool
     {
         $options = $this->_options + [
             'table'  => $field,

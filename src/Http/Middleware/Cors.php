@@ -78,7 +78,7 @@ class Cors extends BaseMiddleware
      *
      * @return bool
      */
-    protected function canPreflight(Request $request) : bool
+    protected function canPreflight(Request $request): bool
     {
         if (empty($request->getHeader('Access-Control-Request-Method')) ||
             $request->getMethod() !== 'OPTIONS'
