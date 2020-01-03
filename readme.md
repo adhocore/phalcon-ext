@@ -857,3 +857,11 @@ You can also see the [example](./example) codes for all these. Read [more](./exa
 - [adhocore/cli](https://github.com/adhocore/cli)
 - [adhocore/jwt](https://github.com/adhocore/jwt)
 - [adhocore/cron-expr](https://github.com/adhocore/cron-expr)
+
+## License
+
+> &copy; 2017-2020, [Jitendra Adhikari](https://github.com/adhocore) | [MIT](./LICENSE)
+
+### Credits
+
+This project is release managed by [please](https://github.com/adhocore/please).
