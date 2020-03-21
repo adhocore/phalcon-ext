@@ -35,7 +35,7 @@ trait Extension
     /** @var array Scheduled taskIds mapped to schedule time */
     protected $scheduled = [];
 
-    /** @var array Raw argv sent to handle() [OR read from $_SERVER] */
+    /** @var array Raw argv sent to handle() [OR read from] */
     protected $rawArgv = [];
 
     /** @var array Normalized argv */

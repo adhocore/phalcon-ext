@@ -41,7 +41,8 @@ $app = new MicroApplication($di);
 
 $app->getRouter()->setUriSource(Router::URI_SOURCE_GET_URL);
 
-$app->mount((new Collection)
+$app->mount(
+    (new Collection)
     ->setPrefix('/')
     ->setHandler(MicroController::class, true)
     ->get('/', 'indexAction', 'home')
