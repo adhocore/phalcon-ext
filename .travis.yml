@@ -1,17 +1,17 @@
 language: php
 
 php:
-  - 7.0
+  # - 7.0
   # - 7.1
   - 7.2
-  # - 7.3
-  # - 7.4
+  - 7.3
+  - 7.4
 
 env:
   matrix:
     # - PHALCON_VERSION="v3.1.0"
     # - PHALCON_VERSION="v3.2.0"
-    - PHALCON_VERSION="v3.3.2"
+    # - PHALCON_VERSION="v3.3.2"
     - PHALCON_VERSION="v3.4.5"
     # - PHALCON_VERSION="v4.0.0"
 
