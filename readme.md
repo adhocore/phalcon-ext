@@ -8,6 +8,9 @@ Useful phalcon adapters, middlewares, extensions and utilities!
 [![Codecov branch](https://img.shields.io/codecov/c/github/adhocore/phalcon-ext/master.svg?style=flat-square)](https://codecov.io/gh/adhocore/phalcon-ext)
 [![StyleCI](https://styleci.io/repos/136166947/shield)](https://styleci.io/repos/136166947)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
+[![Donate](https://img.shields.io/badge/donate-paypal-blue.svg?style=flat-square)](https://www.paypal.me/ji10/50usd)
+[![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Adapters+middlewares+extensions+and+utilities+missing+in+phalcon+framework&url=https://github.com/adhocore/phalcon-ext&hashtags=php,phalcon,extension,middleware)
+
 
 ## Installation
 
