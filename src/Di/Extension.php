@@ -80,7 +80,7 @@ trait Extension
             throw new \RuntimeException('Cyclic dependency for class: ' . $class);
         }
 
-        $this->resolving[$class] = true;
+        $this->resolving[$class]     = true;
         $this->set($class, $resolved = $this->instantiate($class, $parameters), true);
         unset($this->resolving[$class]);
 
