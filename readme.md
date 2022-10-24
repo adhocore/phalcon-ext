@@ -1,6 +1,7 @@
 ## adhocore/phalcon-ext
 
 Useful phalcon adapters, middlewares, extensions and utilities!
+> Supports phalcon v4.
 
 [![Travis Build](https://travis-ci.com/adhocore/phalcon-ext.svg?branch=master)](https://travis-ci.com/adhocore/phalcon-ext?branch=master)
 [![Latest Version](https://img.shields.io/github/release/adhocore/phalcon-ext.svg?style=flat-square)](https://github.com/adhocore/phalcon-ext/releases)
