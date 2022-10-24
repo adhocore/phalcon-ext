@@ -11,7 +11,7 @@
 
 namespace PhalconExt\Mail;
 
-use Phalcon\Di;
+use Phalcon\Di\Di;
 
 trait Mailable
 {

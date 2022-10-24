@@ -11,7 +11,7 @@
 
 namespace PhalconExt\Example;
 
-use Phalcon\Logger;
+use Phalcon\Logger\Logger;
 use PhalconExt\Di\ProvidesDi;
 use PhalconExt\Logger\EchoLogger;
 use PhalconExt\Mail\Mailer;

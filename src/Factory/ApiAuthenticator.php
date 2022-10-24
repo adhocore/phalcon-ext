@@ -11,7 +11,7 @@
 
 namespace PhalconExt\Factory;
 
-use Phalcon\Db\Adapter as Db;
+use Phalcon\Db\Adapter\AbstractAdapter as Db;
 use Phalcon\Security\Random;
 use PhalconExt\Contract\ApiAuthenticator as Contract;
 

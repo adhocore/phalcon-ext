@@ -39,7 +39,7 @@ $di->setShared('view', function () {
 
 $app = new MicroApplication($di);
 
-$app->getRouter()->setUriSource(Router::URI_SOURCE_GET_URL);
+// $app->getRouter()->setUriSource(Router::URI_SOURCE_GET_URL);
 
 $app->mount(
     (new Collection)

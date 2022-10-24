@@ -11,7 +11,7 @@
 
 namespace PhalconExt\Di;
 
-use Phalcon\Di;
+use Phalcon\Di\Di;
 
 /**
  * Provides di service.

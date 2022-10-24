@@ -14,7 +14,7 @@ namespace PhalconExt\Test;
 use Ahc\Cli\IO\Interactor;
 use Phalcon\Cli\Dispatcher;
 use Phalcon\Cli\Router;
-use Phalcon\Config;
+use Phalcon\Config\Config;
 use PhalconExt\Cli\Console;
 
 class ConsoleTestCase extends TestCase
@@ -35,9 +35,9 @@ class ConsoleTestCase extends TestCase
     protected static $in = __DIR__ . '/input';
     protected static $ou = __DIR__ . '/output';
 
-    public function setUp()
+    public function setUp(): void
     {
-        \Phalcon\Di::reset();
+        \Phalcon\Di\Di::reset();
 
         $di = include __DIR__ . '/../example/bootstrap.php';
 
@@ -58,7 +58,7 @@ class ConsoleTestCase extends TestCase
         $this->app->initTasks(); // Late cofigured tasks are not auto inited.
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         unlink(static::$in);
         unlink(static::$ou);
@@ -103,7 +103,7 @@ class ConsoleTestCase extends TestCase
 
     protected function assertTaskOutputs($expected)
     {
-        return $this->assertContains($expected, $this->getOutputBuffer());
+        return $this->assertStringContainsString($expected, $this->getOutputBuffer());
     }
 
     protected function getOutputBuffer()

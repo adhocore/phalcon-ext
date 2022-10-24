@@ -11,7 +11,7 @@
 
 namespace PhalconExt\Logger;
 
-use Phalcon\Logger\Adapter as LoggerAdapter;
+use Phalcon\Logger\AbstractLogger as LoggerAdapter;
 use Phalcon\Logger\Formatter\Line as LineFormatter;
 
 /**

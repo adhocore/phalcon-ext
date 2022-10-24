@@ -11,7 +11,7 @@
 
 namespace PhalconExt\View;
 
-use Phalcon\Mvc\View\Engine;
+use Phalcon\Mvc\View\Engine\AbstractEngine;
 
 /**
  * Twig engine for Phalcon.
@@ -21,7 +21,7 @@ use Phalcon\Mvc\View\Engine;
  *
  * @link    https://github.com/adhocore/phalcon-ext
  */
-class Twig extends Engine
+class Twig extends AbstractEngine
 {
     /** @var \Twig_Environment */
     protected $twig;
@@ -38,13 +38,13 @@ class Twig extends Engine
      *
      * @return string Rendered content
      */
-    public function render($path, $params = [], $mustClean = false)
+    public function render(string $path, $params, bool $mustClean = false): string
     {
         $this->initTwig();
 
         $content = $this->twig->render($this->normalizePath($path), empty($params) ? [] : (array) $params);
 
-        $this->_view->setContent($content);
+        $this->view->setContent($content);
 
         return $content;
     }

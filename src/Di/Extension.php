@@ -11,6 +11,8 @@
 
 namespace PhalconExt\Di;
 
+use Phalcon\Di\ServiceInterface;
+
 /**
  * An extension to phalcon di.
  *
@@ -30,20 +32,20 @@ trait Extension
     /** @var array The aliases of services */
     protected $aliases   = [];
 
-    public function set($service, $definition, $shared = false)
+    public function set(string $name, $definition, bool $shared = false): ServiceInterface
     {
         if ('' !== $alias = $this->inferAlias($definition)) {
-            $this->aliases[$alias] = $service;
+            $this->aliases[$alias] = $name;
         }
 
-        return parent::set($service, $definition, $shared);
+        return parent::set($name, $definition, $shared);
     }
 
-    abstract public function get($service, $parameters = null);
+    abstract public function get(string $name, $parameters = null);
 
-    abstract public function has($service);
+    abstract public function has(string $name);
 
-    abstract public function remove($service);
+    abstract public function remove(string $name);
 
     /**
      * Get names/aliases/class names of registered services.
@@ -53,7 +55,7 @@ trait Extension
     public function services(): array
     {
         return \array_merge(
-            \array_keys($this->_services),
+            \array_keys($this->services),
             \array_keys($this->aliases)
         );
     }
@@ -247,7 +249,7 @@ trait Extension
     {
         $this->aliases += $aliases;
 
-        foreach ($this->_services as $name => $service) {
+        foreach ($this->services as $name => $service) {
             if ('' !== $alias = $this->inferAlias($service->getDefinition())) {
                 $this->aliases[$alias] = $name;
             }

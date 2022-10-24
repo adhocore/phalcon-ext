@@ -20,7 +20,7 @@ class EchoLoggerTest extends TestCase
 {
     protected $logger;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->logger = new EchoLogger(['level' => Logger::INFO]);
 
@@ -37,9 +37,9 @@ class EchoLoggerTest extends TestCase
 
         $buffer = ob_get_clean();
 
-        $this->assertContains('info level msg', $buffer);
-        $this->assertContains('error level msg', $buffer);
-        $this->assertNotContains('debug level msg', $buffer);
+        $this->assertStringContainsString('info level msg', $buffer);
+        $this->assertStringContainsString('error level msg', $buffer);
+        $this->assertStringNotContainsString('debug level msg', $buffer);
     }
 
     public function test_close()

@@ -12,8 +12,8 @@
 namespace PhalconExt\Logger;
 
 use Phalcon\Di;
-use Phalcon\Logger;
-use Phalcon\Logger\Adapter\File as FileLogger;
+use Phalcon\Logger\Logger;
+use Phalcon\Logger\Adapter\Stream as FileLogger;
 use Phalcon\Logger\Formatter\Line as LineFormatter;
 
 /**
@@ -47,7 +47,7 @@ trait LogsToFile
             return;
         }
 
-        $this->logger->log($message, $level, $context);
+        $this->logger->log($level, $message, $context);
     }
 
     /**
@@ -62,8 +62,10 @@ trait LogsToFile
         $logPath = \rtrim($logPath, '/\\') . '/';
 
         $this->activated = true;
-        $this->logger    = new FileLogger($logPath . \date('Y-m-d') . $this->fileExtension);
 
-        $this->logger->setFormatter(new LineFormatter($this->logFormat ?? null));
+        $file = new FileLogger($logPath . \date('Y-m-d') . $this->fileExtension);
+        $file->setFormatter(new LineFormatter($this->logFormat ?? '[%date%][%level%] %message%'));
+
+        $this->logger  = new Logger('logger.file', ['main' => $file]);
     }
 }

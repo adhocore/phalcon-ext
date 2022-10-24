@@ -13,7 +13,7 @@ namespace PhalconExt\Test;
 
 class MvcWebTestCase extends WebTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         // A new instance of fully configured app :)
         $this->app = include __DIR__ . '/../example/mvc.php';

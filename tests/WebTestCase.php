@@ -11,7 +11,7 @@
 
 namespace PhalconExt\Test;
 
-use Phalcon\Config;
+use Phalcon\Config\Config;
 use Phalcon\Http\Request;
 use Phalcon\Http\Response;
 use PhalconExt\Http\Middlewares;
@@ -22,7 +22,7 @@ class WebTestCase extends TestCase
 
     protected $middlewares = [];
 
-    public function setUp()
+    public function setUp(): void
     {
         // A new instance of fully configured app :)
         $this->app = include __DIR__ . '/../example/index.php';
@@ -34,8 +34,8 @@ class WebTestCase extends TestCase
 
     protected function resetDi()
     {
-        \Phalcon\Di::reset();
-        \Phalcon\Di::setDefault($this->app->getDI());
+        \Phalcon\Di\Di::reset();
+        \Phalcon\Di\Di::setDefault($this->app->getDI());
     }
 
     protected function di(string $service = null)
@@ -137,7 +137,7 @@ class WebTestCase extends TestCase
         $headers = $this->response->getHeaders()->toArray();
 
         $this->assertArrayHasKey($header, $headers);
-        $this->assertContains($value, $headers[$header]);
+        $this->assertStringContainsString($value, $headers[$header]);
 
         return $this;
     }
@@ -162,7 +162,7 @@ class WebTestCase extends TestCase
 
     protected function assertResponseContains(string $part): self
     {
-        $this->assertContains($part, $this->response->getContent());
+        $this->assertStringContainsString($part, $this->response->getContent());
 
         return $this;
     }

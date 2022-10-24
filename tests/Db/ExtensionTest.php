@@ -18,14 +18,14 @@ class ExtensionTest extends TestCase
 {
     protected static $db;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         self::$db = new Sqlite([
             'dbname' => __DIR__ . '/../../example/.var/db.db',
         ]);
     }
 
-    public function setUp()
+    public function setUp(): void
     {
         self::$db->execute('DELETE FROM tests');
     }

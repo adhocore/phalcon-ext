@@ -26,9 +26,9 @@ trait Extension
     use ProvidesDi;
 
     // Implemented by \Phalcon\Db\Adapter.
-    abstract public function updateAsDict($table, $data, $conditions = null, $dataTypes = null);
+    abstract public function updateAsDict(string $table, $data, $whereCondition = null, $dataTypes = null): bool;
 
-    abstract public function insertAsDict($table, $data, $dataTypes = null);
+    abstract public function insertAsDict(string $table, $data, $dataTypes = null);
 
     /**
      * Update a row matching given criteria if exists or insert new one.

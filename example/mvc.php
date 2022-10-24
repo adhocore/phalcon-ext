@@ -20,7 +20,7 @@ use PhalconExt\Http\Middlewares;
 
 $di = require __DIR__ . '/bootstrap.php';
 
-$di->get('router')->setUriSource(Router::URI_SOURCE_GET_URL);
+// $di->get('router')->setUriSource(Router::URI_SOURCE_GET_URL);
 
 $app = new Application($di);
 

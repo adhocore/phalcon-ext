@@ -11,9 +11,9 @@
 
 namespace PhalconExt\Validation;
 
-use Phalcon\Validation as BaseValidation;
-use Phalcon\Validation\Validator;
-use Phalcon\Validation\ValidatorInterface;
+use Phalcon\Filter\Validation as BaseValidation;
+use Phalcon\Filter\Validation\Validator;
+use Phalcon\Filter\Validation\ValidatorInterface;
 use PhalconExt\Validators;
 
 /**
@@ -26,8 +26,8 @@ use PhalconExt\Validators;
  */
 class Validation extends BaseValidation
 {
-    /** @var array The alias of available validators */
-    protected $validators = [
+    /** @var array The alias of available validateHandlers */
+    protected $validateHandlers = [
         'alnum'        => Validator\Alnum::class,
         'alpha'        => Validator\Alpha::class,
         'between'      => Validator\Between::class,
@@ -74,15 +74,15 @@ class Validation extends BaseValidation
      */
     public function register(string $ruleName, $handler, string $message = ''): self
     {
-        if (isset($this->validators[$ruleName])) {
+        if (isset($this->validateHandlers[$ruleName])) {
             return $this;
         }
 
         if ($message) {
-            $this->_defaultMessages += [$ruleName => $message];
+            // $this->_defaultMessages += [$ruleName => $message];
         }
 
-        $this->validators[$ruleName] = $this->getHandler($ruleName, $handler);
+        $this->validateHandlers[$ruleName] = $this->getHandler($ruleName, $handler);
 
         return $this;
     }
@@ -107,6 +107,7 @@ class Validation extends BaseValidation
         }
 
         if (!\is_subclass_of($handler, Validator::class)) {
+var_dump($handler, class_exists($handler, true));
             throw new \InvalidArgumentException('Unsupported validation rule: ' . $ruleName);
         }
 
@@ -180,7 +181,7 @@ class Validation extends BaseValidation
      */
     public function run(array $ruleSet, $dataSet): self
     {
-        $this->_messages = $this->_validators = [];
+        $this->_messages = $this->validaters = [];
 
         // See if it is arrayable!
         if (\is_object($dataSet)) {
@@ -248,7 +249,7 @@ class Validation extends BaseValidation
     }
 
     /**
-     * Add all the rules for given attribute to validators list.
+     * Add all the rules for given attribute to validateHandlers list.
      *
      * @param string $attribute
      * @param array  $rules
@@ -258,11 +259,11 @@ class Validation extends BaseValidation
     protected function attributeRules(string $attribute, array $rules)
     {
         foreach ($rules as $rule => $options) {
-            if (!isset($this->validators[$rule])) {
+            if (!isset($this->validateHandlers[$rule])) {
                 throw new \InvalidArgumentException('Unknown validation rule: ' . $rule);
             }
 
-            $validator = $this->validators[$rule];
+            $validator = $this->validateHandlers[$rule];
             $options   = (array) $options + [
                 'callback' => $this->callbacks[$rule] ?? null,
                 'message'  => $this->_defaultMessages[$rule] ?? null,

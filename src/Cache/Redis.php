@@ -11,7 +11,7 @@
 
 namespace PhalconExt\Cache;
 
-use Phalcon\Cache\Backend\Redis as BaseRedis;
+use Phalcon\Cache\Adapter\Redis as BaseRedis;
 use Redis as PhpRedis;
 
 /**
@@ -40,7 +40,7 @@ class Redis extends BaseRedis
      *
      * @return int
      */
-    public function getTtl(string $key): int
+    public function getTtl($key): int
     {
         return $this->getConnection()->ttl("_PHCR$key") ?: -1;
     }

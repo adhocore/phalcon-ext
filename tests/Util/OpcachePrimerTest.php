@@ -16,7 +16,7 @@ use PhalconExt\Util\OpcachePrimer;
 
 class OpcachePrimerTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         if (!extension_loaded('Zend Opcache') || !ini_get('opcache.enable_cli')) {
             $this->markTestSkipped('Zend Opcache required');

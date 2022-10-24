@@ -18,7 +18,7 @@ class ThrottleTest extends WebTestCase
 {
     protected $throttleMw;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

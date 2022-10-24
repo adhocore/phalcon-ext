@@ -11,7 +11,7 @@
 
 namespace PhalconExt\Test\Di;
 
-use Phalcon\Db\Adapter;
+use Phalcon\Db\Adapter\AbstractAdapter as Adapter;
 use PhalconExt\Di\ProvidesDi;
 use PhalconExt\Mail\Mailer;
 

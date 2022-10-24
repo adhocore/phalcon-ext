@@ -11,9 +11,9 @@
 
 namespace PhalconExt\Validation;
 
-use Phalcon\Validation;
-use Phalcon\Validation\Message;
-use Phalcon\Validation\Validator;
+use Phalcon\Filter\Validation;
+use Phalcon\Filter\Validation\Message;
+use Phalcon\Filter\Validation\AbstractValidator;
 use PhalconExt\Di\ProvidesDi;
 
 /**
@@ -24,7 +24,7 @@ use PhalconExt\Di\ProvidesDi;
  *
  * @link    https://github.com/adhocore/phalcon-ext
  */
-class Existence extends Validator
+class Existence extends AbstractValidator
 {
     use ProvidesDi;
 

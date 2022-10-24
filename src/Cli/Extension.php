@@ -15,7 +15,7 @@ use Ahc\Cli\Application;
 use Ahc\Cli\Input\Command;
 use Ahc\Cli\IO\Interactor;
 use Phalcon\Cli\Task;
-use Phalcon\DiInterface;
+use Phalcon\Di\DiInterface;
 use PhalconExt\Cli\Task\ScheduleTask;
 use PhalconExt\Di\ProvidesDi;
 

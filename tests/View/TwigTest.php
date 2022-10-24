@@ -17,7 +17,7 @@ class TwigTest extends WebTestCase
 {
     protected $twig;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -29,9 +29,9 @@ class TwigTest extends WebTestCase
         $content = $this->twig->render('render.block.twig', []);
         $block   = $this->twig->renderBlock('render.block', 'a', []);
 
-        $this->assertContains('It comes from outside', $content);
-        $this->assertNotContains('It comes from outside', $block);
-        $this->assertContains('It comes from block A', $block);
+        $this->assertStringContainsString('It comes from outside', $content);
+        $this->assertStringNotContainsString('It comes from outside', $block);
+        $this->assertStringContainsString('It comes from block A', $block);
     }
 
     public function test_filter()

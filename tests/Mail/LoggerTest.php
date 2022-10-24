@@ -18,7 +18,7 @@ class LoggerTest extends WebTestCase
 {
     protected $log;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -48,7 +48,7 @@ class LoggerTest extends WebTestCase
         if (is_array($expected)) {
             $this->assertSame(implode("\n", $expected), $log);
         } else {
-            $this->assertContains($expected, $log);
+            $this->assertStringContainsString($expected, $log);
         }
     }
 

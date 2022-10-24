@@ -31,11 +31,11 @@ class LogsToFileTest extends TestCase
 
         $logs = file_get_contents(__DIR__ . '/' . date('Y-m-d') . $this->fileExtension);
 
-        $this->assertContains('Would be logged', $logs);
-        $this->assertNotContains('Wont be logged', $logs);
+        $this->assertStringContainsString('Would be logged', $logs);
+        $this->assertStringNotContainsString('Wont be logged', $logs);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         unlink(__DIR__ . '/' . date('Y-m-d') . $this->fileExtension);
     }

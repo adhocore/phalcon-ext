@@ -21,7 +21,7 @@ class LoggerTest extends TestCase
     protected static $db;
     protected static $log;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         self::$db = new Sqlite([
             'dbname' => __DIR__ . '/../../example/.var/db.db',
@@ -47,7 +47,7 @@ class LoggerTest extends TestCase
         self::$log = __DIR__ . '/../../example/.var/sql/' . date('Y-m-d') . '.sql';
     }
 
-    public function setUp()
+    public function setUp(): void
     {
         self::$db->execute('DELETE FROM tests');
         file_put_contents(self::$log, '');
@@ -61,8 +61,8 @@ class LoggerTest extends TestCase
 
         $logs = file_get_contents(self::$log);
 
-        $this->assertContains("SELECT 1 FROM tests;\n", $logs);
-        $this->assertContains("SELECT 1 FROM tests WHERE 1 = '1';\n", $logs);
-        $this->assertContains("SELECT 1 FROM tests WHERE 1 = '1';\n", $logs);
+        $this->assertStringContainsString("SELECT 1 FROM tests;\n", $logs);
+        $this->assertStringContainsString("SELECT 1 FROM tests WHERE 1 = '1';\n", $logs);
+        $this->assertStringContainsString("SELECT 1 FROM tests WHERE 1 = '1';\n", $logs);
     }
 }

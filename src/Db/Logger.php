@@ -11,7 +11,7 @@
 
 namespace PhalconExt\Db;
 
-use Phalcon\Db\Adapter;
+use Phalcon\Db\Adapter\AbstractAdapter;
 use Phalcon\Events\Event;
 use PhalconExt\Logger\LogsToFile;
 
@@ -51,12 +51,12 @@ class Logger
     /**
      * Run before firing query.
      *
-     * @param Event   $event
-     * @param Adapter $connection
+     * @param Event           $event
+     * @param AbstractAdapter $connection
      *
      * @return void
      */
-    public function beforeQuery(Event $event, Adapter $connection)
+    public function beforeQuery(Event $event, AbstractAdapter $connection)
     {
         if (!$this->activated) {
             return;
@@ -111,11 +111,11 @@ class Logger
     /**
      * Get the properly interpolated sql.
      *
-     * @param Adapter $connection
+     * @param AbstractAdapter $connection
      *
      * @return string
      */
-    protected function getParsedSql($connection): string
+    protected function getParsedSql(AbstractAdapter $connection): string
     {
         $parts = $connection->convertBoundParams(
             $connection->getSqlStatement(),

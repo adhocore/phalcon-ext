@@ -24,17 +24,17 @@ if (getenv('APP_ENV') !== 'test' && PHP_SAPI !== 'cli') {
     (new Phalcon\Debug)->listen(true, true);
 }
 
-$loader = (new Phalcon\Loader)
-    ->registerNamespaces([
+$loader = (new Phalcon\Autoload\Loader)
+    ->setNamespaces([
         'PhalconExt\\Example' => __DIR__ . '/',
         'PhalconExt\\Test'    => __DIR__ . '/../tests/',
         'PhalconExt'          => __DIR__ . '/../src/',
     ])
-    ->registerClasses(require __DIR__ . '/../vendor/composer/autoload_classmap.php')
+    ->setClasses(require __DIR__ . '/../vendor/composer/autoload_classmap.php')
     ->register();
 
 if (getenv('APP_ENV') !== 'test') {
-    $loader->registerFiles(require __DIR__ . '/../vendor/composer/autoload_files.php')->loadFiles();
+    $loader->setFiles(require __DIR__ . '/../vendor/composer/autoload_files.php')->loadFiles();
 }
 
 $di = new FactoryDefault;
@@ -43,7 +43,7 @@ $di = new FactoryDefault;
 $di->setShared('loader', $loader);
 
 // Setting config in DI is REQUIRED by this package.
-$di->setShared('config', new Phalcon\Config(require __DIR__ . '/config.php'));
+$di->setShared('config', new Phalcon\Config\Config(require __DIR__ . '/config.php'));
 
 $di->setShared('db', function () {
     $config = $this->get('config')->toArray();

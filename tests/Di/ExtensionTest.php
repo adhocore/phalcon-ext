@@ -11,7 +11,7 @@
 
 namespace PhalconExt\Test\Di;
 
-use Phalcon\Db\Adapter;
+use Phalcon\Db\Adapter\AbstractAdapter as Adapter;
 use Phalcon\Http\Response;
 use PhalconExt\Di\ProvidesDi;
 use PhalconExt\Test\WebTestCase;
@@ -20,9 +20,11 @@ class ExtensionTest extends WebTestCase
 {
     protected $di;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
+
+        require_once __DIR__ . '/Stub.php';
 
         $this->di = $this->app->getDI();
     }
@@ -88,9 +90,9 @@ class ExtensionTest extends WebTestCase
     {
         $this->assertNotEmpty($s = $this->di->services());
 
-        $this->assertContains('db', $s);
-        $this->assertContains('config', $s);
-        $this->assertContains('Phalcon\\Config', $s);
-        $this->assertContains('Phalcon\\Loader', $s);
+        $this->assertStringContainsString('db', $s);
+        $this->assertStringContainsString('config', $s);
+        $this->assertStringContainsString('Phalcon\\Config\\Config', $s);
+        $this->assertStringContainsString('Phalcon\\Autoload\\Loader', $s);
     }
 }
