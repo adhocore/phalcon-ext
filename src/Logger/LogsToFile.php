@@ -12,9 +12,9 @@
 namespace PhalconExt\Logger;
 
 use Phalcon\Di;
-use Phalcon\Logger\Logger;
 use Phalcon\Logger\Adapter\Stream as FileLogger;
 use Phalcon\Logger\Formatter\Line as LineFormatter;
+use Phalcon\Logger\Logger;
 
 /**
  * Provides di service.

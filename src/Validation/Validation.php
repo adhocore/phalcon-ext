@@ -14,7 +14,6 @@ namespace PhalconExt\Validation;
 use Phalcon\Filter\Validation as BaseValidation;
 use Phalcon\Filter\Validation\Validator;
 use Phalcon\Filter\Validation\ValidatorInterface;
-use PhalconExt\Validators;
 
 /**
  * Phalcon Validation with batteries.
@@ -107,7 +106,8 @@ class Validation extends BaseValidation
         }
 
         if (!\is_subclass_of($handler, Validator::class)) {
-var_dump($handler, class_exists($handler, true));
+            var_dump($handler, class_exists($handler, true));
+
             throw new \InvalidArgumentException('Unsupported validation rule: ' . $ruleName);
         }
 

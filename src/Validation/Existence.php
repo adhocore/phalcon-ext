@@ -12,8 +12,8 @@
 namespace PhalconExt\Validation;
 
 use Phalcon\Filter\Validation;
-use Phalcon\Filter\Validation\Message;
 use Phalcon\Filter\Validation\AbstractValidator;
+use Phalcon\Filter\Validation\Message;
 use PhalconExt\Di\ProvidesDi;
 
 /**
